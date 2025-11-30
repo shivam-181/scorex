@@ -24,7 +24,7 @@ export default function AboutPage() {
             animate={{ opacity: 1, y: 0 }}
             className="text-5xl md:text-8xl font-black text-white mb-8 tracking-tighter"
           >
-            WE ARE <span className="text-crimson">SCOREX</span>
+            WE ARE <BrandName />
           </motion.h1>
           <motion.div 
             initial={{ opacity: 0 }}

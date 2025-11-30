@@ -7,8 +7,8 @@ interface BrandNameProps {
 export default function BrandName({ className = '' }: BrandNameProps) {
   return (
     <span className={className}>
-      <span className="text-apricot">SCORE</span>
-      <span className="text-crimson">X</span>
+      <span className="text-white">SCORE</span>
+      <span className="text-[#DC143C]">X</span>
     </span>
   );
 }
