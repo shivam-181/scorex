@@ -127,7 +127,10 @@ export default function MatchCard({
           </div>
 
           <span className="text-gray-400 text-xs uppercase tracking-wider font-bold text-center">
-            {match.competition?.name || (isLive ? "LIVE" : format(new Date(match.utcDate), "MMM d, HH:mm"))}
+            {match.status === "SCHEDULED" || match.status === "TIMED" 
+              ? format(new Date(match.utcDate), "MMM d, HH:mm")
+              : (match.competition?.name || (isLive ? "LIVE" : format(new Date(match.utcDate), "MMM d, HH:mm")))
+            }
           </span>
         </div>
 

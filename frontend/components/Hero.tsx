@@ -1,10 +1,14 @@
 'use client';
 import { motion } from 'framer-motion';
 import BrandName from './BrandName';
+import FloatingLiveWidget from './FloatingLiveWidget';
 
 export default function Hero() {
   return (
     <section className="h-screen flex flex-col justify-center items-center text-center relative overflow-hidden">
+      {/* Floating Live Widget - Positioned Top Left */}
+      <FloatingLiveWidget />
+
       {/* Background Image */}
       <div className="absolute inset-0 z-0">
         <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-black/20 to-dark z-10" />
@@ -32,14 +36,16 @@ export default function Hero() {
         Football Scores. Reimagined.
       </motion.p>
 
-      <motion.button
-        whileHover={{ scale: 1.05 }}
-        whileTap={{ scale: 0.95 }}
-        className="mt-8 px-8 py-3 bg-white/5 text-white rounded-full font-bold text-base tracking-wide border border-white/20 shadow-[0_0_30px_rgba(220,20,60,0.3)] backdrop-blur-md hover:bg-white/10 hover:shadow-[0_0_50px_rgba(220,20,60,0.6)] hover:border-crimson/50 transition-all z-10"
-        onClick={() => document.getElementById('live-scores')?.scrollIntoView({ behavior: 'smooth' })}
-      >
-        Check Live Scores
-      </motion.button>
+      <div className="flex gap-4 mt-8 z-10 relative">
+        <motion.button
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+          className="px-8 py-3 bg-white/5 text-white rounded-full font-bold text-base tracking-wide border border-white/20 shadow-[0_0_30px_rgba(220,20,60,0.3)] backdrop-blur-md hover:bg-white/10 hover:shadow-[0_0_50px_rgba(220,20,60,0.6)] hover:border-crimson/50 transition-all"
+          onClick={() => document.getElementById('live-scores')?.scrollIntoView({ behavior: 'smooth' })}
+        >
+          Check Live Scores
+        </motion.button>
+      </div>
 
       {/* Scroll Indicator */}
       <motion.div 
