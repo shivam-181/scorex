@@ -21,7 +21,7 @@ export default function NewsPage() {
   useEffect(() => {
     const fetchNews = async () => {
       try {
-        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/news?limit=12`);
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/news?limit=30`);
         const data = await res.json();
         setNewsItems(data);
       } catch (error) {

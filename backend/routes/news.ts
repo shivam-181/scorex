@@ -10,35 +10,33 @@ const cache = new NodeCache({ stdTTL: 3600 }); // Cache for 1 hour
 
 router.get('/', async (req, res) => {
   try {
-    const cacheKey = 'football_news';
-    const cachedData = cache.get(cacheKey);
-
-    if (cachedData) {
-      return res.json(cachedData);
-    }
-
-    if (!process.env.NEWS_API_KEY) {
-      return res.status(500).json({ message: "News API Key missing" });
-    }
-
     const limit = parseInt(req.query.limit as string) || 6;
+    const cacheKey = 'football_news_v2'; // Updated cache key
+    let articles = cache.get<any[]>(cacheKey);
 
-    const response = await axios.get('https://newsapi.org/v2/everything', {
-      params: {
-        q: '"premier league" OR "la liga" OR "serie a" OR "bundesliga" OR "champions league" OR "soccer"',
-        language: 'en',
-        sortBy: 'publishedAt',
-        apiKey: process.env.NEWS_API_KEY,
-        pageSize: limit * 2 // Fetch more to filter valid ones
+    if (!articles) {
+      if (!process.env.NEWS_API_KEY) {
+        return res.status(500).json({ message: "News API Key missing" });
       }
-    });
 
-    const articles = response.data.articles.filter((article: any) => 
-      article.urlToImage && article.title && article.description
-    ).slice(0, limit); // Take requested number of valid articles
+      const response = await axios.get('https://newsapi.org/v2/everything', {
+        params: {
+          q: '"premier league" OR "la liga" OR "serie a" OR "bundesliga" OR "champions league" OR "soccer"',
+          language: 'en',
+          sortBy: 'publishedAt',
+          apiKey: process.env.NEWS_API_KEY,
+          pageSize: 60 // Fetch a large batch to serve all requests
+        }
+      });
 
-    cache.set(cacheKey, articles);
-    res.json(articles);
+      articles = response.data.articles.filter((article: any) => 
+        article.urlToImage && article.title && article.description
+      );
+
+      cache.set(cacheKey, articles);
+    }
+
+    res.json(articles?.slice(0, limit));
   } catch (error) {
     console.error("News Fetch Error:", error);
     res.status(500).json({ message: "Failed to fetch news" });

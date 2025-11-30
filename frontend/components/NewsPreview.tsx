@@ -22,7 +22,7 @@ export default function NewsPreview() {
   useEffect(() => {
     const fetchNews = async () => {
       try {
-        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/news`);
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/news?limit=6`);
         const data = await res.json();
         setNewsItems(data);
       } catch (error) {
