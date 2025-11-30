@@ -37,7 +37,7 @@ router.get('/live', async (req, res) => {
           const matchTime = new Date(match.utcDate).getTime();
           const now = new Date().getTime();
           const diffMs = now - matchTime;
-          let minute = Math.floor(diffMs / 60000);
+          let minute: number | string = Math.floor(diffMs / 60000);
           
           // Simple heuristic for half-time
           // If > 45, we assume it's 2nd half or HT. 
