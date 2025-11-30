@@ -1,0 +1,76 @@
+# --------------------
+# Node and NPM
+# --------------------
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# --------------------
+# Environment Variables
+# --------------------
+.env
+.env.* 
+!.env.example
+
+# --------------------
+# Dist / Build Files
+# --------------------
+dist/
+build/
+out/
+
+# --------------------
+# Logs
+# --------------------
+*.log
+logs/
+debug.log
+
+# --------------------
+# Next.js
+# --------------------
+.next/
+.next.cache/
+.next/
+.vercel/
+
+# Next.js outputs
+out/
+server/
+standalone/
+
+# --------------------
+# TypeScript
+# --------------------
+*.tsbuildinfo
+
+# --------------------
+# macOS & Windows
+# --------------------
+.DS_Store
+Thumbs.db
+
+# --------------------
+# VS Code
+# --------------------
+.vscode/
+
+# --------------------
+# Frontend Artifacts
+# --------------------
+frontend/.next/
+frontend/node_modules/
+
+# --------------------
+# Backend Artifacts
+# --------------------
+backend/node_modules/
+backend/dist/
+backend/*.log
+
+# --------------------
+# Misc
+# --------------------
+*.swp
