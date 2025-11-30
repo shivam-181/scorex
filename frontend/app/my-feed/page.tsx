@@ -84,7 +84,7 @@ export default function MyFeed() {
               MY <span className="text-crimson">FEED</span>
             </h1>
             <button
-              onClick={() => router.push("/")}
+              onClick={() => router.push("/#live-scores")}
               className="text-sm text-gray-400 hover:text-white underline"
             >
               Back to Live Scores
@@ -101,7 +101,7 @@ export default function MyFeed() {
                 You haven't followed any matches yet.
               </p>
               <button
-                onClick={() => router.push("/")}
+                onClick={() => router.push("/#live-scores")}
                 className="bg-crimson text-white px-6 py-2 rounded-full font-bold"
               >
                 Explore Matches
@@ -110,7 +110,15 @@ export default function MyFeed() {
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {favorites.map((match: any) => (
-                <MatchCard key={match.id} match={match} />
+                <MatchCard 
+                  key={match.id} 
+                  match={match} 
+                  initialIsFav={true}
+                  showRemoveOption={true}
+                  onRemove={(id) => {
+                    setFavorites(prev => prev.filter((m: any) => m.id !== id));
+                  }}
+                />
               ))}
             </div>
           )}

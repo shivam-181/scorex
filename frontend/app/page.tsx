@@ -48,6 +48,14 @@ export default function Home() {
     };
 
     fetchData();
+
+    // Re-fetch on focus to keep favorites in sync
+    const handleFocus = () => {
+      fetchData();
+    };
+
+    window.addEventListener("focus", handleFocus);
+    return () => window.removeEventListener("focus", handleFocus);
   }, []);
 
   // 2. The Filter Logic

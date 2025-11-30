@@ -30,10 +30,15 @@ router.post('/', async (req, res) => {
 // REMOVE a favorite
 router.delete('/:deviceId/:matchId', async (req, res) => {
   try {
-    await Favorite.findOneAndDelete({ 
+    console.log(`Attempting to remove favorite: deviceId=${req.params.deviceId}, matchId=${req.params.matchId}`);
+    const result = await Favorite.findOneAndDelete({ 
       deviceId: req.params.deviceId, 
       matchId: req.params.matchId 
     });
+    console.log('Delete result:', result);
+    if (!result) {
+      console.log('Favorite not found to delete');
+    }
     res.json({ message: 'Removed' });
   } catch (error) {
     res.status(500).json({ message: 'Server error' });

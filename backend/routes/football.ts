@@ -26,7 +26,42 @@ router.get('/live', async (req, res) => {
     const data = await fetchData(`/matches?dateFrom=${fromStr}&dateTo=${toStr}`); 
     
     console.log(`Fetched ${data?.matches?.length} matches`);
+    if (data?.matches?.length > 0) {
+      console.log('Sample Match Data:', JSON.stringify(data.matches[0], null, 2));
+    }
     
+    // Inject calculated minute for live matches
+    if (data?.matches) {
+      data.matches = data.matches.map((match: any) => {
+        if (match.status === 'IN_PLAY') {
+          const matchTime = new Date(match.utcDate).getTime();
+          const now = new Date().getTime();
+          const diffMs = now - matchTime;
+          let minute = Math.floor(diffMs / 60000);
+          
+          // Simple heuristic for half-time
+          // If > 45, we assume it's 2nd half or HT. 
+          // Realistically, without "half started" time, this is best guess.
+          if (minute > 45) {
+             // If it's been running for > 60 mins, assume 2nd half started approx 15 mins after 45.
+             // So minute = 45 + (minute - 60). 
+             // This is very rough but better than "45'".
+             if (minute > 60) {
+               minute = 45 + (minute - 60);
+             } else {
+               // Between 45 and 60, likely HT
+               return { ...match, minute: "HT" as any };
+             }
+          }
+          // Cap at 90+
+          if (minute > 90) minute = "90+";
+          
+          return { ...match, minute };
+        }
+        return match;
+      });
+    }
+
     res.json(data);
   } catch (error) {
     console.error("Error fetching matches:", error);

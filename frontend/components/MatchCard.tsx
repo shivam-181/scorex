@@ -1,7 +1,7 @@
 import { format } from "date-fns";
 import AiInsightBar from "./AiInsightBar";
 import { useState, useEffect } from "react";
-import { Heart } from "lucide-react";
+import { Heart, Trash2 } from "lucide-react";
 
 interface MatchProps {
   id: string;
@@ -10,14 +10,20 @@ interface MatchProps {
   score: { fullTime: { home: number; away: number } };
   status: string;
   utcDate: string;
+  minute?: number | string;
+  competition?: { name: string; emblem: string };
 }
 
 export default function MatchCard({
   match,
   initialIsFav = false,
+  showRemoveOption = false,
+  onRemove,
 }: {
   match: MatchProps;
   initialIsFav?: boolean;
+  showRemoveOption?: boolean;
+  onRemove?: (id: string) => void;
 }) {
   const isLive = match.status === "IN_PLAY";
 
@@ -30,10 +36,7 @@ export default function MatchCard({
 
   const [isFav, setIsFav] = useState(initialIsFav);
 
-  // Sync state if prop changes (e.g. after fetching favorites)
-  useEffect(() => {
-    setIsFav(initialIsFav);
-  }, [initialIsFav]);
+  // ... (useEffect)
 
   const toggleFavorite = async (e: React.MouseEvent) => {
     e.preventDefault();
@@ -45,6 +48,11 @@ export default function MatchCard({
     // Optimistic UI Update
     const previousState = isFav;
     setIsFav(!isFav);
+    
+    // If we are removing, call the callback immediately for UI responsiveness
+    if (showRemoveOption && onRemove) {
+        onRemove(match.id);
+    }
 
     const endpoint = `${process.env.NEXT_PUBLIC_API_URL}/api/favorites`;
 
@@ -77,16 +85,20 @@ export default function MatchCard({
 
   return (
     <div className="glass-panel p-6 flex flex-col hover:border-crimson transition-colors duration-300 relative group">
-      {/* Absolute Position Heart Icon */}
+      {/* Absolute Position Heart/Trash Icon */}
       <button
         onClick={toggleFavorite}
         className="absolute top-4 right-4 text-white hover:text-crimson transition-colors z-20"
       >
-        <Heart
-          size={20}
-          fill={isFav ? "#DC143C" : "transparent"}
-          color={isFav ? "#DC143C" : "white"}
-        />
+        {showRemoveOption ? (
+           <Trash2 size={20} className="text-gray-400 hover:text-crimson" />
+        ) : (
+          <Heart
+            size={20}
+            fill={isFav ? "#DC143C" : "transparent"}
+            color={isFav ? "#DC143C" : "white"}
+          />
+        )}
       </button>
 
       {/* Top Row: Teams & Score */}
@@ -114,8 +126,8 @@ export default function MatchCard({
             {match.score.fullTime.home ?? 0} - {match.score.fullTime.away ?? 0}
           </div>
 
-          <span className="text-gray-400 text-sm">
-            {isLive ? "45'" : format(new Date(match.utcDate), "MMM d, HH:mm")}
+          <span className="text-gray-400 text-xs uppercase tracking-wider font-bold text-center">
+            {match.competition?.name || (isLive ? "LIVE" : format(new Date(match.utcDate), "MMM d, HH:mm"))}
           </span>
         </div>
 
