@@ -21,19 +21,21 @@ router.get('/', async (req, res) => {
       return res.status(500).json({ message: "News API Key missing" });
     }
 
+    const limit = parseInt(req.query.limit as string) || 6;
+
     const response = await axios.get('https://newsapi.org/v2/everything', {
       params: {
-        q: 'football',
+        q: '"premier league" OR "la liga" OR "serie a" OR "bundesliga" OR "champions league" OR "soccer"',
         language: 'en',
         sortBy: 'publishedAt',
         apiKey: process.env.NEWS_API_KEY,
-        pageSize: 6 // Limit to 6 items
+        pageSize: limit * 2 // Fetch more to filter valid ones
       }
     });
 
     const articles = response.data.articles.filter((article: any) => 
       article.urlToImage && article.title && article.description
-    ).slice(0, 3); // Take top 3 valid articles
+    ).slice(0, limit); // Take requested number of valid articles
 
     cache.set(cacheKey, articles);
     res.json(articles);
