@@ -9,9 +9,9 @@ export default function Hero() {
       <div className="absolute inset-0 z-0">
         <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-black/20 to-dark z-10" />
         <img 
-          src="https://images.unsplash.com/photo-1434648957308-5e6a859697e8?q=80&w=2074&auto=format&fit=crop" 
+          src="https://media.gettyimages.com/id/157156611/photo/fbl-brazil-fifa-ballon-dor-award-contenders.jpg?s=2048x2048&w=gi&k=20&c=gM8LmMaHxRxx6_DcuEcCaNmFC5aQPZTueIbQV3Gr3LU=" 
           alt="Stadium Background" 
-          className="w-full h-full object-cover"
+          className="w-full h-full object-cover scale-110 translate-x-12"
         />
       </div>
       

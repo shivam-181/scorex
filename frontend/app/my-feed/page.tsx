@@ -9,7 +9,7 @@ export default function MyFeed() {
   const router = useRouter();
 
   useEffect(() => {
-    const fetchFavorites = async () => {
+    const fetchData = async () => {
       const deviceId = localStorage.getItem("scorex_device_id");
 
       if (!deviceId) {
@@ -18,33 +18,53 @@ export default function MyFeed() {
       }
 
       try {
-        const res = await fetch(
+        // 1. Fetch Favorites
+        const favRes = await fetch(
           `${process.env.NEXT_PUBLIC_API_URL}/api/favorites/${deviceId}`
         );
-        const data = await res.json();
+        const favData = await favRes.json();
 
-        // We need to transform the MongoDB data to match the MatchCard props
-        // Note: MongoDB stores: { homeTeam: "Name", awayTeam: "Name", date: "..." }
-        // MatchCard expects deeper structure. Let's map it manually or adjust MatchCard.
-        // For this tutorial, we format it to look like the API response:
-        const formattedData = data.map((fav: any) => ({
-          id: fav.matchId,
-          status: "SCHEDULED", // We assume scheduled/finished based on date in a real app
-          utcDate: fav.date,
-          homeTeam: { name: fav.homeTeam },
-          awayTeam: { name: fav.awayTeam },
-          score: { fullTime: { home: null, away: null } },
-        }));
+        // 2. Fetch Live Matches to get real-time scores
+        const matchesRes = await fetch(
+          `${process.env.NEXT_PUBLIC_API_URL}/api/football/live`
+        );
+        const matchesData = await matchesRes.json();
+        const liveMatches = matchesData.matches || [];
 
-        setFavorites(formattedData);
+        // 3. Merge Data
+        console.log("Fav Data:", favData);
+        console.log("Live Matches:", liveMatches);
+
+        const mergedFavorites = favData.map((fav: any) => {
+          // Use toString() to ensure we match string vs number correctly
+          const liveMatch = liveMatches.find((m: any) => m.id.toString() === fav.matchId.toString());
+
+          if (liveMatch) {
+            console.log("Found live match for:", fav.matchId);
+            return liveMatch;
+          }
+
+          console.log("No live match found for:", fav.matchId);
+          // Fallback for matches not in the current live feed
+          return {
+            id: fav.matchId,
+            status: "SCHEDULED",
+            utcDate: fav.date,
+            homeTeam: { name: fav.homeTeam },
+            awayTeam: { name: fav.awayTeam },
+            score: { fullTime: { home: null, away: null } },
+          };
+        });
+
+        setFavorites(mergedFavorites);
       } catch (error) {
-        console.error("Error fetching favorites:", error);
+        console.error("Error fetching feed:", error);
       } finally {
         setLoading(false);
       }
     };
 
-    fetchFavorites();
+    fetchData();
   }, []);
 
   return (

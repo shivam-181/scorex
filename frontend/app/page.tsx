@@ -6,6 +6,7 @@ import MatchCard from "../components/MatchCard";
 import LeagueFilter from "../components/LeagueFilter";
 import FeaturesSection from "../components/FeaturesSection";
 import NewsPreview from "../components/NewsPreview";
+import { Search, Zap, Calendar } from "lucide-react";
 
 export default function Home() {
   const [matches, setMatches] = useState([]);
@@ -14,6 +15,9 @@ export default function Home() {
 
   // 1. Add Filter State
   const [activeFilter, setActiveFilter] = useState("ALL");
+  const [searchQuery, setSearchQuery] = useState("");
+  const [showLiveOnly, setShowLiveOnly] = useState(false);
+  const [showUpcomingOnly, setShowUpcomingOnly] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -48,8 +52,24 @@ export default function Home() {
 
   // 2. The Filter Logic
   const filteredMatches = matches.filter((match: any) => {
-    if (activeFilter === "ALL") return true;
-    return match.competition.code === activeFilter;
+    // League Filter
+    if (activeFilter !== "ALL" && match.competition.code !== activeFilter) return false;
+
+    // Live Filter
+    if (showLiveOnly && match.status !== "IN_PLAY" && match.status !== "PAUSED") return false;
+
+    // Upcoming Filter
+    if (showUpcomingOnly && match.status !== "SCHEDULED" && match.status !== "TIMED") return false;
+
+    // Search Filter
+    if (searchQuery) {
+      const query = searchQuery.toLowerCase();
+      const home = match.homeTeam.name.toLowerCase();
+      const away = match.awayTeam.name.toLowerCase();
+      return home.includes(query) || away.includes(query);
+    }
+
+    return true;
   });
 
   return (
@@ -72,9 +92,58 @@ export default function Home() {
           />
         </div>
         <div className="relative z-10">
-          <h2 className="text-3xl font-bold text-white mb-6 border-l-4 border-crimson pl-4">
-            Live Center
-          </h2>
+          <div className="flex flex-col md:flex-row justify-between items-end mb-6 gap-4">
+            <h2 className="text-3xl font-bold text-white border-l-4 border-crimson pl-4">
+              Live Center
+            </h2>
+
+            {/* Search and Live Toggle */}
+            <div className="flex flex-col md:flex-row gap-4 w-full md:w-auto">
+              {/* Search Bar */}
+              <div className="relative w-full md:w-64">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
+                <input
+                  type="text"
+                  placeholder="Search teams..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="w-full bg-white/5 border border-white/10 rounded-full py-2 pl-10 pr-4 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-crimson transition-colors"
+                />
+              </div>
+
+              {/* Live Toggle */}
+              <button
+                onClick={() => {
+                  setShowLiveOnly(!showLiveOnly);
+                  if (!showLiveOnly) setShowUpcomingOnly(false); // Disable upcoming if enabling live
+                }}
+                className={`flex items-center justify-center gap-2 px-6 py-2 rounded-full font-bold text-sm transition-all border ${
+                  showLiveOnly
+                    ? "bg-crimson border-crimson text-white shadow-[0_0_15px_#DC143C]"
+                    : "bg-white/5 border-white/10 text-gray-400 hover:text-white hover:border-white/30"
+                }`}
+              >
+                <Zap size={16} className={showLiveOnly ? "fill-white" : ""} />
+                LIVE
+              </button>
+
+              {/* Upcoming Toggle */}
+              <button
+                onClick={() => {
+                  setShowUpcomingOnly(!showUpcomingOnly);
+                  if (!showUpcomingOnly) setShowLiveOnly(false); // Disable live if enabling upcoming
+                }}
+                className={`flex items-center justify-center gap-2 px-6 py-2 rounded-full font-bold text-sm transition-all border ${
+                  showUpcomingOnly
+                    ? "bg-[#DC143C]/10 border-white text-white shadow-[0_0_15px_#DC143C]"
+                    : "bg-white/5 border-white/10 text-gray-400 hover:text-white hover:border-white/30"
+                }`}
+              >
+                <Calendar size={16} className={showUpcomingOnly ? "text-white" : ""} />
+                UPCOMING
+              </button>
+            </div>
+          </div>
 
           {/* 3. Render the Filter Bar */}
           <LeagueFilter
@@ -100,7 +169,7 @@ export default function Home() {
               ) : (
                 // 4. Empty State
                 <div className="col-span-full text-center py-10 opacity-50">
-                  <p>No matches found in this league today.</p>
+                  <p>No matches found matching your filters.</p>
                 </div>
               )}
             </div>

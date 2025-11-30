@@ -101,8 +101,9 @@ export default function MatchCard({
         {/* Score / Time */}
         <div className="flex flex-col items-center w-1/3">
           {isLive && (
-            <span className="text-crimson text-xs font-bold animate-pulse">
-              ● LIVE
+            <span className="text-xs font-bold flex items-center gap-1">
+              <span className="text-[#DC143C] animate-pulse">●</span>
+              <span className="text-white">LIVE</span>
             </span>
           )}
           {match.status === "FINISHED" && (
