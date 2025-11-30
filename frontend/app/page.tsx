@@ -18,6 +18,7 @@ export default function Home() {
   const [searchQuery, setSearchQuery] = useState("");
   const [showLiveOnly, setShowLiveOnly] = useState(false);
   const [showUpcomingOnly, setShowUpcomingOnly] = useState(false);
+  const [showRecentOnly, setShowRecentOnly] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -69,6 +70,9 @@ export default function Home() {
     // Upcoming Filter
     if (showUpcomingOnly && match.status !== "SCHEDULED" && match.status !== "TIMED") return false;
 
+    // Recent Filter
+    if (showRecentOnly && match.status !== "FINISHED") return false;
+
     // Search Filter
     if (searchQuery) {
       const query = searchQuery.toLowerCase();
@@ -78,6 +82,11 @@ export default function Home() {
     }
 
     return true;
+  }).sort((a: any, b: any) => {
+    if (showRecentOnly) {
+      return new Date(b.utcDate).getTime() - new Date(a.utcDate).getTime();
+    }
+    return 0;
   });
 
   return (
@@ -123,7 +132,10 @@ export default function Home() {
               <button
                 onClick={() => {
                   setShowLiveOnly(!showLiveOnly);
-                  if (!showLiveOnly) setShowUpcomingOnly(false); // Disable upcoming if enabling live
+                  if (!showLiveOnly) {
+                    setShowUpcomingOnly(false);
+                    setShowRecentOnly(false);
+                  }
                 }}
                 className={`flex items-center justify-center gap-2 px-6 py-2 rounded-full font-bold text-sm transition-all border ${
                   showLiveOnly
@@ -139,7 +151,10 @@ export default function Home() {
               <button
                 onClick={() => {
                   setShowUpcomingOnly(!showUpcomingOnly);
-                  if (!showUpcomingOnly) setShowLiveOnly(false); // Disable live if enabling upcoming
+                  if (!showUpcomingOnly) {
+                    setShowLiveOnly(false);
+                    setShowRecentOnly(false);
+                  }
                 }}
                 className={`flex items-center justify-center gap-2 px-6 py-2 rounded-full font-bold text-sm transition-all border ${
                   showUpcomingOnly
@@ -149,6 +164,25 @@ export default function Home() {
               >
                 <Calendar size={16} className={showUpcomingOnly ? "text-white" : ""} />
                 UPCOMING
+              </button>
+
+              {/* Recent Toggle */}
+              <button
+                onClick={() => {
+                  setShowRecentOnly(!showRecentOnly);
+                  if (!showRecentOnly) {
+                    setShowLiveOnly(false);
+                    setShowUpcomingOnly(false);
+                  }
+                }}
+                className={`flex items-center justify-center gap-2 px-6 py-2 rounded-full font-bold text-sm transition-all border ${
+                  showRecentOnly
+                    ? "bg-[#DC143C]/10 border-white text-white shadow-[0_0_15px_#DC143C]"
+                    : "bg-white/5 border-white/10 text-gray-400 hover:text-white hover:border-white/30"
+                }`}
+              >
+                <Calendar size={16} className={showRecentOnly ? "text-white" : ""} />
+                RECENT
               </button>
             </div>
           </div>

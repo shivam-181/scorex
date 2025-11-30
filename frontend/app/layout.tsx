@@ -55,6 +55,7 @@ import Navbar from "../components/Navbar";
 import TopHeader from "../components/TopHeader";
 
 import Chatbot from "../components/Chatbot";
+import ScrollToTop from "../components/ScrollToTop";
 
 export default function RootLayout({
   children,
@@ -69,6 +70,7 @@ export default function RootLayout({
         <InitDeviceId />
         <TopHeader />
         {children}
+        <ScrollToTop />
         <Chatbot />
         <Navbar />
       </body>
