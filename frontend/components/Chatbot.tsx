@@ -60,14 +60,37 @@ export default function Chatbot() {
     <>
       {/* Floating Button */}
       <motion.button
-        whileHover={{ scale: 1.1 }}
+        initial={{ scale: 0, rotate: -180 }}
+        animate={{ 
+          scale: 1, 
+          rotate: 0,
+          y: [0, -10, 0], // Floating animation
+        }}
+        transition={{
+          type: "spring",
+          stiffness: 260,
+          damping: 20,
+          y: {
+            duration: 2,
+            repeat: Infinity,
+            ease: "easeInOut"
+          }
+        }}
+        whileHover={{ scale: 1.1, rotate: 15 }}
         whileTap={{ scale: 0.9 }}
         onClick={() => setIsOpen(true)}
-        className={`fixed bottom-6 right-6 z-50 p-4 rounded-full shadow-2xl transition-all ${
-          isOpen ? "scale-0 opacity-0 pointer-events-none" : "scale-100 opacity-100 bg-crimson text-white"
+        className={`fixed bottom-6 right-6 z-50 group flex items-center justify-center p-4 rounded-full shadow-[0_0_20px_rgba(220,20,60,0.6)] transition-all ${
+          isOpen ? "scale-0 opacity-0 pointer-events-none" : "scale-100 opacity-100 bg-gradient-to-r from-crimson to-red-600 text-white"
         }`}
       >
-        <MessageSquare size={24} />
+        {/* Pulse Effect */}
+        <span className="absolute inset-0 rounded-full bg-crimson opacity-75 animate-ping group-hover:animate-none"></span>
+        
+        <div className="relative">
+          <MessageSquare size={28} className="drop-shadow-md" />
+          {/* Notification Dot */}
+          <span className="absolute -top-1 -right-1 w-3 h-3 bg-white rounded-full border-2 border-crimson"></span>
+        </div>
       </motion.button>
 
       {/* Chat Window */}
