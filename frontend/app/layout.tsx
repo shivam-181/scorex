@@ -54,6 +54,8 @@ import InitDeviceId from "../components/InitDeviceId";
 import Navbar from "../components/Navbar";
 import TopHeader from "../components/TopHeader";
 
+import Chatbot from "../components/Chatbot";
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -67,6 +69,7 @@ export default function RootLayout({
         <InitDeviceId />
         <TopHeader />
         {children}
+        <Chatbot />
         <Navbar />
       </body>
     </html>
