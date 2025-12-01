@@ -79,7 +79,7 @@ export default function Chatbot() {
         whileHover={{ scale: 1.1, rotate: 15 }}
         whileTap={{ scale: 0.9 }}
         onClick={() => setIsOpen(true)}
-        className={`fixed bottom-6 right-6 z-50 group flex items-center justify-center p-4 rounded-full shadow-[0_0_20px_rgba(220,20,60,0.6)] transition-all ${
+        className={`fixed bottom-24 md:bottom-6 right-6 z-50 group flex items-center justify-center p-4 rounded-full shadow-[0_0_20px_rgba(220,20,60,0.6)] transition-all ${
           isOpen ? "scale-0 opacity-0 pointer-events-none" : "scale-100 opacity-100 bg-gradient-to-r from-crimson to-red-600 text-white"
         }`}
       >
@@ -100,7 +100,7 @@ export default function Chatbot() {
             initial={{ opacity: 0, y: 50, scale: 0.9 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 50, scale: 0.9 }}
-            className="fixed bottom-6 right-6 z-50 w-[350px] h-[500px] bg-dark/95 backdrop-blur-xl border border-white/10 rounded-2xl shadow-2xl flex flex-col overflow-hidden"
+            className="fixed bottom-24 md:bottom-6 right-6 z-50 w-[350px] h-[500px] bg-dark/95 backdrop-blur-xl border border-white/10 rounded-2xl shadow-2xl flex flex-col overflow-hidden"
           >
             {/* Header */}
             <div className="p-4 bg-crimson/90 flex items-center justify-between">
