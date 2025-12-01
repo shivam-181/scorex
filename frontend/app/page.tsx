@@ -210,8 +210,15 @@ export default function Home() {
           />
 
           {loading ? (
-            <div className="flex justify-center py-20">
+            <div className="flex flex-col justify-center items-center py-20 gap-4">
               <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-crimson"></div>
+              <p className="text-gray-400 text-sm animate-pulse">
+                Loading live scores...
+              </p>
+              {/* Show "Waking up" message after 3 seconds */}
+              <div className="text-xs text-gray-500 mt-2 animate-in fade-in slide-in-from-bottom-2 duration-1000 delay-3000 fill-mode-forwards opacity-0" style={{ animationDelay: '3s' }}>
+                (Waking up server, this might take a moment...)
+              </div>
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
