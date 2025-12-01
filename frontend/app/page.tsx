@@ -93,9 +93,6 @@ export default function Home() {
     <main className="min-h-screen bg-dark">
       <Hero />
 
-      {/* Features Section */}
-      <FeaturesSection />
-
       <div
         className="container mx-auto px-4 py-20 relative overflow-hidden"
         id="live-scores"
@@ -221,6 +218,9 @@ export default function Home() {
 
       {/* News Preview Section */}
       <NewsPreview />
+
+      {/* Features Section */}
+      <FeaturesSection />
     </main>
   );
 }
