@@ -112,11 +112,8 @@ export default function Home() {
     <main className="min-h-screen bg-dark">
       <Hero />
 
-      <div
-        className="container mx-auto px-4 py-20 relative overflow-hidden"
-        id="live-scores"
-      >
-        {/* Background Watermark */}
+      <div className="relative w-full py-20 overflow-hidden" id="live-scores">
+        {/* Background Watermark - Full Width */}
         <div className="absolute inset-0 opacity-20 pointer-events-none z-0">
           <img
             src="https://images.unsplash.com/photo-1570498839593-e565b39455fc?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8Zm9vdGJhbGwlMjBwaXRjaHxlbnwwfDF8MHx8fDA%3D"
@@ -124,7 +121,9 @@ export default function Home() {
             className="w-full h-full object-cover"
           />
         </div>
-        <div className="relative z-10">
+
+        {/* Content Container - Centered */}
+        <div className="container mx-auto px-4 relative z-10">
           <div className="flex flex-col md:flex-row justify-between items-end mb-6 gap-4">
             <h2 className="text-3xl font-bold text-white border-l-4 border-crimson pl-4">
               Live Center
