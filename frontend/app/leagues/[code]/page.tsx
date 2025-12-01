@@ -1,7 +1,7 @@
 'use client';
-import { useParams } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
-import { Trophy, Users, Calendar, Loader2 } from 'lucide-react';
+import { Trophy, Users, Calendar, Loader2, ArrowLeft } from 'lucide-react';
 import { useState, useEffect } from 'react';
 
 // Static Config for Visuals (Colors/Logos)
@@ -46,6 +46,7 @@ const leagueConfig: any = {
 
 export default function LeagueDetails() {
   const { code } = useParams();
+  const router = useRouter(); // Initialize router
   const leagueCode = code as string;
   const config = leagueConfig[leagueCode];
   
@@ -83,6 +84,14 @@ export default function LeagueDetails() {
     <main className="min-h-screen bg-dark pb-20">
       {/* Hero Header */}
       <div className={`relative h-80 bg-gradient-to-br ${config.color} flex items-center justify-center overflow-hidden`}>
+        {/* Back Button */}
+        <button 
+          onClick={() => router.back()}
+          className="absolute top-28 left-6 z-30 p-2 bg-black/20 hover:bg-black/40 backdrop-blur-sm rounded-full text-white transition-colors"
+        >
+          <ArrowLeft size={24} />
+        </button>
+
         {/* Watermark Logo */}
         <div className="absolute inset-0 opacity-20 pointer-events-none">
            <img 
