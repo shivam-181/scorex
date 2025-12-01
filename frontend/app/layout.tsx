@@ -2,6 +2,13 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 
+import InitDeviceId from "../components/InitDeviceId";
+import Navbar from "../components/Navbar";
+import TopHeader from "../components/TopHeader";
+import Chatbot from "../components/Chatbot";
+import ScrollToTop from "../components/ScrollToTop";
+import BreakingNewsTicker from '@/components/BreakingNewsTicker';
+
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
@@ -49,14 +56,6 @@ export const metadata: Metadata = {
   },
 };
 
-
-import InitDeviceId from "../components/InitDeviceId";
-import Navbar from "../components/Navbar";
-import TopHeader from "../components/TopHeader";
-
-import Chatbot from "../components/Chatbot";
-import ScrollToTop from "../components/ScrollToTop";
-
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -65,9 +64,10 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-dark text-white`}
       >
         <InitDeviceId />
+        <BreakingNewsTicker />
         <TopHeader />
         {children}
         <ScrollToTop />

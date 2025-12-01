@@ -15,7 +15,11 @@ export default function TopHeader() {
 
   return (
     <>
-      <header className="fixed top-0 left-0 w-full z-50 px-6 py-4 flex justify-between items-center bg-gradient-to-b from-black/80 to-transparent pointer-events-none">
+      <header 
+        className={`${
+          pathname === '/' ? 'sticky' : 'fixed'
+        } top-0 left-0 w-full z-50 px-6 py-4 flex justify-between items-center bg-gradient-to-b from-black/80 to-transparent pointer-events-none`}
+      >
         {/* Logo */}
         <Link href="/" className="pointer-events-auto">
           <h1 className="text-2xl font-bold tracking-tighter text-white">

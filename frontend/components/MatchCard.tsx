@@ -2,6 +2,7 @@ import { format } from "date-fns";
 import AiInsightBar from "./AiInsightBar";
 import { useState, useEffect } from "react";
 import { Heart, Trash2 } from "lucide-react";
+import FanPulse from "./FanPulse";
 
 interface MatchProps {
   id: string;
@@ -142,15 +143,16 @@ export default function MatchCard({
         </div>
       </div>
 
-      {/* Bottom Row: AI Bar */}
+      {/* Bottom Row: AI Bar & Fan Pulse */}
       {/* Only show AI insights for Live or Upcoming games */}
       {match.status !== "FINISHED" && (
-        <div className="border-t border-white/10 pt-3">
+        <div className="border-t border-white/10 pt-3 flex flex-col gap-3">
           <AiInsightBar
             homeProb={mockAiData.home}
             awayProb={mockAiData.away}
             insightText={mockAiData.text}
           />
+          <FanPulse matchId={match.id} homeTeam={match.homeTeam.name} awayTeam={match.awayTeam.name} />
         </div>
       )}
     </div>
