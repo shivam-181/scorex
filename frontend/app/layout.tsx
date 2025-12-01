@@ -7,6 +7,7 @@ import ScrollToTop from "../components/ScrollToTop";
 import BreakingNewsTicker from "../components/BreakingNewsTicker";
 import { PinnedMatchProvider } from "../context/PinnedMatchContext";
 import MiniScoreBar from "../components/MiniScoreBar";
+import Navbar from "../components/Navbar";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 const outfit = Outfit({ subsets: ["latin"], variable: "--font-outfit" });
@@ -31,6 +32,7 @@ export default function RootLayout({
           <Chatbot />
           <ScrollToTop />
           <MiniScoreBar />
+          <Navbar />
         </PinnedMatchProvider>
       </body>
     </html>
