@@ -87,7 +87,7 @@ export default function LeagueDetails() {
         {/* Back Button */}
         <button 
           onClick={() => router.back()}
-          className="absolute top-28 left-6 z-30 p-2 bg-black/20 hover:bg-black/40 backdrop-blur-sm rounded-full text-white transition-colors"
+          className="hidden md:block absolute top-28 left-6 z-30 p-2 bg-black/20 hover:bg-black/40 backdrop-blur-sm rounded-full text-white transition-colors"
         >
           <ArrowLeft size={24} />
         </button>
