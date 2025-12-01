@@ -6,6 +6,7 @@ import connectDB from './config/db.js';
 import favoriteRoutes from './routes/favorites.js';
 import chatRoutes from './routes/chat.js';
 import newsRoutes from './routes/news.js';
+import leagueRoutes from './routes/leagues.js';
 
 // Connect to MongoDB
 connectDB();
@@ -21,6 +22,7 @@ app.use('/api/football', footballRoutes);
 app.use('/api/favorites', favoriteRoutes);
 app.use('/api/chat', chatRoutes);
 app.use('/api/news', newsRoutes);
+app.use('/api/leagues', leagueRoutes);
 
 app.get('/', (req, res) => {
   res.send('ScoreX Backend is Live ⚽');

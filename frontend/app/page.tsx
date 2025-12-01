@@ -59,6 +59,25 @@ export default function Home() {
     return () => window.removeEventListener("focus", handleFocus);
   }, []);
 
+  // Scroll Restoration Effect
+  useEffect(() => {
+    if (!loading && matches.length > 0) {
+      const scrollMatchId = sessionStorage.getItem('scorex_scroll_match_id');
+      if (scrollMatchId) {
+        // Small timeout to ensure DOM is ready
+        setTimeout(() => {
+          const element = document.getElementById(`match-card-${scrollMatchId}`);
+          if (element) {
+            element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            // Optional: Clear it so it doesn't scroll on random refreshes, 
+            // but keeping it might be better for "back" behavior consistency.
+            // sessionStorage.removeItem('scorex_scroll_match_id'); 
+          }
+        }, 100);
+      }
+    }
+  }, [loading, matches]);
+
   // 2. The Filter Logic
   const filteredMatches = matches.filter((match: any) => {
     // League Filter
@@ -198,7 +217,15 @@ export default function Home() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {filteredMatches.length > 0 ? (
                 filteredMatches.map((match: any) => (
-                  <Link href={`/match/${match.id}`} key={match.id}>
+                  <Link 
+                    href={`/match/${match.id}`} 
+                    key={match.id}
+                    onClick={() => {
+                      // Save scroll position marker
+                      sessionStorage.setItem('scorex_scroll_match_id', match.id);
+                    }}
+                    id={`match-card-${match.id}`} // Add ID for scrolling
+                  >
                     <MatchCard
                       match={match}
                       initialIsFav={favorites.includes(match.id.toString())}

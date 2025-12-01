@@ -1,59 +1,19 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Inter, Outfit } from "next/font/google";
 import "./globals.css";
-
-import InitDeviceId from "../components/InitDeviceId";
-import Navbar from "../components/Navbar";
 import TopHeader from "../components/TopHeader";
 import Chatbot from "../components/Chatbot";
 import ScrollToTop from "../components/ScrollToTop";
-import BreakingNewsTicker from '@/components/BreakingNewsTicker';
+import BreakingNewsTicker from "../components/BreakingNewsTicker";
+import { PinnedMatchProvider } from "../context/PinnedMatchContext";
+import MiniScoreBar from "../components/MiniScoreBar";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
+const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
+const outfit = Outfit({ subsets: ["latin"], variable: "--font-outfit" });
 
 export const metadata: Metadata = {
-  title: "ScoreX - Live Football Scores, Stats & Insights",
-  description:
-    "ScoreX provides real-time football scores, match insights, AI-powered analysis, standings, and personalized football feed.",
-  keywords: [
-    "football live score",
-    "soccer stats",
-    "live match updates",
-    "football insights",
-    "ScoreX",
-  ],
-  openGraph: {
-    title: "ScoreX - Live Football Scores & AI Insights",
-    description:
-      "Track football scores, match events, stats, and AI-powered analysis in real-time.",
-    url: "https://your-vercel-domain.vercel.app",
-    siteName: "ScoreX",
-    images: [
-      {
-        url: "/og-image.png",
-        width: 1200,
-        height: 630,
-        alt: "ScoreX Football Insights",
-      },
-    ],
-    locale: "en_US",
-    type: "website",
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: "ScoreX - Live Football Scores & Insights",
-    description:
-      "Real-time football updates, events, stats and AI-powered insights.",
-    images: ["/og-image.png"],
-  },
+  title: "ScoreX - The Future of Live Scores",
+  description: "Experience football like never before.",
 };
 
 export default function RootLayout({
@@ -62,17 +22,16 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-dark text-white`}
-      >
-        <InitDeviceId />
-        <BreakingNewsTicker />
-        <TopHeader />
-        {children}
-        <ScrollToTop />
-        <Chatbot />
-        <Navbar />
+    <html lang="en" className="scroll-smooth">
+      <body className={`${inter.variable} ${outfit.variable} font-sans bg-dark text-white selection:bg-crimson selection:text-white`}>
+        <PinnedMatchProvider>
+          <BreakingNewsTicker />
+          <TopHeader />
+          {children}
+          <Chatbot />
+          <ScrollToTop />
+          <MiniScoreBar />
+        </PinnedMatchProvider>
       </body>
     </html>
   );

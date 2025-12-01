@@ -2,7 +2,7 @@ import axios from 'axios';
 import NodeCache from 'node-cache';
 
 const cache = new NodeCache({ stdTTL: 60 }); // Cache for 60 seconds
-const API_KEY = process.env.FOOTBALL_API_KEY;
+const API_KEY = process.env.FOOTBALL_API_KEY || process.env.FOOTBALL_DATA_API_KEY;
 const BASE_URL = 'https://api.football-data.org/v4';
 
 export const fetchData = async (endpoint: string) => {

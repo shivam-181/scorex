@@ -1,8 +1,10 @@
+import { useRouter } from "next/navigation";
 import { format } from "date-fns";
 import AiInsightBar from "./AiInsightBar";
-import { useState, useEffect } from "react";
-import { Heart, Trash2 } from "lucide-react";
+import { useState } from "react";
+import { Heart, Trash2, Pin } from "lucide-react";
 import FanPulse from "./FanPulse";
+import { usePinnedMatch } from "../context/PinnedMatchContext";
 
 interface MatchProps {
   id: string;
@@ -27,6 +29,8 @@ export default function MatchCard({
   onRemove?: (id: string) => void;
 }) {
   const isLive = match.status === "IN_PLAY";
+  const router = useRouter();
+  const { pinMatch, pinnedMatch } = usePinnedMatch();
 
   // Mocking the data here because our real backend might not send it yet
   const mockAiData = {
@@ -36,8 +40,6 @@ export default function MatchCard({
   };
 
   const [isFav, setIsFav] = useState(initialIsFav);
-
-  // ... (useEffect)
 
   const toggleFavorite = async (e: React.MouseEvent) => {
     e.preventDefault();
@@ -84,23 +86,50 @@ export default function MatchCard({
     }
   };
 
+  const handlePin = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    pinMatch({
+      id: match.id,
+      homeTeam: match.homeTeam.name,
+      awayTeam: match.awayTeam.name,
+      score: { home: match.score.fullTime.home ?? 0, away: match.score.fullTime.away ?? 0 },
+      status: match.status,
+      minute: match.minute
+    });
+  };
+
+  const isPinned = pinnedMatch?.id === match.id;
+
   return (
     <div className="glass-panel p-6 flex flex-col hover:border-crimson transition-colors duration-300 relative group">
-      {/* Absolute Position Heart/Trash Icon */}
-      <button
-        onClick={toggleFavorite}
-        className="absolute top-4 right-4 text-white hover:text-crimson transition-colors z-20"
-      >
-        {showRemoveOption ? (
-           <Trash2 size={20} className="text-gray-400 hover:text-crimson" />
-        ) : (
-          <Heart
-            size={20}
-            fill={isFav ? "#DC143C" : "transparent"}
-            color={isFav ? "#DC143C" : "white"}
-          />
-        )}
-      </button>
+      {/* Absolute Position Icons */}
+      <div className="absolute top-4 right-4 flex gap-2 z-20">
+        {/* Pin Button */}
+        <button
+          onClick={handlePin}
+          className={`transition-colors ${isPinned ? "text-apricot" : "text-gray-600 hover:text-white"}`}
+          title="Pin Score"
+        >
+          <Pin size={20} fill={isPinned ? "currentColor" : "none"} />
+        </button>
+
+        {/* Favorite Button */}
+        <button
+          onClick={toggleFavorite}
+          className="text-white hover:text-crimson transition-colors"
+        >
+          {showRemoveOption ? (
+             <Trash2 size={20} className="text-gray-400 hover:text-crimson" />
+          ) : (
+            <Heart
+              size={20}
+              fill={isFav ? "#DC143C" : "transparent"}
+              color={isFav ? "#DC143C" : "white"}
+            />
+          )}
+        </button>
+      </div>
 
       {/* Top Row: Teams & Score */}
       <div className="flex items-center justify-between mb-4">
@@ -153,6 +182,22 @@ export default function MatchCard({
             insightText={mockAiData.text}
           />
           <FanPulse matchId={match.id} homeTeam={match.homeTeam.name} awayTeam={match.awayTeam.name} />
+        </div>
+      )}
+
+      {/* Hype Mode Button for Upcoming Matches */}
+      {(match.status === "SCHEDULED" || match.status === "TIMED") && (
+        <div className="mt-4 flex justify-center">
+          <button 
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              router.push(`/match/${match.id}/hype`);
+            }}
+            className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-crimson to-apricot text-white text-xs font-bold uppercase tracking-widest rounded-full hover:scale-105 transition-transform shadow-[0_0_15px_rgba(220,20,60,0.4)]"
+          >
+            <span className="animate-pulse">🔥</span> Hype Mode
+          </button>
         </div>
       )}
     </div>
