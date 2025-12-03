@@ -1,22 +1,52 @@
 'use client';
-import { useRef } from 'react';
+import { useRef, useEffect } from 'react';
 import { usePinnedMatch } from '../context/PinnedMatchContext';
 import { X, Pin } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 export default function MiniScoreBar() {
-  const { pinnedMatch, unpinMatch } = usePinnedMatch();
+  const { pinnedMatch, pinMatch, unpinMatch } = usePinnedMatch();
   const constraintsRef = useRef(null);
+
+  // Poll for updates if match is live
+  useEffect(() => {
+    if (!pinnedMatch || pinnedMatch.status === 'FINISHED') return;
+
+    const fetchUpdate = async () => {
+      try {
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/football/match/${pinnedMatch.id}`);
+        const data = await res.json();
+        
+        // Update context if data changed
+        if (data) {
+           pinMatch({
+             id: data.id,
+             homeTeam: data.homeTeam.name,
+             awayTeam: data.awayTeam.name,
+             score: { home: data.score.fullTime.home ?? 0, away: data.score.fullTime.away ?? 0 },
+             status: data.status,
+             minute: data.minute // Backend now calculates this
+           });
+        }
+      } catch (err) {
+        console.error("Failed to update pinned match", err);
+      }
+    };
+
+    const interval = setInterval(fetchUpdate, 30000); // Update every 30s
+    return () => clearInterval(interval);
+  }, [pinnedMatch?.id, pinnedMatch?.status]); // Depend on ID and Status
 
   if (!pinnedMatch) return null;
 
   return (
-    <div ref={constraintsRef} className="fixed inset-0 pointer-events-none z-50">
+    <div ref={constraintsRef} className="fixed inset-0 pointer-events-none z-50 p-4">
       <AnimatePresence>
         <motion.div
           drag
           dragMomentum={false}
           dragConstraints={constraintsRef}
+          dragElastic={0.1} // Add resistance
           whileDrag={{ scale: 1.05, cursor: 'grabbing' }}
           initial={{ y: 100, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}

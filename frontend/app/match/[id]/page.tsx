@@ -46,7 +46,7 @@ export default function MatchDetailsPage() {
       {/* Navbar Back Button */}
       <div className="p-4 absolute top-0 left-0 z-50">
         <button
-          onClick={() => router.back()}
+          onClick={() => router.push('/#live-scores')}
           className="p-2 bg-glass rounded-full text-white hover:bg-white/10 transition"
         >
           <ArrowLeft size={24} />

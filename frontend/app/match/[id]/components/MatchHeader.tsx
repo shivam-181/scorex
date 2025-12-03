@@ -2,6 +2,9 @@ import { format } from 'date-fns';
 
 export default function MatchHeader({ match }: { match: any }) {
   const isLive = match.status === 'IN_PLAY';
+  
+  // Debug: Check if goals exist
+  console.log("Match Goals Data:", match.goals);
 
   return (
     <div className="relative min-h-[45vh] w-full flex items-center justify-center overflow-hidden py-12">
@@ -65,6 +68,39 @@ export default function MatchHeader({ match }: { match: any }) {
         </div>
         
       </div>
+
+
+      {/* Goal Scorers Section */}
+      {(match.status === 'FINISHED' || match.status === 'IN_PLAY') && match.goals && match.goals.length > 0 && (
+        <div className="absolute bottom-8 w-full max-w-4xl px-6 flex justify-between text-sm text-gray-300 font-mono">
+          {/* Home Scorers */}
+          <div className="flex-1 text-right pr-8 md:pr-16">
+            {match.goals
+              .filter((g: any) => g.team.id === match.homeTeam.id)
+              .map((g: any, i: number) => (
+                <div key={i} className="mb-1">
+                  {g.scorer.name} <span className="text-crimson">{g.minute}'</span>
+                </div>
+              ))}
+          </div>
+
+          {/* Goal Icon Center */}
+          <div className="w-8 flex justify-center items-start text-gray-500">
+            ⚽
+          </div>
+
+          {/* Away Scorers */}
+          <div className="flex-1 text-left pl-8 md:pl-16">
+            {match.goals
+              .filter((g: any) => g.team.id === match.awayTeam.id)
+              .map((g: any, i: number) => (
+                <div key={i} className="mb-1">
+                  <span className="text-crimson">{g.minute}'</span> {g.scorer.name}
+                </div>
+              ))}
+          </div>
+        </div>
+      )}
     </div>
   );
 }

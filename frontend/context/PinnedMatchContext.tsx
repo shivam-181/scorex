@@ -34,7 +34,9 @@ export function PinnedMatchProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const pinMatch = (match: PinnedMatch) => {
-    setPinnedMatch(match);
+    // Always update state to reflect live changes (score/minute)
+    // We spread the object to create a new reference, forcing React to re-render
+    setPinnedMatch({ ...match });
     localStorage.setItem('scorex_pinned_match', JSON.stringify(match));
   };
 

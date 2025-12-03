@@ -61,21 +61,55 @@ export default function Home() {
 
   // Scroll Restoration Effect
   useEffect(() => {
+    // 1. Check for Hash (Prioritize specific section navigation)
+    if (window.location.hash === '#live-scores') {
+       setTimeout(() => {
+         const element = document.getElementById('live-scores');
+         if (element) {
+           element.scrollIntoView({ behavior: 'smooth' });
+         }
+       }, 100);
+       return; // Skip restoring saved position if hash is present
+    }
+
+    // 2. Restore position on load
+    const savedPosition = sessionStorage.getItem('scorex_scroll_position');
+    if (savedPosition) {
+       window.scrollTo(0, parseInt(savedPosition));
+    }
+
+    // 2. Save position on scroll (debounced)
+    const handleScroll = () => {
+      sessionStorage.setItem('scorex_scroll_position', window.scrollY.toString());
+    };
+    
+    // Debounce scroll event
+    let timeoutId: NodeJS.Timeout;
+    const debouncedScroll = () => {
+      clearTimeout(timeoutId);
+      timeoutId = setTimeout(handleScroll, 100);
+    };
+
+    window.addEventListener('scroll', debouncedScroll);
+
+    // 3. Match Card Scroll (Specific navigation fallback)
     if (!loading && matches.length > 0) {
       const scrollMatchId = sessionStorage.getItem('scorex_scroll_match_id');
       if (scrollMatchId) {
-        // Small timeout to ensure DOM is ready
         setTimeout(() => {
           const element = document.getElementById(`match-card-${scrollMatchId}`);
           if (element) {
             element.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            // Optional: Clear it so it doesn't scroll on random refreshes, 
-            // but keeping it might be better for "back" behavior consistency.
-            // sessionStorage.removeItem('scorex_scroll_match_id'); 
+            sessionStorage.removeItem('scorex_scroll_match_id'); 
           }
-        }, 100);
+        }, 500); // Increased delay to ensure rendering
       }
     }
+    
+    return () => {
+      window.removeEventListener('scroll', debouncedScroll);
+      clearTimeout(timeoutId);
+    };
   }, [loading, matches]);
 
   // 2. The Filter Logic

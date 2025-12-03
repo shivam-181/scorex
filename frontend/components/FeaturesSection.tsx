@@ -1,11 +1,11 @@
 'use client';
 import { motion } from 'framer-motion';
-import { Cpu, Zap, UserCheck } from 'lucide-react';
+import { BrainCircuit, Zap, User } from 'lucide-react';
 import BrandName from './BrandName';
 
 const features = [
   {
-    icon: <Cpu size={40} className="text-crimson" />,
+    icon: <BrainCircuit size={40} className="text-crimson" />,
     title: "AI Powered Insights",
     description: "Our advanced algorithms predict match outcomes and analyze team performance in real-time."
   },
@@ -15,7 +15,7 @@ const features = [
     description: "Get live scores, stats, and lineup updates milliseconds after they happen on the pitch."
   },
   {
-    icon: <UserCheck size={40} className="text-blue-400" />,
+    icon: <User size={40} className="text-blue-400" />,
     title: "Personalized Feed",
     description: "Follow your favorite teams and leagues. We curate a custom feed just for you."
   }

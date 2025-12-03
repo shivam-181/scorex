@@ -58,7 +58,7 @@ export default function AboutPage() {
                 <h3 className="text-white font-bold">Lightning Fast</h3>
              </div>
              <div className="glass-panel p-6 aspect-square flex flex-col justify-center items-center text-center mt-8">
-                <Shield size={40} className="text-crimson mb-4" />
+                <Database size={40} className="text-crimson mb-4" />
                 <h3 className="text-white font-bold">Reliable Data</h3>
              </div>
              <div className="glass-panel p-6 aspect-square flex flex-col justify-center items-center text-center -mt-8">
