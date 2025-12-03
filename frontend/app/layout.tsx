@@ -8,6 +8,7 @@ import BreakingNewsTicker from "../components/BreakingNewsTicker";
 import { PinnedMatchProvider } from "../context/PinnedMatchContext";
 import MiniScoreBar from "../components/MiniScoreBar";
 import Navbar from "../components/Navbar";
+import InitDeviceId from "../components/InitDeviceId";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 const outfit = Outfit({ subsets: ["latin"], variable: "--font-outfit" });
@@ -26,6 +27,7 @@ export default function RootLayout({
     <html lang="en" className="scroll-smooth">
       <body className={`${inter.variable} ${outfit.variable} font-sans bg-dark text-white selection:bg-crimson selection:text-white`}>
         <PinnedMatchProvider>
+          <InitDeviceId />
           <BreakingNewsTicker />
           <TopHeader />
           {children}

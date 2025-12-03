@@ -117,7 +117,7 @@ export default function MatchCard({
         {/* Favorite Button */}
         <button
           onClick={toggleFavorite}
-          className="text-white hover:text-crimson transition-colors"
+          className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-white/10 transition-all text-white hover:text-crimson"
         >
           {showRemoveOption ? (
              <Trash2 size={20} className="text-gray-400 hover:text-crimson" />
