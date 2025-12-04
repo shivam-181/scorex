@@ -37,24 +37,18 @@ router.get('/live', async (req, res) => {
           const matchTime = new Date(match.utcDate).getTime();
           const now = new Date().getTime();
           const diffMs = now - matchTime;
-          let minute: number | string = Math.floor(diffMs / 60000);
+          let calculatedMinute = Math.floor(diffMs / 60000);
+          let minute: number | string = calculatedMinute;
           
           // Simple heuristic for half-time
-          // If > 45, we assume it's 2nd half or HT. 
-          // Realistically, without "half started" time, this is best guess.
-          if (minute > 45) {
-             // If it's been running for > 60 mins, assume 2nd half started approx 15 mins after 45.
-             // So minute = 45 + (minute - 60). 
-             // This is very rough but better than "45'".
-             if (minute > 60) {
-               minute = 45 + (minute - 60);
+          if (calculatedMinute > 45) {
+             if (calculatedMinute > 60) {
+               minute = 45 + (calculatedMinute - 60);
              } else {
-               // Between 45 and 60, likely HT
-               return { ...match, minute: "HT" as any };
+               minute = "HT";
              }
           }
-          // Cap at 90+
-          if (minute > 90) minute = "90+";
+          if (calculatedMinute > 90) minute = "90+";
           
           return { ...match, minute };
         }
@@ -74,7 +68,6 @@ router.get('/match/:id', async (req, res) => {
   try {
     const { id } = req.params;
     // 1. Fetch real basic data (Score, Status, Teams)
-    // 1. Fetch real basic data (Score, Status, Teams)
     let matchData = await fetchData(`/matches/${id}`);
 
     // Inject calculated minute for live matches
@@ -82,16 +75,17 @@ router.get('/match/:id', async (req, res) => {
       const matchTime = new Date(matchData.utcDate).getTime();
       const now = new Date().getTime();
       const diffMs = now - matchTime;
-      let minute: number | string = Math.floor(diffMs / 60000);
+      let calculatedMinute = Math.floor(diffMs / 60000);
+      let minute: number | string = calculatedMinute;
       
-      if (minute > 45) {
-          if (minute > 60) {
-            minute = 45 + (minute - 60);
+      if (calculatedMinute > 45) {
+          if (calculatedMinute > 60) {
+            minute = 45 + (calculatedMinute - 60);
           } else {
             minute = "HT";
           }
       }
-      if (minute > 90) minute = "90+";
+      if (calculatedMinute > 90) minute = "90+";
       
       matchData = { ...matchData, minute };
     }
