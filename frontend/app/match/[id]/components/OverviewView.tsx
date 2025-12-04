@@ -3,9 +3,12 @@ import AiInsightBar from '@/components/AiInsightBar'; // Adjust path if needed
 import BrandName from '@/components/BrandName';
 
 // Helper to generate mock form (Win/Draw/Loss) since free API limits this
-const getMockForm = () => {
+// Helper to generate deterministic mock form based on a string seed
+const getDeterministicForm = (seed: string) => {
   const forms = ['W', 'D', 'L', 'W', 'L'];
-  return forms.sort(() => 0.5 - Math.random());
+  // Simple hash to sort deterministically
+  const hash = seed.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
+  return forms.sort((a, b) => (hash % 2 === 0 ? 1 : -1));
 };
 
 const FormDots = ({ form }: { form: string[] }) => (
@@ -25,8 +28,9 @@ const FormDots = ({ form }: { form: string[] }) => (
 
 export default function OverviewView({ match }: { match: any }) {
   // Use real data if available, otherwise mock the "Form"
-  const homeForm = getMockForm();
-  const awayForm = getMockForm();
+  // Use real data if available, otherwise mock the "Form"
+  const homeForm = getDeterministicForm(match.homeTeam.name);
+  const awayForm = getDeterministicForm(match.awayTeam.name);
 
   // Mock Probability (In real app, fetch from backend)
   const homeProb = 55;

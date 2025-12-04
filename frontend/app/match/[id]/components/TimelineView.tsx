@@ -32,8 +32,8 @@ export default function TimelineView({ match }: { match: any }) {
             <motion.div 
               key={i}
               initial={{ opacity: 0, x: -20 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: i * 0.1 }}
               className="relative pl-8"
             >
               {/* Dot on the line */}

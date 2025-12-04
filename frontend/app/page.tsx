@@ -7,6 +7,8 @@ import LeagueFilter from "../components/LeagueFilter";
 import FeaturesSection from "../components/FeaturesSection";
 import NewsPreview from "../components/NewsPreview";
 import { Search, Zap, Calendar } from "lucide-react";
+import ScrollRestoration from "@/components/ScrollRestoration";
+import PinnedMatchProvider from "@/context/PinnedMatchContext";
 
 export default function Home() {
   const [matches, setMatches] = useState([]);
@@ -53,20 +55,6 @@ export default function Home() {
     // Re-fetch on focus to keep favorites in sync
     const handleFocus = () => {
       fetchData();
-    };
-
-    window.addEventListener("focus", handleFocus);
-    return () => window.removeEventListener("focus", handleFocus);
-  }, []);
-
-  // Scroll Restoration Effect
-  useEffect(() => {
-    // 1. Check for Hash (Prioritize specific section navigation)
-    if (window.location.hash === '#live-scores') {
-       setTimeout(() => {
-         const element = document.getElementById('live-scores');
-         if (element) {
-           element.scrollIntoView({ behavior: 'smooth' });
          }
        }, 100);
        return; // Skip restoring saved position if hash is present
@@ -137,20 +125,6 @@ export default function Home() {
     return true;
   }).sort((a: any, b: any) => {
     if (showRecentOnly) {
-      return new Date(b.utcDate).getTime() - new Date(a.utcDate).getTime();
-    }
-    return 0;
-  });
-
-  return (
-    <main className="min-h-screen bg-dark">
-      <Hero />
-
-      <div className="relative w-full py-20 overflow-hidden" id="live-scores">
-        {/* Background Watermark - Full Width */}
-        <div className="absolute inset-0 opacity-20 pointer-events-none z-0">
-          <img
-            src="https://images.unsplash.com/photo-1570498839593-e565b39455fc?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8Zm9vdGJhbGwlMjBwaXRjaHxlbnwwfDF8MHx8fDA%3D"
             alt="Background"
             className="w-full h-full object-cover"
           />

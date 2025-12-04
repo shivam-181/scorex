@@ -19,7 +19,7 @@ const StatRow = ({ label, homeValue, awayValue }: { label: string, homeValue: nu
       <div className="h-2 bg-gray-800 rounded-full overflow-hidden flex relative">
         <motion.div 
           initial={{ width: 0 }}
-          whileInView={{ width: `${homePercent}%` }}
+          animate={{ width: `${homePercent}%` }}
           transition={{ duration: 1, ease: 'easeOut' }}
           className="h-full bg-crimson"
         />
