@@ -8,7 +8,6 @@ import FeaturesSection from "../components/FeaturesSection";
 import NewsPreview from "../components/NewsPreview";
 import { Search, Zap, Calendar } from "lucide-react";
 import ScrollRestoration from "@/components/ScrollRestoration";
-import PinnedMatchProvider from "@/context/PinnedMatchContext";
 
 export default function Home() {
   const [matches, setMatches] = useState([]);
@@ -22,17 +21,18 @@ export default function Home() {
   const [showUpcomingOnly, setShowUpcomingOnly] = useState(false);
   const [showRecentOnly, setShowRecentOnly] = useState(false);
 
+  // 1. Data Fetching Effect
   useEffect(() => {
     const fetchData = async () => {
       try {
-        // 1. Fetch Matches
+        // Fetch Matches
         const matchesRes = await fetch(
           `${process.env.NEXT_PUBLIC_API_URL}/api/football/live`
         );
         const matchesData = await matchesRes.json();
         setMatches(matchesData.matches || []);
 
-        // 2. Fetch Favorites
+        // Fetch Favorites
         const deviceId = localStorage.getItem("scorex_device_id");
         if (deviceId) {
           const favRes = await fetch(
@@ -55,18 +55,32 @@ export default function Home() {
     // Re-fetch on focus to keep favorites in sync
     const handleFocus = () => {
       fetchData();
+    };
+
+    window.addEventListener("focus", handleFocus);
+    return () => window.removeEventListener("focus", handleFocus);
+  }, []);
+
+  // 2. Scroll Restoration Effect
+  useEffect(() => {
+    // Check for Hash (Prioritize specific section navigation)
+    if (window.location.hash === '#live-scores') {
+       setTimeout(() => {
+         const element = document.getElementById('live-scores');
+         if (element) {
+           element.scrollIntoView({ behavior: 'smooth' });
          }
        }, 100);
        return; // Skip restoring saved position if hash is present
     }
 
-    // 2. Restore position on load
+    // Restore position on load
     const savedPosition = sessionStorage.getItem('scorex_scroll_position');
     if (savedPosition) {
        window.scrollTo(0, parseInt(savedPosition));
     }
 
-    // 2. Save position on scroll (debounced)
+    // Save position on scroll (debounced)
     const handleScroll = () => {
       sessionStorage.setItem('scorex_scroll_position', window.scrollY.toString());
     };
@@ -80,7 +94,7 @@ export default function Home() {
 
     window.addEventListener('scroll', debouncedScroll);
 
-    // 3. Match Card Scroll (Specific navigation fallback)
+    // Match Card Scroll (Specific navigation fallback)
     if (!loading && matches.length > 0) {
       const scrollMatchId = sessionStorage.getItem('scorex_scroll_match_id');
       if (scrollMatchId) {
@@ -100,7 +114,7 @@ export default function Home() {
     };
   }, [loading, matches]);
 
-  // 2. The Filter Logic
+  // 3. The Filter Logic
   const filteredMatches = matches.filter((match: any) => {
     // League Filter
     if (activeFilter !== "ALL" && match.competition.code !== activeFilter) return false;
@@ -125,6 +139,20 @@ export default function Home() {
     return true;
   }).sort((a: any, b: any) => {
     if (showRecentOnly) {
+      return new Date(b.utcDate).getTime() - new Date(a.utcDate).getTime();
+    }
+    return 0;
+  });
+
+  return (
+    <main className="min-h-screen bg-dark">
+      <Hero />
+
+      <div className="relative w-full py-20 overflow-hidden" id="live-scores">
+        {/* Background Watermark - Full Width */}
+        <div className="absolute inset-0 opacity-20 pointer-events-none z-0">
+          <img
+            src="https://images.unsplash.com/photo-1570498839593-e565b39455fc?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8Zm9vdGJhbGwlMjBwaXRjaHxlbnwwfDF8MHx8fDA%3D"
             alt="Background"
             className="w-full h-full object-cover"
           />
