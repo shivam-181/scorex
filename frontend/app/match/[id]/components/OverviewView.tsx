@@ -47,7 +47,42 @@ export default function OverviewView({ match }: { match: any }) {
         />
       </div>
 
-      {/* 2. Recent Form Guide */}
+      {/* 2. Head to Head (H2H) */}
+      {match.h2h && (
+        <div className="glass-panel p-6">
+          <h3 className="text-white font-bold mb-4">Head-to-Head</h3>
+          <div className="flex justify-between items-center mb-6 px-4">
+             <div className="text-center">
+               <div className="text-2xl font-black text-white">{match.h2h.aggregates?.homeTeamWins || 0}</div>
+               <div className="text-xs text-gray-400 uppercase tracking-wider">{match.homeTeam.tla} Wins</div>
+             </div>
+             <div className="text-center">
+               <div className="text-2xl font-black text-gray-400">{match.h2h.aggregates?.draws || 0}</div>
+               <div className="text-xs text-gray-500 uppercase tracking-wider">Draws</div>
+             </div>
+             <div className="text-center">
+               <div className="text-2xl font-black text-white">{match.h2h.aggregates?.awayTeamWins || 0}</div>
+               <div className="text-xs text-gray-400 uppercase tracking-wider">{match.awayTeam.tla} Wins</div>
+             </div>
+          </div>
+          
+          <div className="space-y-3">
+            {match.h2h.matches?.slice(0, 3).map((m: any, i: number) => (
+              <div key={i} className="flex justify-between items-center text-sm p-3 bg-white/5 rounded-lg">
+                <span className="text-gray-400 w-20">{new Date(m.utcDate).toLocaleDateString()}</span>
+                <div className="flex-1 flex justify-center gap-3 font-bold text-white">
+                  <span>{m.homeTeam.name}</span>
+                  <span className="text-crimson">{m.score.fullTime.home} - {m.score.fullTime.away}</span>
+                  <span>{m.awayTeam.name}</span>
+                </div>
+                <span className="text-gray-500 w-20 text-right text-xs">{m.competition.name}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* 3. Recent Form Guide */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div className="glass-panel p-6">
           <h4 className="text-gray-400 text-sm mb-3 uppercase tracking-wider">{match.homeTeam.name} Form</h4>

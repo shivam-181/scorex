@@ -26,6 +26,44 @@ export default function Chatbot() {
     scrollToBottom();
   }, [messages, isOpen]);
 
+  const [isFooterVisible, setIsFooterVisible] = useState(false);
+  
+  useEffect(() => {
+    let observer: IntersectionObserver | null = null;
+
+    const initObserver = () => {
+      const footer = document.getElementById('main-footer');
+      if (footer) {
+        observer = new IntersectionObserver(
+          (entries) => {
+            setIsFooterVisible(entries[0].isIntersecting);
+          },
+          { threshold: 0.1 }
+        );
+        observer.observe(footer);
+        return true;
+      }
+      return false;
+    };
+
+    if (!initObserver()) {
+      const intervalId = setInterval(() => {
+        if (initObserver()) {
+          clearInterval(intervalId);
+        }
+      }, 500);
+
+      return () => {
+        clearInterval(intervalId);
+        if (observer) observer.disconnect();
+      };
+    }
+
+    return () => {
+      if (observer) observer.disconnect();
+    };
+  }, []);
+
   const handleSend = async () => {
     if (!input.trim()) return;
 
@@ -80,7 +118,7 @@ export default function Chatbot() {
         whileTap={{ scale: 0.9 }}
         onClick={() => setIsOpen(true)}
         className={`fixed bottom-24 md:bottom-6 right-6 z-50 group flex items-center justify-center p-4 rounded-full shadow-[0_0_20px_rgba(220,20,60,0.6)] transition-all ${
-          isOpen ? "scale-0 opacity-0 pointer-events-none" : "scale-100 opacity-100 bg-gradient-to-r from-crimson to-red-600 text-white"
+          isOpen || isFooterVisible ? "scale-0 opacity-0 pointer-events-none" : "scale-100 opacity-100 bg-gradient-to-r from-crimson to-red-600 text-white"
         }`}
       >
         {/* Pulse Effect */}

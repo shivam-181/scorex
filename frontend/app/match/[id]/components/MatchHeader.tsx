@@ -34,10 +34,14 @@ export default function MatchHeader({ match }: { match: any }) {
 
         {/* Scoreboard */}
         <div className="flex flex-col items-center mx-4 md:mx-12">
-          {isLive && (
+          {isLive ? (
              <span className="bg-crimson px-3 py-1 rounded text-xs font-bold text-white animate-pulse mb-2">
                LIVE • {match.minute}'
              </span>
+          ) : (
+            <span className="bg-white/10 px-3 py-1 rounded text-xs font-bold text-gray-300 mb-2">
+              {format(new Date(match.utcDate), 'MMM d, HH:mm')}
+            </span>
           )}
           
           <div className="text-5xl md:text-7xl font-black text-white tracking-widest font-mono">

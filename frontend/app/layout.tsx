@@ -9,6 +9,7 @@ import { PinnedMatchProvider } from "../context/PinnedMatchContext";
 import MiniScoreBar from "../components/MiniScoreBar";
 import Navbar from "../components/Navbar";
 import InitDeviceId from "../components/InitDeviceId";
+import Footer from "../components/Footer";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 const outfit = Outfit({ subsets: ["latin"], variable: "--font-outfit" });
@@ -31,6 +32,7 @@ export default function RootLayout({
           <BreakingNewsTicker />
           <TopHeader />
           {children}
+          <Footer />
           <Chatbot />
           <ScrollToTop />
           <MiniScoreBar />

@@ -74,15 +74,36 @@ router.get('/match/:id', async (req, res) => {
   try {
     const { id } = req.params;
     // 1. Fetch real basic data (Score, Status, Teams)
-    const matchData = await fetchData(`/matches/${id}`);
+    // 1. Fetch real basic data (Score, Status, Teams)
+    let matchData = await fetchData(`/matches/${id}`);
+
+    // Inject calculated minute for live matches
+    if (matchData.status === 'IN_PLAY') {
+      const matchTime = new Date(matchData.utcDate).getTime();
+      const now = new Date().getTime();
+      const diffMs = now - matchTime;
+      let minute: number | string = Math.floor(diffMs / 60000);
+      
+      if (minute > 45) {
+          if (minute > 60) {
+            minute = 45 + (minute - 60);
+          } else {
+            minute = "HT";
+          }
+      }
+      if (minute > 90) minute = "90+";
+      
+      matchData = { ...matchData, minute };
+    }
     
     // 2. Fetch H2H (Head to Head) if available
-    // const h2hData = await fetchData(`/matches/${id}/head2head`); // Optional, creates extra API call
+    const h2hData = await fetchData(`/matches/${id}/head2head`);
     
     // 3. Check if Lineups/Stats exist. If not, Inject Mock Data.
     // Real API sends specific structure, we normalize it here.
     const enrichedData = {
       ...matchData,
+      h2h: h2hData, // Include H2H data
       stats: matchData.statistics || generateMockStats(), 
       lineups: matchData.lineup?.length > 0 ? matchData.lineup : {
         home: getMockLineup(matchData.homeTeam.name),

@@ -29,7 +29,7 @@ export default function LineupView({ lineups }: { lineups: any }) {
   const away = getFormation(lineups.away);
 
   return (
-    <div className="w-full flex justify-center py-4">
+    <div className="w-full flex flex-col items-center py-4">
       {/* THE PITCH CONTAINER */}
       <div className="relative w-full max-w-[400px] h-[600px] bg-green-800 rounded-xl border-4 border-white/10 overflow-hidden shadow-2xl">
         
@@ -66,6 +66,37 @@ export default function LineupView({ lineups }: { lineups: any }) {
            <div className="flex justify-center"><PlayerDot player={home.GK[0]} color="#DC143C" /></div>
         </div>
 
+      </div>
+
+      {/* Substitutes Section */}
+      <div className="w-full max-w-4xl mt-8 grid grid-cols-2 gap-8">
+        {/* Home Subs */}
+        <div>
+          <h4 className="text-crimson font-bold mb-4 uppercase text-sm tracking-wider border-b border-white/10 pb-2">Home Substitutes</h4>
+          <div className="space-y-2">
+            {lineups.home.bench?.map((p: any, i: number) => (
+              <div key={i} className="flex items-center gap-3 text-sm text-gray-300">
+                <span className="w-6 text-right text-gray-500 font-mono">{p.number}</span>
+                <span>{p.name}</span>
+                <span className="text-xs text-gray-500 ml-auto">{p.position}</span>
+              </div>
+            )) || <p className="text-gray-500 text-sm italic">No substitutes available</p>}
+          </div>
+        </div>
+
+        {/* Away Subs */}
+        <div>
+          <h4 className="text-apricot font-bold mb-4 uppercase text-sm tracking-wider border-b border-white/10 pb-2">Away Substitutes</h4>
+          <div className="space-y-2">
+            {lineups.away.bench?.map((p: any, i: number) => (
+              <div key={i} className="flex items-center gap-3 text-sm text-gray-300">
+                <span className="w-6 text-right text-gray-500 font-mono">{p.number}</span>
+                <span>{p.name}</span>
+                <span className="text-xs text-gray-500 ml-auto">{p.position}</span>
+              </div>
+            )) || <p className="text-gray-500 text-sm italic">No substitutes available</p>}
+          </div>
+        </div>
       </div>
     </div>
   );

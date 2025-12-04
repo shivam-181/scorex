@@ -36,10 +36,15 @@ export default function StatsView({ stats }: { stats: any }) {
     <div className="glass-panel p-6">
       <h3 className="text-white font-bold mb-6 text-lg">Match Statistics</h3>
       
-      <StatRow label="Possession %" homeValue={stats.possession.home} awayValue={stats.possession.away} />
-      <StatRow label="Shots" homeValue={stats.shots.home} awayValue={stats.shots.away} />
-      <StatRow label="Fouls" homeValue={stats.fouls.home} awayValue={stats.fouls.away} />
-      <StatRow label="Corners" homeValue={stats.corners.home} awayValue={stats.corners.away} />
+      <StatRow label="Possession %" homeValue={stats.possession?.home ?? 50} awayValue={stats.possession?.away ?? 50} />
+      <StatRow label="Shots" homeValue={stats.shots?.home ?? 0} awayValue={stats.shots?.away ?? 0} />
+      <StatRow label="Shots on Target" homeValue={stats.shotsOnTarget?.home ?? 0} awayValue={stats.shotsOnTarget?.away ?? 0} />
+      <StatRow label="Fouls" homeValue={stats.fouls?.home ?? 0} awayValue={stats.fouls?.away ?? 0} />
+      <StatRow label="Corners" homeValue={stats.corners?.home ?? 0} awayValue={stats.corners?.away ?? 0} />
+      <StatRow label="Offsides" homeValue={stats.offsides?.home ?? 0} awayValue={stats.offsides?.away ?? 0} />
+      <StatRow label="Yellow Cards" homeValue={stats.yellowCards?.home ?? 0} awayValue={stats.yellowCards?.away ?? 0} />
+      <StatRow label="Red Cards" homeValue={stats.redCards?.home ?? 0} awayValue={stats.redCards?.away ?? 0} />
+      <StatRow label="Saves" homeValue={stats.saves?.home ?? 0} awayValue={stats.saves?.away ?? 0} />
     </div>
   );
 }

@@ -6,27 +6,64 @@ import { useState, useEffect } from 'react';
 
 export default function Navbar() {
   const pathname = usePathname();
-  const [isVisible, setIsVisible] = useState(false);
+  const [isScrolledDeep, setIsScrolledDeep] = useState(false);
+  const [isFooterIntersecting, setIsFooterIntersecting] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => {
-      // Show navbar if scrolled past 600px (approx hero height)
-      if (window.scrollY > 600) {
-        setIsVisible(true);
-      } else {
-        setIsVisible(false);
-      }
+      setIsScrolledDeep(window.scrollY > 600);
     };
 
     window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
+    
+    // Initial check
+    handleScroll();
+
+    // Intersection Observer for Footer
+    let observer: IntersectionObserver | null = null;
+    
+    const initObserver = () => {
+      const footer = document.getElementById('main-footer');
+      if (footer) {
+        observer = new IntersectionObserver(
+          (entries) => {
+            setIsFooterIntersecting(entries[0].isIntersecting);
+          },
+          { threshold: 0.1 } // Trigger as soon as 10% of footer is visible
+        );
+        observer.observe(footer);
+        return true;
+      }
+      return false;
+    };
+
+    // Try to find footer immediately, then poll if not found
+    if (!initObserver()) {
+      const intervalId = setInterval(() => {
+        if (initObserver()) {
+          clearInterval(intervalId);
+        }
+      }, 500);
+      
+      // Cleanup interval on unmount
+      return () => {
+        window.removeEventListener('scroll', handleScroll);
+        clearInterval(intervalId);
+        if (observer) observer.disconnect();
+      };
+    }
+
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+      if (observer) observer.disconnect();
+    };
   }, []);
 
   // Only render on homepage
   if (pathname !== '/') return null;
 
-  // Hide if not scrolled enough
-  if (!isVisible) return null;
+  // Hide if not scrolled enough OR if footer is visible
+  if (!isScrolledDeep || isFooterIntersecting) return null;
 
   return (
     <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 animate-in fade-in slide-in-from-bottom-10 duration-300">
