@@ -1,8 +1,36 @@
 'use client';
 import Link from 'next/link';
+import { useState } from 'react';
 import { Facebook, Twitter, Instagram, Youtube, Mail, ArrowRight } from 'lucide-react';
 
 export default function Footer() {
+  const [email, setEmail] = useState('');
+  const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
+
+  const handleSubscribe = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!email) return;
+
+    setStatus('loading');
+    try {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/subscribe`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email }),
+      });
+
+      if (res.ok) {
+        setStatus('success');
+        setEmail('');
+      } else {
+        setStatus('error');
+      }
+    } catch (err) {
+      console.error(err);
+      setStatus('error');
+    }
+  };
+
   return (
     <footer id="main-footer" className="bg-dark border-t border-white/10 pt-16 pb-8 relative overflow-hidden">
       {/* Decorative Elements */}
@@ -102,19 +130,30 @@ export default function Footer() {
             <p className="text-gray-400 text-sm mb-4">
               Subscribe to our newsletter for the latest updates and exclusive features.
             </p>
-            <form className="space-y-3" onSubmit={(e) => e.preventDefault()}>
+            <form className="space-y-3" onSubmit={handleSubscribe}>
               <div className="relative">
                 <Mail className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500" size={18} />
                 <input 
                   type="email" 
                   placeholder="Enter your email" 
-                  className="w-full bg-white/5 border border-white/10 rounded-lg py-3 pl-10 pr-4 text-white placeholder-gray-500 focus:outline-none focus:border-crimson transition-colors"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  disabled={status === 'loading' || status === 'success'}
+                  className="w-full bg-white/5 border border-white/10 rounded-lg py-3 pl-10 pr-4 text-white placeholder-gray-500 focus:outline-none focus:border-crimson transition-colors disabled:opacity-50"
+                  required
                 />
               </div>
-              <button className="w-full bg-crimson hover:bg-red-600 text-white font-bold py-3 rounded-lg transition-colors flex items-center justify-center gap-2 group">
-                Subscribe
-                <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
+              <button 
+                disabled={status === 'loading' || status === 'success'}
+                className={`w-full font-bold py-3 rounded-lg transition-colors flex items-center justify-center gap-2 group
+                  ${status === 'success' ? 'bg-green-600 text-white' : 'bg-crimson hover:bg-red-600 text-white'}
+                  disabled:opacity-70
+                `}
+              >
+                {status === 'loading' ? 'Subscribing...' : status === 'success' ? 'Subscribed!' : 'Subscribe'}
+                {status !== 'loading' && status !== 'success' && <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />}
               </button>
+              {status === 'error' && <p className="text-red-500 text-xs">Failed to subscribe. Try again.</p>}
             </form>
           </div>
         </div>
@@ -125,8 +164,8 @@ export default function Footer() {
             © {new Date().getFullYear()} ScoreX. All rights reserved.
           </p>
           <div className="flex gap-6 text-sm text-gray-500">
-            <a href="#" className="hover:text-white transition-colors">Privacy</a>
-            <a href="#" className="hover:text-white transition-colors">Terms</a>
+            <Link href="/privacy" className="hover:text-white transition-colors">Privacy</Link>
+            <Link href="/terms" className="hover:text-white transition-colors">Terms</Link>
             <Link href="/sitemap" className="hover:text-white transition-colors">Sitemap</Link>
           </div>
         </div>

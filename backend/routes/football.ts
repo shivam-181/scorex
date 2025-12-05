@@ -91,7 +91,14 @@ router.get('/match/:id', async (req, res) => {
     }
     
     // 2. Fetch H2H (Head to Head) if available
-    const h2hData = await fetchData(`/matches/${id}/head2head`);
+    let h2hData = null;
+    try {
+      h2hData = await fetchData(`/matches/${id}/head2head`);
+      console.log('H2H Data Fetched:', h2hData?.aggregates ? 'Success' : 'No Aggregates');
+    } catch (err) {
+      console.warn('Failed to fetch H2H data:', err);
+      // Continue without H2H
+    }
     
     // 3. Check if Lineups/Stats exist. If not, Inject Mock Data.
     // Real API sends specific structure, we normalize it here.
