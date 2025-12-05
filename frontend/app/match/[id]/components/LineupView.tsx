@@ -15,10 +15,14 @@ const getFormation = (players: any[]) => {
 const PlayerDot = ({ player, color }: { player: any, color: string }) => (
   <Link href={`/player/${encodeURIComponent(player.name)}`} className="flex flex-col items-center justify-center mx-2 md:mx-4 group cursor-pointer">
     <div 
-      className={`w-8 h-8 md:w-10 md:h-10 rounded-full border-2 border-white flex items-center justify-center text-xs font-bold text-white shadow-lg group-hover:scale-110 transition-transform`}
+      className={`w-8 h-8 md:w-10 md:h-10 rounded-full border-2 border-white flex items-center justify-center text-xs font-bold text-white shadow-lg group-hover:scale-110 transition-transform overflow-hidden relative`}
       style={{ backgroundColor: color }}
     >
-      {player.number}
+      {player.image ? (
+        <img src={player.image} alt={player.name} className="w-full h-full object-cover" />
+      ) : (
+        player.number
+      )}
     </div>
     <span className="text-[10px] text-white bg-black/50 px-1 rounded mt-1 truncate max-w-[60px] group-hover:bg-crimson transition-colors">
       {player.name.split(' ').pop()} {/* Show Last Name only */}

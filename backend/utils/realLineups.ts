@@ -3,17 +3,17 @@
 
 export const REAL_LINEUPS: Record<string, any[]> = {
   "Manchester City": [
-    { name: "Ederson", number: 31, position: "GK" },
-    { name: "Kyle Walker", number: 2, position: "DF" },
-    { name: "Ruben Dias", number: 3, position: "DF" },
-    { name: "Manuel Akanji", number: 25, position: "DF" },
-    { name: "Josko Gvardiol", number: 24, position: "DF" },
-    { name: "Rodri", number: 16, position: "MF" },
-    { name: "Kevin De Bruyne", number: 17, position: "MF" },
-    { name: "Bernardo Silva", number: 20, position: "MF" },
-    { name: "Phil Foden", number: 47, position: "FW" },
-    { name: "Erling Haaland", number: 9, position: "FW" },
-    { name: "Jeremy Doku", number: 11, position: "FW" }
+    { name: "Ederson", number: 31, position: "GK", image: "https://resources.premierleague.com/premierleague/photos/players/250x250/p121160.png" },
+    { name: "Kyle Walker", number: 2, position: "DF", image: "https://resources.premierleague.com/premierleague/photos/players/250x250/p58621.png" },
+    { name: "Ruben Dias", number: 3, position: "DF", image: "https://resources.premierleague.com/premierleague/photos/players/250x250/p171314.png" },
+    { name: "Manuel Akanji", number: 25, position: "DF", image: "https://resources.premierleague.com/premierleague/photos/players/250x250/p220566.png" },
+    { name: "Josko Gvardiol", number: 24, position: "DF", image: "https://resources.premierleague.com/premierleague/photos/players/250x250/p477424.png" },
+    { name: "Rodri", number: 16, position: "MF", image: "https://resources.premierleague.com/premierleague/photos/players/250x250/p220566.png" },
+    { name: "Kevin De Bruyne", number: 17, position: "MF", image: "https://resources.premierleague.com/premierleague/photos/players/250x250/p61366.png" },
+    { name: "Bernardo Silva", number: 20, position: "MF", image: "https://resources.premierleague.com/premierleague/photos/players/250x250/p165809.png" },
+    { name: "Phil Foden", number: 47, position: "FW", image: "https://resources.premierleague.com/premierleague/photos/players/250x250/p209244.png" },
+    { name: "Erling Haaland", number: 9, position: "FW", image: "https://resources.premierleague.com/premierleague/photos/players/250x250/p223094.png" },
+    { name: "Jeremy Doku", number: 11, position: "FW", image: "https://resources.premierleague.com/premierleague/photos/players/250x250/p223340.png" }
   ],
   "Arsenal": [
     { name: "David Raya", number: 22, position: "GK" },
