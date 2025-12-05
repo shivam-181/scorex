@@ -8,6 +8,8 @@ import chatRoutes from './routes/chat.js';
 import newsRoutes from './routes/news.js';
 import leagueRoutes from './routes/leagues.js';
 import subscribeRoutes from './routes/subscribe.js';
+import playerRoutes from './routes/players.js';
+import searchRoutes from './routes/search.js';
 
 // Connect to MongoDB
 connectDB();
@@ -25,6 +27,8 @@ app.use('/api/chat', chatRoutes);
 app.use('/api/news', newsRoutes);
 app.use('/api/leagues', leagueRoutes);
 app.use('/api/subscribe', subscribeRoutes);
+app.use('/api/players', playerRoutes);
+app.use('/api/search', searchRoutes);
 
 app.get('/', (req, res) => {
   res.send('ScoreX Backend is Live ⚽');

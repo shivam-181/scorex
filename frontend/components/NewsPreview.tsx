@@ -64,8 +64,8 @@ export default function NewsPreview() {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {newsItems.map((item, index) => (
-              <a href={item.url} target="_blank" rel="noopener noreferrer" key={index} className="group">
-                <div className="glass-panel overflow-hidden rounded-xl h-full hover:border-crimson transition-colors duration-300 flex flex-col">
+              <a href={item.url} target="_blank" rel="noopener noreferrer" key={index} className="group block h-full">
+                <div className="glass-panel overflow-hidden rounded-xl h-full group-hover:border-crimson transition-all duration-300 flex flex-col">
                   <div className="h-48 overflow-hidden relative shrink-0">
                     <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent z-10" />
                     <img 

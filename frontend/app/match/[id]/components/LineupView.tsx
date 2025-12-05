@@ -1,5 +1,7 @@
 'use client';
 
+import Link from 'next/link';
+
 // Helper to group players by position (GK, DF, MF, FW)
 const getFormation = (players: any[]) => {
   return {
@@ -11,17 +13,17 @@ const getFormation = (players: any[]) => {
 };
 
 const PlayerDot = ({ player, color }: { player: any, color: string }) => (
-  <div className="flex flex-col items-center justify-center mx-2 md:mx-4">
+  <Link href={`/player/${encodeURIComponent(player.name)}`} className="flex flex-col items-center justify-center mx-2 md:mx-4 group cursor-pointer">
     <div 
-      className={`w-8 h-8 md:w-10 md:h-10 rounded-full border-2 border-white flex items-center justify-center text-xs font-bold text-white shadow-lg`}
+      className={`w-8 h-8 md:w-10 md:h-10 rounded-full border-2 border-white flex items-center justify-center text-xs font-bold text-white shadow-lg group-hover:scale-110 transition-transform`}
       style={{ backgroundColor: color }}
     >
       {player.number}
     </div>
-    <span className="text-[10px] text-white bg-black/50 px-1 rounded mt-1 truncate max-w-[60px]">
+    <span className="text-[10px] text-white bg-black/50 px-1 rounded mt-1 truncate max-w-[60px] group-hover:bg-crimson transition-colors">
       {player.name.split(' ').pop()} {/* Show Last Name only */}
     </span>
-  </div>
+  </Link>
 );
 
 export default function LineupView({ lineups }: { lineups: any }) {
@@ -75,11 +77,11 @@ export default function LineupView({ lineups }: { lineups: any }) {
           <h4 className="text-crimson font-bold mb-4 uppercase text-sm tracking-wider border-b border-white/10 pb-2">Home Substitutes</h4>
           <div className="space-y-2">
             {lineups.home.bench?.map((p: any, i: number) => (
-              <div key={i} className="flex items-center gap-3 text-sm text-gray-300">
+              <Link href={`/player/${encodeURIComponent(p.name)}`} key={i} className="flex items-center gap-3 text-sm text-gray-300 hover:text-white hover:bg-white/5 p-1 rounded transition-colors cursor-pointer">
                 <span className="w-6 text-right text-gray-500 font-mono">{p.number}</span>
                 <span>{p.name}</span>
                 <span className="text-xs text-gray-500 ml-auto">{p.position}</span>
-              </div>
+              </Link>
             )) || <p className="text-gray-500 text-sm italic">No substitutes available</p>}
           </div>
         </div>
@@ -89,11 +91,11 @@ export default function LineupView({ lineups }: { lineups: any }) {
           <h4 className="text-apricot font-bold mb-4 uppercase text-sm tracking-wider border-b border-white/10 pb-2">Away Substitutes</h4>
           <div className="space-y-2">
             {lineups.away.bench?.map((p: any, i: number) => (
-              <div key={i} className="flex items-center gap-3 text-sm text-gray-300">
+              <Link href={`/player/${encodeURIComponent(p.name)}`} key={i} className="flex items-center gap-3 text-sm text-gray-300 hover:text-white hover:bg-white/5 p-1 rounded transition-colors cursor-pointer">
                 <span className="w-6 text-right text-gray-500 font-mono">{p.number}</span>
                 <span>{p.name}</span>
                 <span className="text-xs text-gray-500 ml-auto">{p.position}</span>
-              </div>
+              </Link>
             )) || <p className="text-gray-500 text-sm italic">No substitutes available</p>}
           </div>
         </div>

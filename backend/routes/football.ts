@@ -1,6 +1,7 @@
 import express from 'express';
 import { fetchData } from '../utils/apiClient.js';
 import { generateMockStats, getMockLineup } from '../utils/mockData.js';
+import { getHardcodedLineup } from '../utils/realLineups.js';
 
 const router = express.Router();
 
@@ -67,8 +68,11 @@ router.get('/live', async (req, res) => {
 router.get('/match/:id', async (req, res) => {
   try {
     const { id } = req.params;
+    console.log(`\n--- Fetching Match Details for ID: ${id} ---`);
+
     // 1. Fetch real basic data (Score, Status, Teams)
     let matchData = await fetchData(`/matches/${id}`);
+    console.log(`Basic Data Fetched. Status: ${matchData.status}`);
 
     // Inject calculated minute for live matches
     if (matchData.status === 'IN_PLAY') {
@@ -100,20 +104,69 @@ router.get('/match/:id', async (req, res) => {
       // Continue without H2H
     }
     
-    // 3. Check if Lineups/Stats exist. If not, Inject Mock Data.
-    // Real API sends specific structure, we normalize it here.
+    // 3. Check if Lineups/Stats exist. If not, Inject Mock Data or AI Data.
+    console.log(`Lineup Check: matchData.lineup is ${matchData.lineup ? 'Present' : 'Missing'}, Length: ${matchData.lineup?.length}`);
+    
+    // Check for Hardcoded Lineups individually
+    console.log(`TEAM NAMES FROM API: Home='${matchData.homeTeam?.name}', Away='${matchData.awayTeam?.name}'`);
+    const hardcodedHome = getHardcodedLineup(matchData.homeTeam.name);
+    const hardcodedAway = getHardcodedLineup(matchData.awayTeam.name);
+    
+    console.log(`Hardcoded Check: Home (${matchData.homeTeam.name}) -> ${hardcodedHome ? 'Found' : 'Missing'}, Away (${matchData.awayTeam.name}) -> ${hardcodedAway ? 'Found' : 'Missing'}`);
+
+    // Helper to get lineup for a specific team
+    const getTeamLineup = async (side: 'home' | 'away', teamName: string, hardcoded: any[] | null | undefined) => {
+      // 1. Priority: Hardcoded
+      if (hardcoded) {
+        console.log(`Using Hardcoded lineup for ${teamName}`);
+        return hardcoded;
+      }
+
+      // 2. Priority: AI Generation
+      try {
+         if (!process.env.GOOGLE_API_KEY) throw new Error("No API Key");
+         
+         console.log(`Generating AI lineup for ${teamName}...`);
+         const { GoogleGenerativeAI } = await import('@google/generative-ai');
+         const genAI = new GoogleGenerativeAI(process.env.GOOGLE_API_KEY);
+         const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
+         
+         const prompt = `Generate a realistic starting XI for ${teamName}. Return JSON ONLY: [{ "name": "Player Name", "number": 1, "position": "GK" }, ...]`;
+         const result = await model.generateContent(prompt);
+         const text = result.response.text().replace(/```json/g, '').replace(/```/g, '').trim();
+         return JSON.parse(text);
+      } catch (e) {
+        console.error(`AI Error for ${teamName}:`, e);
+        // 3. Priority: Mock
+        return getMockLineup(teamName);
+      }
+    };
+
     const enrichedData = {
       ...matchData,
       h2h: h2hData, // Include H2H data
       stats: matchData.statistics || generateMockStats(), 
-      lineups: matchData.lineup?.length > 0 ? matchData.lineup : {
-        home: getMockLineup(matchData.homeTeam.name),
-        away: getMockLineup(matchData.awayTeam.name)
-      }
+      lineups: await (async () => {
+        // If API has lineup AND we don't have ANY hardcoded, use API?
+        // But user complains about placeholders. So let's force our logic if ANY hardcoded exists,
+        // OR if API lineup is missing.
+        
+        if (matchData.lineup && matchData.lineup.length > 0 && !hardcodedHome && !hardcodedAway) {
+           console.log("Using API Lineup (No hardcoded overrides found)");
+           return matchData.lineup;
+        }
+
+        // Otherwise, build it manually
+        const homeLineup = await getTeamLineup('home', matchData.homeTeam.name, hardcodedHome);
+        const awayLineup = await getTeamLineup('away', matchData.awayTeam.name, hardcodedAway);
+        
+        return { home: homeLineup, away: awayLineup };
+      })()
     };
 
     res.json(enrichedData);
   } catch (error) {
+    console.error("Error in /match/:id:", error);
     res.status(500).json({ error: 'Failed to fetch match details' });
   }
 });

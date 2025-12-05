@@ -6,13 +6,14 @@ import MatchCard from "../components/MatchCard";
 import LeagueFilter from "../components/LeagueFilter";
 import FeaturesSection from "../components/FeaturesSection";
 import NewsPreview from "../components/NewsPreview";
-import { Search, Zap, Calendar } from "lucide-react";
+import { Search, Zap, Calendar, ArrowUpDown } from "lucide-react";
 import ScrollRestoration from "@/components/ScrollRestoration";
 
 export default function Home() {
   const [matches, setMatches] = useState([]);
   const [loading, setLoading] = useState(true);
   const [favorites, setFavorites] = useState<string[]>([]);
+  const [error, setError] = useState("");
 
   // 1. Add Filter & Sort State
   const [activeFilter, setActiveFilter] = useState("ALL");
@@ -20,9 +21,116 @@ export default function Home() {
   const [showLiveOnly, setShowLiveOnly] = useState(false);
   const [showUpcomingOnly, setShowUpcomingOnly] = useState(false);
   const [showRecentOnly, setShowRecentOnly] = useState(false);
-  const [sortOption, setSortOption] = useState<"DATE" | "LEAGUE" | "HOME_TEAM">("DATE");
+  const [sortOption, setSortOption] = useState<"TIME" | "LEAGUE" | "STATUS">("TIME");
+  const [isSortOpen, setIsSortOpen] = useState(false);
 
-  // ... (useEffect remains same) ...
+  // 1. Data Fetching Effect
+  useEffect(() => {
+    const fetchData = async () => {
+      console.log("Page: Starting fetch...");
+      try {
+        // Fetch Matches
+        console.log("Page: Fetching matches from", process.env.NEXT_PUBLIC_API_URL);
+        const matchesRes = await fetch(
+          `${process.env.NEXT_PUBLIC_API_URL}/api/football/live`
+        );
+        console.log("Page: Matches response status:", matchesRes.status);
+        
+        if (!matchesRes.ok) throw new Error(`Failed to fetch matches: ${matchesRes.status}`);
+
+        const matchesData = await matchesRes.json();
+        console.log("Page: Matches data received:", matchesData);
+        
+        setMatches(matchesData.matches || []);
+
+        // Fetch Favorites
+        const deviceId = localStorage.getItem("scorex_device_id");
+        if (deviceId) {
+          console.log("Page: Fetching favorites for", deviceId);
+          try {
+            const favRes = await fetch(
+              `${process.env.NEXT_PUBLIC_API_URL}/api/favorites/${deviceId}`
+            );
+            const favData = await favRes.json();
+            setFavorites(favData.map((fav: any) => fav.matchId));
+          } catch (favErr) {
+            console.error("Page: Error fetching favorites:", favErr);
+            // Don't block main loading for favorites
+          }
+        }
+
+        console.log("Page: Fetch complete, turning off loading.");
+        setLoading(false);
+      } catch (err: any) {
+        console.error("Page: Error in fetchData:", err);
+        setError(err.message);
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+
+    // Re-fetch on focus to keep favorites in sync
+    const handleFocus = () => {
+      fetchData();
+    };
+
+    window.addEventListener("focus", handleFocus);
+    return () => window.removeEventListener("focus", handleFocus);
+  }, []);
+
+  // 2. Scroll Restoration Effect
+  useEffect(() => {
+    // Check for Hash (Prioritize specific section navigation)
+    if (window.location.hash === '#live-scores') {
+       setTimeout(() => {
+         const element = document.getElementById('live-scores');
+         if (element) {
+           element.scrollIntoView({ behavior: 'smooth' });
+         }
+       }, 100);
+       return; // Skip restoring saved position if hash is present
+    }
+
+    // Restore position on load
+    const savedPosition = sessionStorage.getItem('scorex_scroll_position');
+    if (savedPosition) {
+       window.scrollTo(0, parseInt(savedPosition));
+    }
+
+    // Save position on scroll (debounced)
+    const handleScroll = () => {
+      sessionStorage.setItem('scorex_scroll_position', window.scrollY.toString());
+    };
+    
+    // Debounce scroll event
+    let timeoutId: NodeJS.Timeout;
+    const debouncedScroll = () => {
+      clearTimeout(timeoutId);
+      timeoutId = setTimeout(handleScroll, 100);
+    };
+
+    window.addEventListener('scroll', debouncedScroll);
+
+    // Match Card Scroll (Specific navigation fallback)
+    if (!loading && matches.length > 0) {
+      const scrollMatchId = sessionStorage.getItem('scorex_scroll_match_id');
+      if (scrollMatchId) {
+        setTimeout(() => {
+          const element = document.getElementById(`match-card-${scrollMatchId}`);
+          if (element) {
+            element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            sessionStorage.removeItem('scorex_scroll_match_id'); 
+          }
+        }, 500); // Increased delay to ensure rendering
+      }
+    }
+    
+    return () => {
+      window.removeEventListener('scroll', debouncedScroll);
+      clearTimeout(timeoutId);
+    };
+  }, [loading, matches]);
 
   // 3. The Filter Logic
   const filteredMatches = matches.filter((match: any) => {
@@ -48,18 +156,23 @@ export default function Home() {
 
     return true;
   }).sort((a: any, b: any) => {
-    // 1. Priority: Live matches always on top unless sorting by specific criteria that overrides it? 
-    // Actually, let's keep live on top for DATE sort, but maybe strict sort for others.
-    // For now, let's just sort the filtered list.
-
     if (sortOption === 'LEAGUE') {
-      return a.competition.name.localeCompare(b.competition.name);
-    }
-    if (sortOption === 'HOME_TEAM') {
-      return a.homeTeam.name.localeCompare(b.homeTeam.name);
+      const leagueA = a.competition?.name || "";
+      const leagueB = b.competition?.name || "";
+      return leagueA.localeCompare(leagueB);
     }
     
-    // Default: DATE (and Status priority)
+    if (sortOption === 'STATUS') {
+      // Priority: Live (1) > Upcoming (2) > Finished (3)
+      const getPriority = (status: string) => {
+        if (['IN_PLAY', 'PAUSED'].includes(status)) return 1;
+        if (['SCHEDULED', 'TIMED'].includes(status)) return 2;
+        return 3; 
+      };
+      return getPriority(a.status) - getPriority(b.status);
+    }
+    
+    // Default: TIME (Chronological)
     // If showing recent, we want newest first.
     if (showRecentOnly) {
       return new Date(b.utcDate).getTime() - new Date(a.utcDate).getTime();
@@ -68,6 +181,11 @@ export default function Home() {
     // Otherwise (Upcoming/Live/All), we usually want earliest first.
     return new Date(a.utcDate).getTime() - new Date(b.utcDate).getTime();
   });
+
+  // Debug Sort Option
+  useEffect(() => {
+    console.log("Sort Option Changed:", sortOption);
+  }, [sortOption]);
 
   return (
     <main className="min-h-screen bg-dark">
@@ -162,30 +280,48 @@ export default function Home() {
               </button>
 
               {/* Sort Dropdown */}
-              <div className="relative group">
-                <button className="flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 border border-white/10 text-gray-400 hover:text-white hover:border-white/30 transition-all text-sm font-bold">
-                  <span className="uppercase">Sort: {sortOption.replace('_', ' ')}</span>
+              <div className="relative">
+                <button 
+                  onClick={() => setIsSortOpen(!isSortOpen)}
+                  className={`flex items-center justify-center w-10 h-10 rounded-full border transition-all ${isSortOpen ? 'bg-crimson border-crimson text-white' : 'bg-white/5 border-white/10 text-gray-400 hover:text-white hover:border-white/30'}`}
+                >
+                  <ArrowUpDown size={18} />
                 </button>
-                <div className="absolute right-0 top-full mt-2 w-40 bg-[#1a1a1a] border border-white/10 rounded-lg shadow-xl overflow-hidden hidden group-hover:block z-50">
-                  <button 
-                    onClick={() => setSortOption('DATE')}
-                    className={`w-full text-left px-4 py-3 text-sm hover:bg-white/5 transition-colors ${sortOption === 'DATE' ? 'text-crimson font-bold' : 'text-gray-400'}`}
-                  >
-                    Date
-                  </button>
-                  <button 
-                    onClick={() => setSortOption('LEAGUE')}
-                    className={`w-full text-left px-4 py-3 text-sm hover:bg-white/5 transition-colors ${sortOption === 'LEAGUE' ? 'text-crimson font-bold' : 'text-gray-400'}`}
-                  >
-                    League
-                  </button>
-                  <button 
-                    onClick={() => setSortOption('HOME_TEAM')}
-                    className={`w-full text-left px-4 py-3 text-sm hover:bg-white/5 transition-colors ${sortOption === 'HOME_TEAM' ? 'text-crimson font-bold' : 'text-gray-400'}`}
-                  >
-                    Home Team
-                  </button>
-                </div>
+                
+                {/* Dropdown Menu */}
+                {isSortOpen && (
+                  <div className="absolute right-0 top-full mt-2 w-40 z-50 animate-in fade-in zoom-in-95 duration-200">
+                    <div className="bg-[#1a1a1a] border border-white/10 rounded-lg shadow-2xl overflow-hidden ring-1 ring-white/5">
+                      <div className="px-4 py-2 text-xs font-bold text-gray-500 uppercase tracking-wider border-b border-white/5 bg-white/5">
+                        Sort By
+                      </div>
+                      <button 
+                        onClick={() => { setSortOption('TIME'); setIsSortOpen(false); }}
+                        className={`w-full text-left px-4 py-3 text-sm hover:bg-white/5 transition-colors ${sortOption === 'TIME' ? 'text-crimson font-bold' : 'text-gray-400'}`}
+                      >
+                        Time
+                      </button>
+                      <button 
+                        onClick={() => { setSortOption('LEAGUE'); setIsSortOpen(false); }}
+                        className={`w-full text-left px-4 py-3 text-sm hover:bg-white/5 transition-colors ${sortOption === 'LEAGUE' ? 'text-crimson font-bold' : 'text-gray-400'}`}
+                      >
+                        League
+                      </button>
+                      <button 
+                        onClick={() => { setSortOption('STATUS'); setIsSortOpen(false); }}
+                        className={`w-full text-left px-4 py-3 text-sm hover:bg-white/5 transition-colors ${sortOption === 'STATUS' ? 'text-crimson font-bold' : 'text-gray-400'}`}
+                      >
+                        Status
+                      </button>
+                    </div>
+                    
+                    {/* Backdrop to close on click outside (Invisible) */}
+                    <div 
+                      className="fixed inset-0 z-[-1]" 
+                      onClick={() => setIsSortOpen(false)}
+                    />
+                  </div>
+                )}
               </div>
             </div>
           </div>
@@ -207,24 +343,25 @@ export default function Home() {
                 (Waking up server, this might take a moment...)
               </div>
             </div>
+          ) : error ? (
+            <div className="col-span-full text-center py-20 text-red-500">
+              <p>Error: {error}</p>
+              <button onClick={() => window.location.reload()} className="mt-4 px-4 py-2 bg-white/10 rounded hover:bg-white/20 text-white text-sm">Retry</button>
+            </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {filteredMatches.length > 0 ? (
                 filteredMatches.map((match: any) => (
-                  <Link 
-                    href={`/match/${match.id}`} 
+                  <div 
                     key={match.id}
-                    onClick={() => {
-                      // Save scroll position marker
-                      sessionStorage.setItem('scorex_scroll_match_id', match.id);
-                    }}
                     id={`match-card-${match.id}`} // Add ID for scrolling
+                    className="contents" // Use contents to let MatchCard be the grid item, or just let div be the item
                   >
                     <MatchCard
                       match={match}
                       initialIsFav={favorites.includes(match.id.toString())}
                     />
-                  </Link>
+                  </div>
                 ))
               ) : (
                 // 4. Empty State

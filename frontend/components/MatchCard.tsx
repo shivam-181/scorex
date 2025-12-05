@@ -101,8 +101,17 @@ export default function MatchCard({
 
   const isPinned = pinnedMatch?.id === match.id;
 
+  const handleCardClick = () => {
+    // Save scroll position marker (logic moved from page.tsx)
+    sessionStorage.setItem('scorex_scroll_match_id', match.id);
+    router.push(`/match/${match.id}`);
+  };
+
   return (
-    <div className="glass-panel p-6 flex flex-col hover:border-crimson transition-colors duration-300 relative group">
+    <div 
+      onClick={handleCardClick}
+      className="glass-panel p-6 flex flex-col hover:border-crimson transition-colors duration-300 relative group cursor-pointer"
+    >
       {/* Absolute Position Icons */}
       <div className="absolute top-4 right-4 flex gap-2 z-20">
         {/* Pin Button */}

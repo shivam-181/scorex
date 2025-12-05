@@ -1,0 +1,12 @@
+--- Testing Lineup Matching ---
+'Manchester City' -> FOUND
+'Manchester City FC' -> FOUND
+'Man City' -> FOUND
+'Arsenal' -> FOUND
+'Arsenal FC' -> FOUND
+'Liverpool FC' -> FOUND
+'Real Madrid' -> FOUND
+'Real Madrid CF' -> FOUND
+'FC Barcelona' -> FOUND
+'Barca' -> FOUND
+'Unknown Team FC' -> MISSING

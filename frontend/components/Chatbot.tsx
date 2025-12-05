@@ -138,15 +138,15 @@ export default function Chatbot() {
             initial={{ opacity: 0, y: 50, scale: 0.9 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 50, scale: 0.9 }}
-            className="fixed bottom-24 md:bottom-6 right-6 z-50 w-[350px] h-[500px] bg-dark/95 backdrop-blur-xl border border-white/10 rounded-2xl shadow-2xl flex flex-col overflow-hidden"
+            className="fixed bottom-24 md:bottom-6 right-6 z-50 w-[350px] h-[500px] bg-black/60 backdrop-blur-xl border border-white/10 rounded-2xl shadow-2xl flex flex-col overflow-hidden"
           >
             {/* Header */}
-            <div className="p-4 bg-crimson/90 flex items-center justify-between">
+            <div className="p-4 bg-crimson/80 backdrop-blur-md flex items-center justify-between border-b border-white/10">
               <div className="flex items-center gap-2">
                 <Bot size={20} className="text-white" />
                 <span className="font-bold text-white">ScoreX AI</span>
               </div>
-              <button onClick={() => setIsOpen(false)} className="text-white/80 hover:text-white">
+              <button onClick={() => setIsOpen(false)} className="text-white/80 hover:text-white transition-colors">
                 <X size={20} />
               </button>
             </div>
@@ -159,10 +159,10 @@ export default function Chatbot() {
                   className={`flex ${msg.sender === "user" ? "justify-end" : "justify-start"}`}
                 >
                   <div
-                    className={`max-w-[80%] p-3 rounded-2xl text-sm ${
+                    className={`max-w-[80%] p-3 rounded-2xl text-sm backdrop-blur-sm ${
                       msg.sender === "user"
-                        ? "bg-crimson text-white rounded-tr-none"
-                        : "bg-white/10 text-white rounded-tl-none"
+                        ? "bg-crimson/80 text-white rounded-tr-none border border-white/10"
+                        : "bg-white/10 text-white rounded-tl-none border border-white/5"
                     }`}
                   >
                     {msg.text}
@@ -171,7 +171,7 @@ export default function Chatbot() {
               ))}
               {loading && (
                 <div className="flex justify-start">
-                  <div className="bg-white/10 p-3 rounded-2xl rounded-tl-none flex gap-1">
+                  <div className="bg-white/10 backdrop-blur-sm p-3 rounded-2xl rounded-tl-none flex gap-1 border border-white/5">
                     <span className="w-2 h-2 bg-white/50 rounded-full animate-bounce" />
                     <span className="w-2 h-2 bg-white/50 rounded-full animate-bounce delay-75" />
                     <span className="w-2 h-2 bg-white/50 rounded-full animate-bounce delay-150" />
@@ -182,7 +182,7 @@ export default function Chatbot() {
             </div>
 
             {/* Input */}
-            <div className="p-4 border-t border-white/10 bg-white/5">
+            <div className="p-4 border-t border-white/10 bg-black/20 backdrop-blur-md">
               <div className="flex gap-2">
                 <input
                   type="text"
@@ -190,12 +190,12 @@ export default function Chatbot() {
                   onChange={(e) => setInput(e.target.value)}
                   onKeyDown={(e) => e.key === "Enter" && handleSend()}
                   placeholder="Ask about football..."
-                  className="flex-1 bg-black/20 border border-white/10 rounded-full px-4 py-2 text-sm text-white focus:outline-none focus:border-crimson transition-colors"
+                  className="flex-1 bg-white/5 border border-white/10 rounded-full px-4 py-2 text-sm text-white focus:outline-none focus:border-crimson transition-colors placeholder-gray-500"
                 />
                 <button
                   onClick={handleSend}
                   disabled={loading || !input.trim()}
-                  className="p-2 bg-crimson rounded-full text-white disabled:opacity-50 disabled:cursor-not-allowed hover:bg-crimson/80 transition-colors"
+                  className="p-2 bg-crimson rounded-full text-white disabled:opacity-50 disabled:cursor-not-allowed hover:bg-crimson/80 transition-colors shadow-lg shadow-crimson/20"
                 >
                   <Send size={18} />
                 </button>
