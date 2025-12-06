@@ -1132,7 +1132,7 @@ export const REAL_LINEUPS: Record<string, any[]> = {
     {
       "name": "Matheus Nunes",
       "number": 0,
-      "position": "DF",
+      "position": "MF",
       "image": "https://resources.premierleague.com/premierleague/photos/players/250x250/p465351.png"
     },
     {

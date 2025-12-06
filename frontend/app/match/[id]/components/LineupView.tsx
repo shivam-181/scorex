@@ -3,59 +3,24 @@ import React from 'react';
 
 import Link from 'next/link';
 
-// Helper to group players into a strict 4-3-3 formation
+// Helper to group players based on their defined position
 const getFormation = (players: any[]) => {
   if (!Array.isArray(players) || players.length === 0) return { GK: [], DF: [], MF: [], FW: [] };
   
-  // 1. Identify GK (Always need 1)
+  // Filter by position
   const gk = players.filter(p => p.position === 'GK');
-  const fieldPlayers = players.filter(p => p.position !== 'GK');
-
-  // If no GK, take the first player
-  const finalGK = gk.length > 0 ? [gk[0]] : [fieldPlayers.shift()];
-
-  // 2. We need 4 DF, 3 MF, 3 FW. Total field = 10.
-  // We will distribute whatever players we have into these buckets sequentially if they don't match the position count.
-  // Actually, simplest strategy for visual consistency:
-  // - Filter strictly first.
-  // - If counts match (1, 4, 3, 3), great.
-  // - If not, redistribute field players freely to fill the slots.
-  
   const df = players.filter(p => p.position === 'DF');
   const mf = players.filter(p => p.position === 'MF');
   const fw = players.filter(p => p.position === 'FW');
 
-  // Strict check: if we have roughly correct numbers, keep positions
-  if (df.length === 4 && mf.length === 3 && fw.length === 3 && gk.length === 1) {
-     return { GK: gk, DF: df, MF: mf, FW: fw };
-  }
-
-  // Fallback: Force Distribution from all 11 players
-  // 1 GK, 4 DF, 3 MF, 3 FW
-  const allEleven = players.slice(0, 11); // Ensure we only have 11 on pitch
+  // Handle case where no GK is defined - take first player
+  // But strictly speaking, we should try to keep players in their assigned roles.
+  // If we have > 1 GK, the extra usually stays on bench, but here we only have the starting 11 passed to us.
   
-  // Re-select GK from this set
-  const strictGK = allEleven.filter(p => p.position === 'GK');
-  const others = allEleven.filter(p => p.position !== 'GK');
+  // If distinct positions count < 11, it means some players might have invalid positions? 
+  // But typically we trust the data "according to the data you have".
   
-  const finalGKList = strictGK.length > 0 ? [strictGK[0]] : [others.shift()].filter(Boolean);
-  
-  // Add back any extra GKs to others if we picked one
-  if (strictGK.length > 1) others.push(...strictGK.slice(1));
-  
-  // Now others should ideally have 10 players. Fill buckets.
-  const finalDF = others.splice(0, 4);
-  const finalMF = others.splice(0, 3);
-  const finalFW = others.splice(0, 3);
-  // Add any remainder to FW or MF (should not happen if 11 total)
-  if (others.length > 0) finalFW.push(...others);
-
-  return {
-    GK: finalGKList,
-    DF: finalDF,
-    MF: finalMF,
-    FW: finalFW
-  };
+  return { GK: gk, DF: df, MF: mf, FW: fw };
 };
 
 const PlayerDot = ({ player, color }: { player: any, color: string }) => {
