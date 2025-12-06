@@ -71,7 +71,7 @@ export default function NewsPreview() {
                     <img 
                       src={item.urlToImage || '/placeholder.jpg'} 
                       alt={item.title} 
-                      className="w-full h-full object-cover transform transition-transform duration-500 group-hover:scale-125 group-hover:brightness-110"
+                      className="w-full h-full object-cover transform transition-transform duration-700 group-hover:scale-110 group-hover:brightness-110"
                     />
                     <span className="absolute bottom-3 left-3 z-20 text-[10px] font-bold bg-crimson text-white px-2 py-1 rounded">
                       {item.source.name}
