@@ -13,14 +13,45 @@ const getFormation = (players: any[]) => {
   const mf = players.filter(p => p.position === 'MF');
   const fw = players.filter(p => p.position === 'FW');
 
-  // Handle case where no GK is defined - take first player
-  // But strictly speaking, we should try to keep players in their assigned roles.
-  // If we have > 1 GK, the extra usually stays on bench, but here we only have the starting 11 passed to us.
-  
-  // If distinct positions count < 11, it means some players might have invalid positions? 
-  // But typically we trust the data "according to the data you have".
-  
   return { GK: gk, DF: df, MF: mf, FW: fw };
+};
+
+// Helper: Ensure we only show 11 players on pitch, move rest to substitutes
+// Also handles missing positions by defaulting to MF
+const optimizeLineup = (players: any[]) => {
+  if (!Array.isArray(players)) return { xi: [], overflow: [] };
+
+  // Normalize positions
+  const normalized = players.map(p => ({
+    ...p,
+    position: p.position ? p.position.toUpperCase() : 'MF' 
+  }));
+
+  // 1. Find GK
+  // We prefer the first player marked as GK.
+  const gkIndex = normalized.findIndex(p => p.position === 'GK');
+  
+  let xi: any[] = [];
+  let overflow: any[] = [];
+
+  if (gkIndex !== -1) {
+    xi.push(normalized[gkIndex]);
+    // Remove from candidate pool
+    const others = [...normalized];
+    others.splice(gkIndex, 1);
+    
+    // 2. Take next 10 players for outfield
+    xi.push(...others.slice(0, 10));
+    overflow.push(...others.slice(10));
+  } else {
+    // If no GK, just take first 11 players?
+    // Or take first 11, force first one to be GK visually? 
+    // Let's just take first 11.
+    xi = normalized.slice(0, 11);
+    overflow = normalized.slice(11);
+  }
+
+  return { xi, overflow };
 };
 
 const PlayerDot = ({ player, color }: { player: any, color: string }) => {
@@ -41,7 +72,7 @@ const PlayerDot = ({ player, color }: { player: any, color: string }) => {
             onError={() => setImgError(true)}
           />
         ) : (
-          player.number
+          player.number || '-'
         )}
       </div>
       <span className="text-[10px] text-white bg-black/50 px-1 rounded mt-1 truncate max-w-[60px] group-hover:bg-crimson transition-colors">
@@ -70,11 +101,20 @@ export default function LineupView({ lineups }: { lineups: any }) {
      return [];
   };
 
-  const homeStarting = getPlayers(lineups.home);
-  const awayStarting = getPlayers(lineups.away);
+  // Get raw starting lineups
+  const homeStartingRaw = getPlayers(lineups.home);
+  const awayStartingRaw = getPlayers(lineups.away);
   
-  const homeFormation = getFormation(homeStarting);
-  const awayFormation = getFormation(awayStarting);
+  // Optimize: Limit to 11, get overflow
+  const { xi: homeXI, overflow: homeOverflow } = optimizeLineup(homeStartingRaw);
+  const { xi: awayXI, overflow: awayOverflow } = optimizeLineup(awayStartingRaw);
+  
+  // Combine official bench with our overflow
+  const homeBench = [...getBench(lineups.home), ...homeOverflow];
+  const awayBench = [...getBench(lineups.away), ...awayOverflow];
+
+  const homeFormation = getFormation(homeXI);
+  const awayFormation = getFormation(awayXI);
 
   return (
     <div className="w-full flex flex-col items-center py-4">
@@ -126,14 +166,14 @@ export default function LineupView({ lineups }: { lineups: any }) {
         <div>
           <h4 className="text-crimson font-bold mb-4 uppercase text-sm tracking-wider border-b border-white/10 pb-2">Home Substitutes</h4>
           <div className="space-y-2">
-            {getBench(lineups.home).map((p: any, i: number) => (
+            {homeBench.map((p: any, i: number) => (
               <Link href={`/player/${encodeURIComponent(p.name)}`} key={i} className="flex items-center gap-3 text-sm text-gray-300 hover:text-white hover:bg-white/5 p-1 rounded transition-colors cursor-pointer">
-                <span className="w-6 text-right text-gray-500 font-mono">{p.number}</span>
+                <span className="w-6 text-right text-gray-500 font-mono">{p.number || '-'}</span>
                 <span>{p.name}</span>
                 <span className="text-xs text-gray-500 ml-auto">{p.position}</span>
               </Link>
             ))}
-            {getBench(lineups.home).length === 0 && <p className="text-gray-500 text-sm italic">No substitutes available</p>}
+            {homeBench.length === 0 && <p className="text-gray-500 text-sm italic">No substitutes available</p>}
           </div>
         </div>
 
@@ -141,14 +181,14 @@ export default function LineupView({ lineups }: { lineups: any }) {
         <div>
           <h4 className="text-apricot font-bold mb-4 uppercase text-sm tracking-wider border-b border-white/10 pb-2">Away Substitutes</h4>
           <div className="space-y-2">
-            {getBench(lineups.away).map((p: any, i: number) => (
+            {awayBench.map((p: any, i: number) => (
               <Link href={`/player/${encodeURIComponent(p.name)}`} key={i} className="flex items-center gap-3 text-sm text-gray-300 hover:text-white hover:bg-white/5 p-1 rounded transition-colors cursor-pointer">
-                <span className="w-6 text-right text-gray-500 font-mono">{p.number}</span>
+                <span className="w-6 text-right text-gray-500 font-mono">{p.number || '-'}</span>
                 <span>{p.name}</span>
                 <span className="text-xs text-gray-500 ml-auto">{p.position}</span>
               </Link>
             ))}
-            {getBench(lineups.away).length === 0 && <p className="text-gray-500 text-sm italic">No substitutes available</p>}
+            {awayBench.length === 0 && <p className="text-gray-500 text-sm italic">No substitutes available</p>}
           </div>
         </div>
       </div>
