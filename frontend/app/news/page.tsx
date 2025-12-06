@@ -72,11 +72,11 @@ export default function NewsPage() {
                 className="glass-panel overflow-hidden rounded-xl group hover:border-crimson transition-colors duration-300 flex flex-col"
               >
                 <div className="h-48 overflow-hidden relative shrink-0">
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent z-10" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent z-10 transition-opacity duration-300 group-hover:opacity-60" />
                   <img 
                     src={article.urlToImage || '/placeholder.jpg'} 
                     alt={article.title} 
-                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                    className="w-full h-full object-cover transform transition-transform duration-500 group-hover:scale-125 group-hover:brightness-110"
                   />
                   <span className="absolute bottom-3 left-3 z-20 text-[10px] font-bold bg-crimson text-white px-2 py-1 rounded">
                     {article.source.name}

@@ -84,10 +84,14 @@ export default function PlayerProfile() {
           className="flex flex-col md:flex-row gap-8 items-end"
         >
           {/* Avatar Placeholder */}
-          <div className="w-32 h-32 md:w-48 md:h-48 bg-gradient-to-br from-crimson to-red-900 rounded-full flex items-center justify-center shadow-[0_0_30px_rgba(220,20,60,0.4)] border-4 border-dark">
-            <span className="text-4xl md:text-6xl font-bold text-white">
-              {playerData.name.charAt(0)}
-            </span>
+          <div className="w-32 h-32 md:w-48 md:h-48 bg-gradient-to-br from-crimson to-red-900 rounded-full flex items-center justify-center shadow-[0_0_30px_rgba(220,20,60,0.4)] border-4 border-dark overflow-hidden relative">
+            {playerData.image ? (
+              <img src={playerData.image} alt={playerData.name} className="w-full h-full object-cover" />
+            ) : (
+              <span className="text-4xl md:text-6xl font-bold text-white">
+                {playerData.name.charAt(0)}
+              </span>
+            )}
           </div>
 
           <div className="flex-1 mb-4">
