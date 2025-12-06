@@ -4,6 +4,7 @@ import Link from 'next/link';
 
 // Helper to group players by position (GK, DF, MF, FW)
 const getFormation = (players: any[]) => {
+  if (!Array.isArray(players)) return { GK: [], DF: [], MF: [], FW: [] };
   return {
     GK: players.filter(p => p.position === 'GK'),
     DF: players.filter(p => p.position === 'DF'),
@@ -12,25 +13,33 @@ const getFormation = (players: any[]) => {
   };
 };
 
-const PlayerDot = ({ player, color }: { player: any, color: string }) => (
-  <Link href={`/player/${encodeURIComponent(player.name)}`} className="flex flex-col items-center justify-center mx-2 md:mx-4 group cursor-pointer">
-    <div 
-      className={`w-8 h-8 md:w-10 md:h-10 rounded-full border-2 border-white flex items-center justify-center text-xs font-bold text-white shadow-lg group-hover:scale-110 transition-transform overflow-hidden relative`}
-      style={{ backgroundColor: color }}
-    >
-      {player.image ? (
-        <img src={player.image} alt={player.name} className="w-full h-full object-cover" />
-      ) : (
-        player.number
-      )}
-    </div>
-    <span className="text-[10px] text-white bg-black/50 px-1 rounded mt-1 truncate max-w-[60px] group-hover:bg-crimson transition-colors">
-      {player.name.split(' ').pop()} {/* Show Last Name only */}
-    </span>
-  </Link>
-);
+const PlayerDot = ({ player, color }: { player: any, color: string }) => {
+  if (!player) return null;
+
+  return (
+    <Link href={`/player/${encodeURIComponent(player.name)}`} className="flex flex-col items-center justify-center mx-2 md:mx-4 group cursor-pointer">
+      <div 
+        className={`w-8 h-8 md:w-10 md:h-10 rounded-full border-2 border-white flex items-center justify-center text-xs font-bold text-white shadow-lg group-hover:scale-110 transition-transform overflow-hidden relative`}
+        style={{ backgroundColor: color }}
+      >
+        {player.image ? (
+          <img src={player.image} alt={player.name} className="w-full h-full object-cover" />
+        ) : (
+          player.number
+        )}
+      </div>
+      <span className="text-[10px] text-white bg-black/50 px-1 rounded mt-1 truncate max-w-[60px] group-hover:bg-crimson transition-colors">
+        {player.name ? player.name.split(' ').pop() : ''} {/* Show Last Name only */}
+      </span>
+    </Link>
+  );
+};
 
 export default function LineupView({ lineups }: { lineups: any }) {
+  if (!lineups || !lineups.home || !lineups.away) {
+    return <div className="text-white text-center py-10">Lineup data unavailable</div>;
+  }
+
   const home = getFormation(lineups.home);
   const away = getFormation(lineups.away);
 
@@ -51,7 +60,9 @@ export default function LineupView({ lineups }: { lineups: any }) {
         {/* --- AWAY TEAM (Top) --- */}
         <div className="absolute top-0 w-full h-1/2 flex flex-col justify-start pt-4 pb-2">
           {/* GK */}
-          <div className="flex justify-center mb-2"><PlayerDot player={away.GK[0]} color="#fbceb1" /></div>
+          <div className="flex justify-center mb-2">
+            {away.GK[0] && <PlayerDot player={away.GK[0]} color="#fbceb1" />}
+          </div>
           {/* DF */}
           <div className="flex justify-center mb-4">{away.DF.map((p: any, i: number) => <PlayerDot key={i} player={p} color="#fbceb1" />)}</div>
           {/* MF */}
@@ -69,7 +80,9 @@ export default function LineupView({ lineups }: { lineups: any }) {
            {/* DF */}
            <div className="flex justify-center mb-2">{home.DF.map((p: any, i: number) => <PlayerDot key={i} player={p} color="#DC143C" />)}</div>
            {/* GK */}
-           <div className="flex justify-center"><PlayerDot player={home.GK[0]} color="#DC143C" /></div>
+           <div className="flex justify-center">
+             {home.GK[0] && <PlayerDot player={home.GK[0]} color="#DC143C" />}
+           </div>
         </div>
 
       </div>
