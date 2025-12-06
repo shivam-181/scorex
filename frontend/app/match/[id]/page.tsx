@@ -58,7 +58,7 @@ export default function MatchDetailsPage() {
 
       {/* Content Tabs (Lineups, Stats, etc) */}
       <div className="container mx-auto px-4 -mt-6 relative z-20">
-        <MatchTabs match={matchData} />
+        <MatchTabs match={matchData} initialTab={typeof window !== 'undefined' ? new URLSearchParams(window.location.search).get('tab') : 'overview'} />
       </div>
     </main>
   );

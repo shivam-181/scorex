@@ -70,8 +70,15 @@ router.get('/match/:id', async (req, res) => {
     const { id } = req.params;
     console.log(`\n--- Fetching Match Details for ID: ${id} ---`);
 
-    // 1. Fetch real basic data (Score, Status, Teams)
-    let matchData = await fetchData(`/matches/${id}`);
+    // 1. Parallel Fetch: Real basic data + H2H
+    const [matchData, h2hData] = await Promise.all([
+      fetchData(`/matches/${id}`),
+      fetchData(`/matches/${id}/head2head`).catch(err => {
+         console.warn('Failed to fetch H2H data:', err);
+         return null; 
+      })
+    ]);
+
     console.log(`Basic Data Fetched. Status: ${matchData.status}`);
 
     // Inject calculated minute for live matches
@@ -91,17 +98,7 @@ router.get('/match/:id', async (req, res) => {
       }
       if (calculatedMinute > 90) minute = "90+";
       
-      matchData = { ...matchData, minute };
-    }
-    
-    // 2. Fetch H2H (Head to Head) if available
-    let h2hData = null;
-    try {
-      h2hData = await fetchData(`/matches/${id}/head2head`);
-      console.log('H2H Data Fetched:', h2hData?.aggregates ? 'Success' : 'No Aggregates');
-    } catch (err) {
-      console.warn('Failed to fetch H2H data:', err);
-      // Continue without H2H
+      matchData.minute = minute;
     }
     
     // 3. Check if Lineups/Stats exist. If not, Inject Mock Data or AI Data.
@@ -146,10 +143,11 @@ router.get('/match/:id', async (req, res) => {
       ...matchData,
       h2h: h2hData, // Include H2H data
       stats: matchData.statistics || generateMockStats(), 
-      // Inject Mock Timeline if empty
+      // Inject Mock Timeline if empty, but ONLY for live/finished matches
       ...(() => {
-        // If we have no goals and no bookings, assume we need mock timeline
-        if ((!matchData.goals || matchData.goals.length === 0) && (!matchData.bookings || matchData.bookings.length === 0)) {
+        const isLiveOrFinished = matchData.status === 'IN_PLAY' || matchData.status === 'PAUSED' || matchData.status === 'FINISHED';
+        // If we have no goals and no bookings, AND it's a game that should have stats, assume we need mock timeline
+        if (isLiveOrFinished && (!matchData.goals || matchData.goals.length === 0) && (!matchData.bookings || matchData.bookings.length === 0)) {
            const timeline = generateMockTimeline(matchData.homeTeam.name, matchData.awayTeam.name, matchData.score.fullTime);
            return {
              goals: timeline.filter((e: any) => e.type === 'GOAL'),

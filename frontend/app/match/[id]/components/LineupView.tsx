@@ -3,14 +3,58 @@ import React from 'react';
 
 import Link from 'next/link';
 
-// Helper to group players by position (GK, DF, MF, FW)
+// Helper to group players into a strict 4-3-3 formation
 const getFormation = (players: any[]) => {
-  if (!Array.isArray(players)) return { GK: [], DF: [], MF: [], FW: [] };
+  if (!Array.isArray(players) || players.length === 0) return { GK: [], DF: [], MF: [], FW: [] };
+  
+  // 1. Identify GK (Always need 1)
+  const gk = players.filter(p => p.position === 'GK');
+  const fieldPlayers = players.filter(p => p.position !== 'GK');
+
+  // If no GK, take the first player
+  const finalGK = gk.length > 0 ? [gk[0]] : [fieldPlayers.shift()];
+
+  // 2. We need 4 DF, 3 MF, 3 FW. Total field = 10.
+  // We will distribute whatever players we have into these buckets sequentially if they don't match the position count.
+  // Actually, simplest strategy for visual consistency:
+  // - Filter strictly first.
+  // - If counts match (1, 4, 3, 3), great.
+  // - If not, redistribute field players freely to fill the slots.
+  
+  const df = players.filter(p => p.position === 'DF');
+  const mf = players.filter(p => p.position === 'MF');
+  const fw = players.filter(p => p.position === 'FW');
+
+  // Strict check: if we have roughly correct numbers, keep positions
+  if (df.length === 4 && mf.length === 3 && fw.length === 3 && gk.length === 1) {
+     return { GK: gk, DF: df, MF: mf, FW: fw };
+  }
+
+  // Fallback: Force Distribution from all 11 players
+  // 1 GK, 4 DF, 3 MF, 3 FW
+  const allEleven = players.slice(0, 11); // Ensure we only have 11 on pitch
+  
+  // Re-select GK from this set
+  const strictGK = allEleven.filter(p => p.position === 'GK');
+  const others = allEleven.filter(p => p.position !== 'GK');
+  
+  const finalGKList = strictGK.length > 0 ? [strictGK[0]] : [others.shift()].filter(Boolean);
+  
+  // Add back any extra GKs to others if we picked one
+  if (strictGK.length > 1) others.push(...strictGK.slice(1));
+  
+  // Now others should ideally have 10 players. Fill buckets.
+  const finalDF = others.splice(0, 4);
+  const finalMF = others.splice(0, 3);
+  const finalFW = others.splice(0, 3);
+  // Add any remainder to FW or MF (should not happen if 11 total)
+  if (others.length > 0) finalFW.push(...others);
+
   return {
-    GK: players.filter(p => p.position === 'GK'),
-    DF: players.filter(p => p.position === 'DF'),
-    MF: players.filter(p => p.position === 'MF'),
-    FW: players.filter(p => p.position === 'FW'),
+    GK: finalGKList,
+    DF: finalDF,
+    MF: finalMF,
+    FW: finalFW
   };
 };
 

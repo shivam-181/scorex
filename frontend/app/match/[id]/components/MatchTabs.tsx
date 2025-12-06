@@ -9,8 +9,15 @@ import LineupView from './LineupView';
 
 const TABS = ['Overview', 'Timeline', 'Lineups', 'Stats'];
 
-export default function MatchTabs({ match }: { match: any }) {
-  const [activeTab, setActiveTab] = useState('Overview');
+export default function MatchTabs({ match, initialTab }: { match: any, initialTab?: string | null }) {
+  const [activeTab, setActiveTab] = useState(() => {
+    if (initialTab) {
+        // Capitalize first letter to match tabs
+        const formatted = initialTab.charAt(0).toUpperCase() + initialTab.slice(1).toLowerCase();
+        if (TABS.includes(formatted)) return formatted;
+    }
+    return 'Overview';
+  });
 
   return (
     <div className="w-full max-w-4xl mx-auto">
