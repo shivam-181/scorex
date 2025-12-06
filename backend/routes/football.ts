@@ -182,16 +182,33 @@ router.get('/match/:id', async (req, res) => {
         homeAll = await getTeamLineup('home', matchData.homeTeam.name, hardcodedHome);
         awayAll = await getTeamLineup('away', matchData.awayTeam.name, hardcodedAway);
         
-        return { 
-          home: {
-             starting: homeAll.slice(0, 11),
-             bench: homeAll.slice(11)
-          }, 
-          away: {
-             starting: awayAll.slice(0, 11),
-             bench: awayAll.slice(11)
-          }
-        };
+         // Helper to ensure 11 starters
+         const padToEleven = (players: any[]) => {
+            const starters = players.slice(0, 11);
+            if (starters.length >= 11) return starters;
+            
+            const needed = 11 - starters.length;
+            for (let i = 0; i < needed; i++) {
+               starters.push({
+                 name: `Player ${(starters.length + 1)}`,
+                 number: '-',
+                 position: 'MF', // Default to MF to fill midfield
+                 isMock: true
+               });
+            }
+            return starters;
+         };
+
+         return { 
+           home: {
+              starting: padToEleven(homeAll),
+              bench: homeAll.slice(11)
+           }, 
+           away: {
+              starting: padToEleven(awayAll),
+              bench: awayAll.slice(11)
+           }
+         };
       })()
     };
 

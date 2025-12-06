@@ -26,7 +26,14 @@ export default function MatchTabs({ match, initialTab }: { match: any, initialTa
         {TABS.map((tab) => (
           <button
             key={tab}
-            onClick={() => setActiveTab(tab)}
+            onClick={() => {
+              setActiveTab(tab);
+              if (typeof window !== 'undefined') {
+                const url = new URL(window.location.href);
+                url.searchParams.set('tab', tab.toLowerCase());
+                window.history.pushState({}, '', url.toString());
+              }
+            }}
             className={`flex-1 py-3 px-4 text-sm font-bold rounded-lg transition-all duration-300 relative whitespace-nowrap ${
               activeTab === tab ? 'text-white' : 'text-gray-500 hover:text-gray-300'
             }`}
