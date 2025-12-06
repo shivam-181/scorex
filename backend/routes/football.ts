@@ -1,6 +1,6 @@
 import express from 'express';
 import { fetchData } from '../utils/apiClient.js';
-import { generateMockStats, getMockLineup } from '../utils/mockData.js';
+import { generateMockStats, getMockLineup, generateMockTimeline } from '../utils/mockData.js';
 import { getHardcodedLineup } from '../utils/realLineups.js';
 
 const router = express.Router();
@@ -146,6 +146,19 @@ router.get('/match/:id', async (req, res) => {
       ...matchData,
       h2h: h2hData, // Include H2H data
       stats: matchData.statistics || generateMockStats(), 
+      // Inject Mock Timeline if empty
+      ...(() => {
+        // If we have no goals and no bookings, assume we need mock timeline
+        if ((!matchData.goals || matchData.goals.length === 0) && (!matchData.bookings || matchData.bookings.length === 0)) {
+           const timeline = generateMockTimeline(matchData.homeTeam.name, matchData.awayTeam.name, matchData.score.fullTime);
+           return {
+             goals: timeline.filter((e: any) => e.type === 'GOAL'),
+             bookings: timeline.filter((e: any) => e.type === 'CARD'),
+             substitutions: timeline.filter((e: any) => e.type === 'SUB'),
+           };
+        }
+        return {};
+      })(),
       lineups: await (async () => {
         // If API has lineup AND we don't have ANY hardcoded, use API?
         // But user complains about placeholders. So let's force our logic if ANY hardcoded exists,

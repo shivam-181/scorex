@@ -44,6 +44,13 @@ router.get('/:name', async (req, res) => {
     const responseText = result.response.text().replace(/```json/g, '').replace(/```/g, '').trim();
     
     const playerData = JSON.parse(responseText);
+    
+    // Inject Real Image if available
+    const { getPlayerImage } = await import('../utils/realLineups.js');
+    const image = getPlayerImage(decodedName);
+    if (image) {
+      playerData.image = image;
+    }
 
     res.json(playerData);
   } catch (error) {
