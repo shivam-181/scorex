@@ -108,6 +108,15 @@ export default function LineupView({ lineups }: { lineups: any }) {
   // Optimize: Limit to 11, get overflow
   const { xi: homeXI, overflow: homeOverflow } = optimizeLineup(homeStartingRaw);
   const { xi: awayXI, overflow: awayOverflow } = optimizeLineup(awayStartingRaw);
+
+  console.log('DEBUG LINEUP FIX:', {
+    homeRaw: homeStartingRaw?.length,
+    homeXI: homeXI?.length,
+    homeOverflow: homeOverflow?.length,
+    awayRaw: awayStartingRaw?.length,
+    awayXI: awayXI?.length,
+    awayOverflow: awayOverflow?.length
+  });
   
   // Combine official bench with our overflow
   const homeBench = [...getBench(lineups.home), ...homeOverflow];

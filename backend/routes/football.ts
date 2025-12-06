@@ -171,12 +171,12 @@ router.get('/match/:id', async (req, res) => {
         let homeAll = [];
         let awayAll = [];
 
-        if (matchData.lineup && matchData.lineup.length > 0 && !hardcodedHome && !hardcodedAway) {
-           // Normalize API data if it exists but is flat? 
-           // Usually API returns { home: { starting: [], bench: [] } } structure if it is good data
-           // But if we are falling back to our manual logic:
-           return matchData.lineup; 
-        }
+        // if (matchData.lineup && matchData.lineup.length > 0 && !hardcodedHome && !hardcodedAway) {
+        //    // Normalize API data if it exists but is flat? 
+        //    // Usually API returns { home: { starting: [], bench: [] } } structure if it is good data
+        //    // But if we are falling back to our manual logic:
+        //    return matchData.lineup; 
+        // }
 
         // Otherwise, build it manually
         homeAll = await getTeamLineup('home', matchData.homeTeam.name, hardcodedHome);
