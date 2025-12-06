@@ -163,17 +163,37 @@ router.get('/match/:id', async (req, res) => {
         // If API has lineup AND we don't have ANY hardcoded, use API?
         // But user complains about placeholders. So let's force our logic if ANY hardcoded exists,
         // OR if API lineup is missing.
+
+        /* 
+           Refactoring for better frontend display:
+           Instead of sending flat arrays, we send { starting: [], bench: [] }
+           We assume the first 11 are starters if it's a flat list.
+        */
         
+        let homeAll = [];
+        let awayAll = [];
+
         if (matchData.lineup && matchData.lineup.length > 0 && !hardcodedHome && !hardcodedAway) {
-           console.log("Using API Lineup (No hardcoded overrides found)");
-           return matchData.lineup;
+           // Normalize API data if it exists but is flat? 
+           // Usually API returns { home: { starting: [], bench: [] } } structure if it is good data
+           // But if we are falling back to our manual logic:
+           return matchData.lineup; 
         }
 
         // Otherwise, build it manually
-        const homeLineup = await getTeamLineup('home', matchData.homeTeam.name, hardcodedHome);
-        const awayLineup = await getTeamLineup('away', matchData.awayTeam.name, hardcodedAway);
+        homeAll = await getTeamLineup('home', matchData.homeTeam.name, hardcodedHome);
+        awayAll = await getTeamLineup('away', matchData.awayTeam.name, hardcodedAway);
         
-        return { home: homeLineup, away: awayLineup };
+        return { 
+          home: {
+             starting: homeAll.slice(0, 11),
+             bench: homeAll.slice(11)
+          }, 
+          away: {
+             starting: awayAll.slice(0, 11),
+             bench: awayAll.slice(11)
+          }
+        };
       })()
     };
 

@@ -1863,16 +1863,26 @@ export const REAL_LINEUPS: Record<string, any[]> = {
     }
   ],
   "FC Barcelona": [
-    {
-      "name": "Robert Lewandowski",
-      "number": 9,
-      "position": "FW"
-    },
-    {
-      "name": "Lamine Yamal",
-      "number": 27,
-      "position": "FW"
-    }
+    { "name": "Marc-André ter Stegen", "number": 1, "position": "GK" },
+    { "name": "Jules Koundé", "number": 23, "position": "DF" },
+    { "name": "Ronald Araújo", "number": 4, "position": "DF" },
+    { "name": "Pau Cubarsí", "number": 33, "position": "DF" },
+    { "name": "João Cancelo", "number": 2, "position": "DF" },
+    { "name": "Frenkie de Jong", "number": 21, "position": "MF" },
+    { "name": "Ilkay Gündogan", "number": 22, "position": "MF" },
+    { "name": "Pedri", "number": 8, "position": "MF" },
+    { "name": "Lamine Yamal", "number": 27, "position": "FW" },
+    { "name": "Raphinha", "number": 11, "position": "FW" },
+    { "name": "Robert Lewandowski", "number": 9, "position": "FW" },
+    // Bench
+    { "name": "Iñaki Peña", "number": 13, "position": "GK" },
+    { "name": "Andreas Christensen", "number": 15, "position": "DF" },
+    { "name": "Íñigo Martínez", "number": 5, "position": "DF" },
+    { "name": "Alejandro Balde", "number": 3, "position": "DF" },
+    { "name": "Fermín López", "number": 16, "position": "MF" },
+    { "name": "Gavi", "number": 6, "position": "MF" },
+    { "name": "Ferran Torres", "number": 7, "position": "FW" },
+    { "name": "Vitor Roque", "number": 19, "position": "FW" }
   ],
   "Bayern Munich": [
     {

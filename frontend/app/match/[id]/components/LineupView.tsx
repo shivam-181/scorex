@@ -1,4 +1,5 @@
 'use client';
+import React from 'react';
 
 import Link from 'next/link';
 
@@ -15,6 +16,7 @@ const getFormation = (players: any[]) => {
 
 const PlayerDot = ({ player, color }: { player: any, color: string }) => {
   if (!player) return null;
+  const [imgError, setImgError] = React.useState(false);
 
   return (
     <Link href={`/player/${encodeURIComponent(player.name)}`} className="flex flex-col items-center justify-center mx-2 md:mx-4 group cursor-pointer">
@@ -22,8 +24,13 @@ const PlayerDot = ({ player, color }: { player: any, color: string }) => {
         className={`w-8 h-8 md:w-10 md:h-10 rounded-full border-2 border-white flex items-center justify-center text-xs font-bold text-white shadow-lg group-hover:scale-110 transition-transform overflow-hidden relative`}
         style={{ backgroundColor: color }}
       >
-        {player.image ? (
-          <img src={player.image} alt={player.name} className="w-full h-full object-cover" />
+        {player.image && !imgError ? (
+          <img 
+            src={player.image} 
+            alt={player.name} 
+            className="w-full h-full object-cover" 
+            onError={() => setImgError(true)}
+          />
         ) : (
           player.number
         )}
@@ -40,8 +47,25 @@ export default function LineupView({ lineups }: { lineups: any }) {
     return <div className="text-white text-center py-10">Lineup data unavailable</div>;
   }
 
-  const home = getFormation(lineups.home);
-  const away = getFormation(lineups.away);
+  // Handle both new { starting, bench } structure and potential older/API structures
+  const getPlayers = (teamData: any) => {
+    if (Array.isArray(teamData)) return teamData; // Old/Flat structure
+    if (teamData.starting && Array.isArray(teamData.starting)) return teamData.starting; // New structure
+    if (teamData.startingXI && Array.isArray(teamData.startingXI)) return teamData.startingXI; // API structure fallback
+    return [];
+  };
+
+  const getBench = (teamData: any) => {
+     if (teamData.bench && Array.isArray(teamData.bench)) return teamData.bench;
+     if (teamData.substitutes && Array.isArray(teamData.substitutes)) return teamData.substitutes;
+     return [];
+  };
+
+  const homeStarting = getPlayers(lineups.home);
+  const awayStarting = getPlayers(lineups.away);
+  
+  const homeFormation = getFormation(homeStarting);
+  const awayFormation = getFormation(awayStarting);
 
   return (
     <div className="w-full flex flex-col items-center py-4">
@@ -61,27 +85,27 @@ export default function LineupView({ lineups }: { lineups: any }) {
         <div className="absolute top-0 w-full h-1/2 flex flex-col justify-start pt-4 pb-2">
           {/* GK */}
           <div className="flex justify-center mb-2">
-            {away.GK[0] && <PlayerDot player={away.GK[0]} color="#fbceb1" />}
+            {awayFormation.GK[0] && <PlayerDot player={awayFormation.GK[0]} color="#fbceb1" />}
           </div>
           {/* DF */}
-          <div className="flex justify-center mb-4">{away.DF.map((p: any, i: number) => <PlayerDot key={i} player={p} color="#fbceb1" />)}</div>
+          <div className="flex justify-center mb-4">{awayFormation.DF.map((p: any, i: number) => <PlayerDot key={i} player={p} color="#fbceb1" />)}</div>
           {/* MF */}
-          <div className="flex justify-center mb-4">{away.MF.map((p: any, i: number) => <PlayerDot key={i} player={p} color="#fbceb1" />)}</div>
+          <div className="flex justify-center mb-4">{awayFormation.MF.map((p: any, i: number) => <PlayerDot key={i} player={p} color="#fbceb1" />)}</div>
           {/* FW */}
-          <div className="flex justify-center">{away.FW.map((p: any, i: number) => <PlayerDot key={i} player={p} color="#fbceb1" />)}</div>
+          <div className="flex justify-center">{awayFormation.FW.map((p: any, i: number) => <PlayerDot key={i} player={p} color="#fbceb1" />)}</div>
         </div>
 
         {/* --- HOME TEAM (Bottom) --- */}
         <div className="absolute bottom-0 w-full h-1/2 flex flex-col justify-end pb-4 pt-2">
            {/* FW */}
-           <div className="flex justify-center mb-4">{home.FW.map((p: any, i: number) => <PlayerDot key={i} player={p} color="#DC143C" />)}</div>
+           <div className="flex justify-center mb-4">{homeFormation.FW.map((p: any, i: number) => <PlayerDot key={i} player={p} color="#DC143C" />)}</div>
            {/* MF */}
-           <div className="flex justify-center mb-4">{home.MF.map((p: any, i: number) => <PlayerDot key={i} player={p} color="#DC143C" />)}</div>
+           <div className="flex justify-center mb-4">{homeFormation.MF.map((p: any, i: number) => <PlayerDot key={i} player={p} color="#DC143C" />)}</div>
            {/* DF */}
-           <div className="flex justify-center mb-2">{home.DF.map((p: any, i: number) => <PlayerDot key={i} player={p} color="#DC143C" />)}</div>
+           <div className="flex justify-center mb-2">{homeFormation.DF.map((p: any, i: number) => <PlayerDot key={i} player={p} color="#DC143C" />)}</div>
            {/* GK */}
            <div className="flex justify-center">
-             {home.GK[0] && <PlayerDot player={home.GK[0]} color="#DC143C" />}
+             {homeFormation.GK[0] && <PlayerDot player={homeFormation.GK[0]} color="#DC143C" />}
            </div>
         </div>
 
@@ -93,13 +117,14 @@ export default function LineupView({ lineups }: { lineups: any }) {
         <div>
           <h4 className="text-crimson font-bold mb-4 uppercase text-sm tracking-wider border-b border-white/10 pb-2">Home Substitutes</h4>
           <div className="space-y-2">
-            {lineups.home.bench?.map((p: any, i: number) => (
+            {getBench(lineups.home).map((p: any, i: number) => (
               <Link href={`/player/${encodeURIComponent(p.name)}`} key={i} className="flex items-center gap-3 text-sm text-gray-300 hover:text-white hover:bg-white/5 p-1 rounded transition-colors cursor-pointer">
                 <span className="w-6 text-right text-gray-500 font-mono">{p.number}</span>
                 <span>{p.name}</span>
                 <span className="text-xs text-gray-500 ml-auto">{p.position}</span>
               </Link>
-            )) || <p className="text-gray-500 text-sm italic">No substitutes available</p>}
+            ))}
+            {getBench(lineups.home).length === 0 && <p className="text-gray-500 text-sm italic">No substitutes available</p>}
           </div>
         </div>
 
@@ -107,13 +132,14 @@ export default function LineupView({ lineups }: { lineups: any }) {
         <div>
           <h4 className="text-apricot font-bold mb-4 uppercase text-sm tracking-wider border-b border-white/10 pb-2">Away Substitutes</h4>
           <div className="space-y-2">
-            {lineups.away.bench?.map((p: any, i: number) => (
+            {getBench(lineups.away).map((p: any, i: number) => (
               <Link href={`/player/${encodeURIComponent(p.name)}`} key={i} className="flex items-center gap-3 text-sm text-gray-300 hover:text-white hover:bg-white/5 p-1 rounded transition-colors cursor-pointer">
                 <span className="w-6 text-right text-gray-500 font-mono">{p.number}</span>
                 <span>{p.name}</span>
                 <span className="text-xs text-gray-500 ml-auto">{p.position}</span>
               </Link>
-            )) || <p className="text-gray-500 text-sm italic">No substitutes available</p>}
+            ))}
+            {getBench(lineups.away).length === 0 && <p className="text-gray-500 text-sm italic">No substitutes available</p>}
           </div>
         </div>
       </div>
