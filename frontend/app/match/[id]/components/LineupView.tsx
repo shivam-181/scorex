@@ -21,10 +21,20 @@ const getFormation = (players: any[]) => {
 const optimizeLineup = (players: any[]) => {
   if (!Array.isArray(players)) return { xi: [], overflow: [] };
 
-  // Normalize positions
+  // Normalize positions with robust mapping
+  const normalizePosition = (pos: string) => {
+    if (!pos) return 'MF';
+    const upper = pos.toString().toUpperCase().trim();
+    if (['GK', 'GOALKEEPER'].includes(upper)) return 'GK';
+    if (['DF', 'DEFENDER', 'CB', 'LB', 'RB', 'RWB', 'LWB', 'BACK', 'CENTRE-BACK'].some(s => upper.includes(s))) return 'DF';
+    if (['MF', 'MIDFIELDER', 'DM', 'CM', 'AM', 'LM', 'RM', 'CDM', 'CAM'].some(s => upper.includes(s))) return 'MF';
+    if (['FW', 'FORWARD', 'ST', 'STRIKER', 'WINGER', 'LW', 'RW', 'CF', 'ATTACKER'].some(s => upper.includes(s))) return 'FW';
+    return upper.length <= 2 ? upper : 'MF'; // Fallback
+  };
+
   const normalized = players.map(p => ({
     ...p,
-    position: p.position ? p.position.toUpperCase() : 'MF' 
+    position: normalizePosition(p.position)
   }));
 
   // 1. Find GK
