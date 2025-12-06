@@ -148,7 +148,19 @@ router.get('/match/:id', async (req, res) => {
         const isLiveOrFinished = matchData.status === 'IN_PLAY' || matchData.status === 'PAUSED' || matchData.status === 'FINISHED';
         // If we have no goals and no bookings, AND it's a game that should have stats, assume we need mock timeline
         if (isLiveOrFinished && (!matchData.goals || matchData.goals.length === 0) && (!matchData.bookings || matchData.bookings.length === 0)) {
-           const timeline = generateMockTimeline(matchData.homeTeam.name, matchData.awayTeam.name, matchData.score.fullTime);
+           let timeline = generateMockTimeline(matchData.homeTeam.name, matchData.awayTeam.name, matchData.score.fullTime);
+           
+           // Filter for Live Matches (Don't show future events)
+           if (matchData.status === 'IN_PLAY' || matchData.status === 'PAUSED') {
+              const currentMinute = typeof matchData.minute === 'string' 
+                ? parseInt(matchData.minute.replace('+', ''), 10) 
+                : matchData.minute;
+                
+              if (!isNaN(currentMinute)) {
+                timeline = timeline.filter((e: any) => e.minute <= currentMinute);
+              }
+           }
+
            return {
              goals: timeline.filter((e: any) => e.type === 'GOAL'),
              bookings: timeline.filter((e: any) => e.type === 'CARD'),
