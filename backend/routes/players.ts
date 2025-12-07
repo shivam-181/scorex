@@ -1,6 +1,7 @@
 import express from 'express';
 import { GoogleGenerativeAI } from '@google/generative-ai';
 import dotenv from 'dotenv';
+import { getPlayerImage } from '../utils/realLineups.js';
 
 dotenv.config();
 
@@ -46,7 +47,6 @@ router.get('/:name', async (req, res) => {
     const playerData = JSON.parse(responseText);
     
     // Inject Real Image if available
-    const { getPlayerImage } = await import('../utils/realLineups.js');
     const image = getPlayerImage(decodedName);
     if (image) {
       playerData.image = image;
