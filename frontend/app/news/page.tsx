@@ -39,7 +39,7 @@ export default function NewsPage() {
       {/* Background Watermark */}
       <div className="absolute inset-0 opacity-35 pointer-events-none">
         <img 
-          src="https://images.pexels.com/photos/1657332/pexels-photo-1657332.jpeg?_gl=1*i3j6ra*_ga*NDYyOTUzNDg2LjE3NjMyMDA4NTc.*_ga_8JE65Q40S6*czE3NjQ0OTIyMzQkbzQkZzEkdDE3NjQ0OTI0NTQkajU5JGwwJGgw" 
+          src="https://images.pexels.com/photos/17656445/pexels-photo-17656445.jpeg" 
           alt="Background" 
           className="w-full h-full object-cover"
         />
@@ -50,8 +50,9 @@ export default function NewsPage() {
           animate={{ opacity: 1, y: 0 }}
           className="text-center mb-12"
         >
-          <h1 className="text-4xl md:text-6xl font-bold text-white mb-4">Latest <span className="text-crimson">News</span></h1>
-          <p className="text-gray-400 text-lg">Breaking stories, transfer updates, and tactical analysis.</p>
+<h1 className="text-6xl md:text-8xl font-black mb-6 tracking-tighter uppercase">
+              Latest <span className="text-transparent bg-clip-text bg-gradient-to-r from-crimson to-red-600">News</span>
+            </h1>          <p className="text-gray-400 text-lg">Breaking stories, transfer updates, and tactical analysis.</p>
         </motion.div>
 
         {loading ? (
@@ -76,7 +77,7 @@ export default function NewsPage() {
                   <img 
                     src={article.urlToImage || '/placeholder.jpg'} 
                     alt={article.title} 
-                    className="w-full h-full object-cover transform transition-transform duration-500 group-hover:scale-125 group-hover:brightness-110"
+                    className="w-full h-full object-cover transform transition-transform duration-700 group-hover:scale-110 group-hover:brightness-110"
                   />
                   <span className="absolute bottom-3 left-3 z-20 text-[10px] font-bold bg-crimson text-white px-2 py-1 rounded">
                     {article.source.name}

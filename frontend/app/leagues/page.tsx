@@ -17,7 +17,7 @@ export default function LeaguesPage() {
       {/* Background Watermark - REPLACE src WITH YOUR IMAGE LINK */}
       <div className="absolute inset-0 opacity-40 pointer-events-none">
         <img 
-          src="http://images.unsplash.com/photo-1490696809909-71f5f1fd23e5?q=80&w=580&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" 
+          src="https://images.unsplash.com/photo-1628936274131-de999fec20dd?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NzI0fHxmb290YmFsbHxlbnwwfHwwfHx8MA%3D%3D" 
           alt="Background" 
           className="w-full h-full object-cover"
         />
@@ -28,8 +28,9 @@ export default function LeaguesPage() {
           animate={{ opacity: 1, y: 0 }}
           className="text-center mb-12"
         >
-          <h1 className="text-4xl md:text-6xl font-bold text-white mb-4">Competitions</h1>
-          <p className="text-gray-400 text-lg">Follow the world's biggest leagues.</p>
+<h1 className="text-6xl md:text-8xl font-black mb-6 tracking-tighter uppercase">
+              Latest <span className="text-transparent bg-clip-text bg-gradient-to-r from-crimson to-red-600">News</span>
+            </h1>            <p className="text-gray-400 text-lg">Follow the world's biggest leagues.</p>
         </motion.div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
