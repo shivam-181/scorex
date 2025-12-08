@@ -1,9 +1,9 @@
 import express from 'express';
 import axios from 'axios';
-import { GoogleGenerativeAI } from '@google/generative-ai';
 import dotenv from 'dotenv';
 import { getPlayerImage } from '../utils/realLineups.js';
 import NodeCache from 'node-cache';
+import { generateAIContent } from '../utils/aiModel.js';
 
 dotenv.config();
 
@@ -11,11 +11,6 @@ const router = express.Router();
 
 // Initialize Cache (StdTTL: 24 hours = 86400 seconds)
 const playerCache = new NodeCache({ stdTTL: 86400 });
-
-// Initialize Gemini
-const genAI = new GoogleGenerativeAI(process.env.GOOGLE_API_KEY || '');
-// Switch to 1.5-flash for better stability (15 RPM limit vs 2 RPM for Pro)
-const model = genAI.getGenerativeModel({ model: "gemini-flash-latest" });
 
 // Get Player Scout Report (AI Generated)
 router.get('/:name', async (req, res) => {
@@ -59,8 +54,7 @@ router.get('/:name', async (req, res) => {
     `;
 
     console.log("Generating report for:", decodedName);
-    const result = await model.generateContent(systemPrompt);
-    const text = result.response.text();
+    const text = await generateAIContent(systemPrompt);
     const jsonStart = text.indexOf('{');
     const jsonEnd = text.lastIndexOf('}');
     

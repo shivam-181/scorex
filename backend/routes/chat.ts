@@ -1,27 +1,11 @@
 import express from 'express';
-import { GoogleGenerativeAI } from '@google/generative-ai';
-import dotenv from 'dotenv';
-
-dotenv.config();
+import { generateAIContent } from '../utils/aiModel.js';
 
 const router = express.Router();
-
-// Initialize Gemini lazily to avoid startup crashes
-const getModel = () => {
-  const apiKey = process.env.GOOGLE_API_KEY;
-  if (!apiKey) return null;
-  const genAI = new GoogleGenerativeAI(apiKey);
-  return genAI.getGenerativeModel({ model: "gemini-flash-latest" });
-};
 
 router.post('/', async (req, res) => {
   try {
     const { message } = req.body;
-
-    const model = getModel();
-    if (!model) {
-      return res.json({ response: "I'm currently offline (API Key missing). Please check back later!" });
-    }
 
     // System Prompt to give the bot personality and context
     const systemPrompt = `
@@ -49,8 +33,7 @@ router.post('/', async (req, res) => {
       - User Query: ${message}
     `;
 
-    const result = await model.generateContent(systemPrompt);
-    const response = result.response.text();
+    const response = await generateAIContent(systemPrompt);
 
     res.json({ response });
   } catch (error: any) {

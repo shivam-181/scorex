@@ -129,16 +129,12 @@ router.get('/match/:id', async (req, res) => {
 
           // 2. Priority: AI Generation
           try {
-             if (!process.env.GOOGLE_API_KEY) throw new Error("No API Key");
+             // console.log(`Generating AI lineup for ${teamName}...`);
+             const { generateAIContent } = await import('../utils/aiModel.js'); // Dynamic import to keep startup fast/safe
              
-             console.log(`Generating AI lineup for ${teamName}...`);
-             const { GoogleGenerativeAI } = await import('@google/generative-ai');
-             const genAI = new GoogleGenerativeAI(process.env.GOOGLE_API_KEY);
-             const model = genAI.getGenerativeModel({ model: "gemini-flash-latest" });
-             
-             const prompt = `Generate a realistic starting XI for ${teamName}. Return JSON ONLY: [{ "name": "Player Name", "number": 1, "position": "GK" }, ...]`;
-             const result = await model.generateContent(prompt);
-             const text = result.response.text().replace(/```json/g, '').replace(/```/g, '').trim();
+             const prompt = `Generate a realistic starting XI for ${teamName} (Football/Soccer). Return JSON ONLY: [{ "name": "Player Name", "number": 1, "position": "GK" }, ...]`;
+             const textRaw = await generateAIContent(prompt);
+             const text = textRaw.replace(/```json/g, '').replace(/```/g, '').trim();
              return JSON.parse(text);
           } catch (e) {
             console.error(`AI Error for ${teamName}:`, e);
