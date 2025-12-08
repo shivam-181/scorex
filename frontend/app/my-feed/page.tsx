@@ -72,7 +72,7 @@ export default function MyFeed() {
       {/* Background Watermark */}
       <div className="absolute inset-0 opacity-35 pointer-events-none">
         <img
-          src="https://images.pexels.com/photos/1884574/pexels-photo-1884574.jpeg"
+          src="https://images.unsplash.com/photo-1628936274131-de999fec20dd?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NzI0fHxmb290YmFsbHxlbnwwfHwwfHx8MA%3D%3D" 
           alt="Background"
           className="w-full h-full object-cover"
         />
@@ -80,8 +80,8 @@ export default function MyFeed() {
       <div className="relative z-10">
         <div className="container mx-auto">
           <div className="flex items-center justify-between mb-8">
-            <h1 className="text-4xl font-bold text-white tracking-tighter">
-              MY <span className="text-crimson">FEED</span>
+<h1 className="text-6xl md:text-8xl font-black mb-6 tracking-tighter uppercase">
+              MY <span className="text-transparent bg-clip-text bg-gradient-to-r from-crimson to-red-600">FEED</span>
             </h1>
             <button
               onClick={() => router.push("/#live-scores")}

@@ -291,7 +291,7 @@ export default function Home() {
                 {/* Dropdown Menu */}
                 {isSortOpen && (
                   <div className="absolute right-0 top-full mt-2 w-40 z-50 animate-in fade-in zoom-in-95 duration-200">
-                    <div className="bg-[#1a1a1a]/80 backdrop-blur-md border border-white/10 rounded-lg shadow-2xl overflow-hidden ring-1 ring-white/5">
+                    <div className="bg-black/30 backdrop-blur-xl border border-white/10 rounded-lg shadow-2xl overflow-hidden ring-1 ring-white/5">
                       <div className="px-4 py-2 text-xs font-bold text-gray-500 uppercase tracking-wider border-b border-white/5 bg-white/5">
                         Sort By
                       </div>

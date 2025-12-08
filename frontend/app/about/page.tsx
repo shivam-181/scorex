@@ -152,7 +152,7 @@ export default function AboutPage() {
       </section>
 
       {/* Our Mission */}
-      <section className="py-24 bg-white/5 border-y border-white/5">
+      <section id="vision" className="py-24 bg-white/5 border-y border-white/5">
         <div className="container mx-auto px-4 grid md:grid-cols-2 gap-16 items-center">
           <motion.div {...fadeInUp}>
             <h4 className="text-crimson font-bold tracking-widest uppercase mb-4 text-sm">Our Mission</h4>
@@ -312,7 +312,7 @@ export default function AboutPage() {
        </section>
 
       {/* Careers Teaser */}
-      <section className="py-32 relative text-white text-center overflow-hidden">
+      <section id="careers" className="py-32 relative text-white text-center overflow-hidden">
           <div className="absolute inset-0">
              <img 
                 src="/tech_team.png" 

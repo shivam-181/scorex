@@ -95,7 +95,7 @@ export default function ContactPage() {
                   <div>
                     <h4 className="text-lg font-bold text-white mb-1">Visit Us</h4>
                     <p className="text-gray-400 font-light">123 Football Lane</p>
-                    <p className="text-gray-400 font-light">London, UK SW1A 1AA</p>
+                    <p className="text-gray-400 font-light">New Delhi, India</p>
                   </div>
                 </div>
 
@@ -105,8 +105,8 @@ export default function ContactPage() {
                   </div>
                   <div>
                     <h4 className="text-lg font-bold text-white mb-1">Call Us</h4>
-                    <p className="text-gray-400 font-light">+44 (0) 20 1234 5678</p>
-                    <p className="text-gray-400 font-light">Mon-Fri, 9am-6pm GMT</p>
+                    <p className="text-gray-400 font-light">+91 1234 5678</p>
+                    <p className="text-gray-400 font-light">Mon-Fri, 9am-6pm IST</p>
                   </div>
                 </div>
               </div>

@@ -25,20 +25,20 @@ export default function SitemapPage() {
       links: [
         { name: 'About Us', path: '/about' },
         { name: 'Our Vision', path: '/about#vision' }, // Conceptual anchor
-        { name: 'Careers', path: '#' }, // Placeholder for future
+        { name: 'Careers', path: '/about#careers' }, // Placeholder for future
         { name: 'Contact Support', path: '/contact' }
       ]
     },
     {
       title: "Legal & Privacy",
-      color: "text-blue-400",
-      bg: "bg-blue-500/5",
+      color: "text-red-400",
+      bg: "bg-red-500/5",
       icon: <Shield size={20} />,
       links: [
         { name: 'Privacy Policy', path: '/privacy' },
         { name: 'Terms of Service', path: '/terms' },
         { name: 'Cookie Policy', path: '/cookies' },
-        { name: 'GDPR Compliance', path: '/privacy#gdpr' }
+        { name: 'GDPR Compliance', path: '/gdpr' }
       ]
     }
   ];

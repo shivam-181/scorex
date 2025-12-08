@@ -13,7 +13,7 @@ export default function Hero() {
       <div className="absolute inset-0 z-0 bg-black">
         <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-black/20 to-dark z-10" />
         <img 
-          src="https://media.gettyimages.com/id/157156611/photo/fbl-brazil-fifa-ballon-dor-award-contenders.jpg?s=2048x2048&w=gi&k=20&c=gM8LmMaHxRxx6_DcuEcCaNmFC5aQPZTueIbQV3Gr3LU=" 
+          src="/Dt.jpeg" 
           alt="Stadium Background" 
           className="w-full h-full object-cover object-[0%_35%] scale-115 translate-x-10"
         />
