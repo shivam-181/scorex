@@ -1,4 +1,5 @@
 import express from 'express';
+import axios from 'axios';
 import { GoogleGenerativeAI } from '@google/generative-ai';
 import dotenv from 'dotenv';
 import { getPlayerImage } from '../utils/realLineups.js';
@@ -95,8 +96,35 @@ router.get('/:name', async (req, res) => {
     console.error("Player API Error Details:", error);
     console.log("API Key Present:", !!process.env.GOOGLE_API_KEY);
     
-    // Fallback Mock Data if AI fails
-    console.log("Serving fallback data for:", decodedName);
+    // === WIKIPEDIA FALLBACK ===
+    try {
+        console.log("Attempting Wikipedia Fallback for:", decodedName);
+        const wikiUrl = `https://en.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(decodedName.replace(/ /g, '_'))}`;
+        const wikiRes = await axios.get(wikiUrl, {
+            headers: { 'User-Agent': 'ScoreX/1.0 (Education Project; shivam@scorex.dev)' }
+        });
+        
+        if (wikiRes.data && wikiRes.data.extract) {
+            const wikiData = {
+                name: wikiRes.data.title,
+                position: "Professional Footballer", // Wiki doesn't give structured position easily
+                nationality: "Unknown",
+                bio: wikiRes.data.extract, // The summary paragraph
+                strengths: ["Experience", "Career Stats"], // Generic
+                weaknesses: ["N/A"],
+                similar_players: ["N/A"],
+                image: wikiRes.data.thumbnail?.source || getPlayerImage(decodedName)
+            };
+            
+            playerCache.set(decodedName, wikiData); // Cache this too
+            return res.json(wikiData);
+        }
+    } catch (wikiError) {
+        console.error("Wikipedia Fallback Failed:", wikiError.message);
+    }
+    
+    // === FINAL FALLBACK (If both AI and Wiki fail) ===
+    console.log("Serving generic fallback data for:", decodedName);
     const fallbackData: any = {
       name: decodedName || "Unknown Player",
       position: "Forward (Est.)",
