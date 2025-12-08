@@ -2,11 +2,11 @@
 import { Resend } from 'resend';
 import { NextRequest, NextResponse } from 'next/server';
 
-const apiKey = process.env.RESEND_API_KEY;
+const apiKey = process.env.RESEND_API_KEY || process.env.RENDER_API_KEY;
 
 export async function POST(req: NextRequest) {
   if (!apiKey) {
-    console.error('RESEND_API_KEY is not defined');
+    console.error('API Key (RESEND or RENDER) is not defined');
     return NextResponse.json({ error: 'Server configuration error: Missing API Key' }, { status: 500 });
   }
 

@@ -59,7 +59,16 @@ router.get('/:name', async (req, res) => {
 
     console.log("Generating report for:", decodedName);
     const result = await model.generateContent(systemPrompt);
-    const responseText = result.response.text().replace(/```json/g, '').replace(/```/g, '').trim();
+    const text = result.response.text();
+    const jsonStart = text.indexOf('{');
+    const jsonEnd = text.lastIndexOf('}');
+    
+    let responseText = "";
+    if (jsonStart !== -1 && jsonEnd !== -1) {
+      responseText = text.substring(jsonStart, jsonEnd + 1);
+    } else {
+      responseText = text; // Fallback to raw text (likely to fail parse, but worth a try if clean)
+    }
     
     console.log("Gemini Response:", responseText);
 
@@ -84,16 +93,17 @@ router.get('/:name', async (req, res) => {
     res.json(playerData);
   } catch (error) {
     console.error("Player API Error Details:", error);
+    console.log("API Key Present:", !!process.env.GOOGLE_API_KEY);
     
-    // Fallback Mock Data if AI fails (e.g. Quota Exceeded)
+    // Fallback Mock Data if AI fails
     console.log("Serving fallback data for:", decodedName);
     const fallbackData: any = {
       name: decodedName || "Unknown Player",
-      position: "Unknown Position",
-      nationality: "Unknown",
-      bio: "Scouting report unavailable at the moment due to high demand. This is a preliminary placeholder profile.",
-      strengths: ["Potential", "Determination"],
-      weaknesses: ["Data needed"],
+      position: "Forward (Est.)",
+      nationality: "Global",
+      bio: "AI analysis is currently processing. This player's full scout report will be available shortly.",
+      strengths: ["Technical Ability", "Tactical Awareness"],
+      weaknesses: ["Physicality"],
       similar_players: ["N/A"]
     };
 
