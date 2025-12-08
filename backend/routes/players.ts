@@ -119,7 +119,7 @@ router.get('/:name', async (req, res) => {
             playerCache.set(decodedName, wikiData); // Cache this too
             return res.json(wikiData);
         }
-    } catch (wikiError) {
+    } catch (wikiError: any) {
         console.error("Wikipedia Fallback Failed:", wikiError.message);
     }
     
