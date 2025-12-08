@@ -15,7 +15,7 @@ const playerCache = new NodeCache({ stdTTL: 86400 });
 // Initialize Gemini
 const genAI = new GoogleGenerativeAI(process.env.GOOGLE_API_KEY || '');
 // Switch to 1.5-flash for better stability (15 RPM limit vs 2 RPM for Pro)
-const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
+const model = genAI.getGenerativeModel({ model: "gemini-flash-latest" });
 
 // Get Player Scout Report (AI Generated)
 router.get('/:name', async (req, res) => {

@@ -134,7 +134,7 @@ router.get('/match/:id', async (req, res) => {
              console.log(`Generating AI lineup for ${teamName}...`);
              const { GoogleGenerativeAI } = await import('@google/generative-ai');
              const genAI = new GoogleGenerativeAI(process.env.GOOGLE_API_KEY);
-             const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
+             const model = genAI.getGenerativeModel({ model: "gemini-flash-latest" });
              
              const prompt = `Generate a realistic starting XI for ${teamName}. Return JSON ONLY: [{ "name": "Player Name", "number": 1, "position": "GK" }, ...]`;
              const result = await model.generateContent(prompt);

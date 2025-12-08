@@ -11,7 +11,7 @@ const getModel = () => {
   const apiKey = process.env.GOOGLE_API_KEY;
   if (!apiKey) return null;
   const genAI = new GoogleGenerativeAI(apiKey);
-  return genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
+  return genAI.getGenerativeModel({ model: "gemini-flash-latest" });
 };
 
 router.post('/', async (req, res) => {
