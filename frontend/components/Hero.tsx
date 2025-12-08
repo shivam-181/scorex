@@ -22,7 +22,7 @@ export default function Hero() {
       <motion.h1 
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="text-7xl font-bold tracking-tighter z-10"
+        className="text-5xl md:text-7xl font-bold tracking-tighter z-10"
       >
         <BrandName />
       </motion.h1>

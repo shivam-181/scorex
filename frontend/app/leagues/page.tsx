@@ -28,7 +28,7 @@ export default function LeaguesPage() {
           animate={{ opacity: 1, y: 0 }}
           className="text-center mb-12"
         >
-<h1 className="text-6xl md:text-8xl font-black mb-6 tracking-tighter uppercase">
+<h1 className="text-5xl md:text-8xl font-black mb-6 tracking-tighter uppercase">
               Global <span className="text-transparent bg-clip-text bg-gradient-to-r from-crimson to-red-600">Leagues</span>
             </h1>            <p className="text-gray-400 text-lg">Follow the world's biggest leagues.</p>
         </motion.div>

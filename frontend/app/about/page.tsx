@@ -86,7 +86,7 @@ export default function AboutPage() {
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-crimson/5 rounded-full blur-[120px] -z-10" />
         
         <motion.h1 
-           className="relative z-10 text-8xl md:text-[10rem] font-black tracking-tighter mb-8 uppercase drop-shadow-2xl leading-[0.8] mt-12 text-left max-w-[90%]"
+           className="relative z-10 text-6xl md:text-[10rem] font-black tracking-tighter mb-8 uppercase drop-shadow-2xl leading-[0.8] mt-12 text-left max-w-[90%]"
            initial="hidden"
            animate="visible"
            variants={{

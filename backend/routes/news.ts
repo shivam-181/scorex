@@ -21,7 +21,7 @@ router.get('/', async (req, res) => {
 
       const response = await axios.get('https://newsapi.org/v2/everything', {
         params: {
-          q: '"premier league" OR "la liga" OR "serie a" OR "bundesliga" OR "champions league" OR "soccer"',
+          q: '(football OR soccer OR "premier league" OR "champions league" OR "la liga" OR "bundesliga" OR "serie a") AND NOT (cricket OR ipl OR t20 OR "indian premier league")',
           language: 'en',
           sortBy: 'publishedAt',
           apiKey: process.env.NEWS_API_KEY,

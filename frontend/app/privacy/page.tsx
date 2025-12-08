@@ -12,7 +12,7 @@ export default function PrivacyPage() {
           transition={{ duration: 0.5 }}
         >
           <header className="mb-20 border-b border-white/10 pb-12">
-            <h1 className="text-6xl md:text-8xl font-black mb-6 tracking-tighter uppercase">
+            <h1 className="text-5xl md:text-8xl font-black mb-6 tracking-tighter uppercase">
               Privacy <span className="text-transparent bg-clip-text bg-gradient-to-r from-crimson to-red-600">Policy</span>
             </h1>
             <p className="text-xl text-gray-400">

@@ -50,7 +50,10 @@ router.get('/:name', async (req, res) => {
         "similar_players": ["Player A", "Player B"]
       }
 
-      If the player is unknown or generic, invent a plausible profile but mention it's a "Generated Profile".
+      If the player is famous, be accurate. 
+      If the player is lesser known, infer from their position/nationality but keep the bio generic and plausible based on their role. 
+      Do NOT invent specific false career facts. 
+      Ensure 'position' and 'nationality' are accurate.
       Do not include markdown formatting like \`\`\`json. Just raw JSON.
     `;
 

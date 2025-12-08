@@ -1,213 +1,254 @@
 'use client';
 import React from 'react';
-
 import Link from 'next/link';
 
-// Helper to group players based on their defined position
-const getFormation = (players: any[]) => {
-  if (!Array.isArray(players) || players.length === 0) return { GK: [], DF: [], MF: [], FW: [] };
-  
-  // Filter by position
-  const gk = players.filter(p => p.position === 'GK');
-  const df = players.filter(p => p.position === 'DF');
-  const mf = players.filter(p => p.position === 'MF');
-  const fw = players.filter(p => p.position === 'FW');
+// === COORDINATE SYSTEM (Standard % from top-left) ===
+// 'home' represents the team playing 'up' the pitch (bottom half) or just standard orientation.
+// We will flip these for the away team.
 
-  return { GK: gk, DF: df, MF: mf, FW: fw };
-};
-
-// Helper: Ensure we only show 11 players on pitch, move rest to substitutes
-// Also handles missing positions by defaulting to MF
-const optimizeLineup = (players: any[]) => {
-  if (!Array.isArray(players)) return { xi: [], overflow: [] };
-
-  // Normalize positions with robust mapping
-  const normalizePosition = (pos: string) => {
-    if (!pos) return 'MF';
-    const upper = pos.toString().toUpperCase().trim();
-    if (['GK', 'GOALKEEPER'].includes(upper)) return 'GK';
-    if (['DF', 'DEFENDER', 'CB', 'LB', 'RB', 'RWB', 'LWB', 'BACK', 'CENTRE-BACK'].some(s => upper.includes(s))) return 'DF';
-    if (['MF', 'MIDFIELDER', 'DM', 'CM', 'AM', 'LM', 'RM', 'CDM', 'CAM'].some(s => upper.includes(s))) return 'MF';
-    if (['FW', 'FORWARD', 'ST', 'STRIKER', 'WINGER', 'LW', 'RW', 'CF', 'ATTACKER'].some(s => upper.includes(s))) return 'FW';
-    return upper.length <= 2 ? upper : 'MF'; // Fallback
-  };
-
-  const normalized = players.map(p => ({
-    ...p,
-    position: normalizePosition(p.position)
-  }));
-
-  // 1. Find GK
-  // We prefer the first player marked as GK.
-  const gkIndex = normalized.findIndex(p => p.position === 'GK');
-  
-  let xi: any[] = [];
-  let overflow: any[] = [];
-
-  if (gkIndex !== -1) {
-    xi.push(normalized[gkIndex]);
-    // Remove from candidate pool
-    const others = [...normalized];
-    others.splice(gkIndex, 1);
-    
-    // 2. Take next 10 players for outfield
-    xi.push(...others.slice(0, 10));
-    overflow.push(...others.slice(10));
-  } else {
-    // If no GK, just take first 11 players?
-    // Or take first 11, force first one to be GK visually? 
-    // Let's just take first 11.
-    xi = normalized.slice(0, 11);
-    overflow = normalized.slice(11);
+const FORMATIONS: any = {
+  '4-4-2': {
+    GK: { top: 90, left: 50 },
+    LB: { top: 70, left: 15 }, LCB: { top: 75, left: 38 }, RCB: { top: 75, left: 62 }, RB: { top: 70, left: 85 },
+    LM: { top: 45, left: 15 }, LCM: { top: 50, left: 38 }, RCM: { top: 50, left: 62 }, RM: { top: 45, left: 85 },
+    LST: { top: 20, left: 35 }, RST: { top: 20, left: 65 }
+  },
+  '4-3-3': {
+    GK: { top: 92, left: 50 },
+    LB: { top: 75, left: 12 }, LCB: { top: 78, left: 36 }, RCB: { top: 78, left: 64 }, RB: { top: 75, left: 88 },
+    LCM: { top: 52, left: 30 }, CM: { top: 55, left: 50 }, RCM: { top: 52, left: 70 },
+    LW: { top: 25, left: 15 }, ST: { top: 20, left: 50 }, RW: { top: 25, left: 85 }
+  },
+  '3-5-2': {
+    GK: { top: 92, left: 50 },
+    LCB: { top: 75, left: 25 }, CB: { top: 80, left: 50 }, RCB: { top: 75, left: 75 },
+    LWB: { top: 50, left: 10 }, LCM: { top: 55, left: 35 }, CM: { top: 60, left: 50 }, RCM: { top: 55, left: 65 }, RWB: { top: 50, left: 90 },
+    LST: { top: 20, left: 35 }, RST: { top: 20, left: 65 }
+  },
+  'fallback': {
+    // Generic spots if formation is unknown
+    GK: { top: 90, left: 50 },
+    DF: [{top: 75, left: 20}, {top: 75, left: 40}, {top: 75, left: 60}, {top: 75, left: 80}],
+    MF: [{top: 50, left: 20}, {top: 50, left: 40}, {top: 50, left: 60}, {top: 50, left: 80}],
+    FW: [{top: 25, left: 30}, {top: 25, left: 70}]
   }
-
-  return { xi, overflow };
 };
 
-const PlayerDot = ({ player, color }: { player: any, color: string }) => {
-  if (!player) return null;
+// Helper: Normalize position string to generic role
+const normalizePosition = (pos: string) => {
+  if (!pos) return 'MF';
+  const upper = pos.toString().toUpperCase().trim();
+  if (['GK', 'GOALKEEPER'].includes(upper)) return 'GK';
+  if (upper.includes('BACK') || upper.includes('DF') || upper.includes('CB')) return 'DF';
+  if (upper.includes('MID') || upper.includes('MF') || upper.includes('CM')) return 'MF';
+  if (upper.includes('FOR') || upper.includes('FW') || upper.includes('ST') || upper.includes('WING')) return 'FW';
+  return 'MF'; // Default
+};
+
+// Helper: Assign coordinate based on role index
+const getCoordinates = (role: string, index: number, totalInRole: number) => {
+  // Simple dynamic spread for generic roles
+  const rowMap: any = { GK: 90, DF: 75, MF: 50, FW: 20 };
+  const top = rowMap[role] || 50;
+  
+  // Calculate horizontal spread
+  // e.g. 2 players: 33%, 66% | 3 players: 25%, 50%, 75% | 4 players: 20%, 40%, 60%, 80%
+  const segment = 100 / (totalInRole + 1);
+  const left = segment * (index + 1);
+  
+  return { top, left };
+};
+
+const PlayerDot = ({ player, color, style, isAway }: { player: any, color: string, style?: any, isAway?: boolean }) => {
   const [imgError, setImgError] = React.useState(false);
 
   return (
-    <Link href={`/player/${encodeURIComponent(player.name)}`} className="flex flex-col items-center justify-center mx-2 md:mx-4 group cursor-pointer">
-      <div 
-        className={`w-8 h-8 md:w-10 md:h-10 rounded-full border-2 border-white flex items-center justify-center text-xs font-bold text-white shadow-lg group-hover:scale-110 transition-transform overflow-hidden relative`}
-        style={{ backgroundColor: color }}
-      >
-        {player.image && !imgError ? (
-          <img 
-            src={player.image} 
-            alt={player.name} 
-            className="w-full h-full object-cover" 
-            onError={() => setImgError(true)}
-          />
-        ) : (
-          player.number || '-'
-        )}
+    <Link 
+      href={`/player/${encodeURIComponent(player.name)}`} 
+      className="absolute flex flex-col items-center justify-center -translate-x-1/2 -translate-y-1/2 hover:z-50 transition-all duration-300 w-16"
+      style={style}
+    >
+      <div className="relative group cursor-pointer">
+        <div 
+          className={`w-8 h-8 md:w-10 md:h-10 lg:w-12 lg:h-12 rounded-full border-2 border-white flex items-center justify-center text-[10px] md:text-sm font-bold text-white shadow-lg group-hover:scale-110 transition-transform overflow-hidden relative bg-gray-800`}
+          style={{ backgroundColor: color }}
+        >
+          {player.image && !imgError ? (
+            <img 
+              src={player.image} 
+              alt={player.name} 
+              className="w-full h-full object-cover transform transition-transform group-hover:scale-110" 
+              onError={() => setImgError(true)}
+            />
+          ) : (
+            <span className="opacity-90">{player.number || '•'}</span>
+          )}
+        </div>
+        
+        {/* Name Tag */}
+        <div className={`absolute left-1/2 -translate-x-1/2 ${isAway ? '-top-6' : 'bottom-[-20px]'} opacity-0 group-hover:opacity-100 md:opacity-100 transition-opacity`}>
+          <span className="text-[9px] md:text-[10px] text-white font-bold bg-black/60 px-2 py-0.5 rounded-full whitespace-nowrap backdrop-blur-sm border border-white/10 uppercase tracking-widest shadow-md truncate block max-w-[80px]">
+            {player.name ? player.name.split(' ').pop() : 'Player'}
+          </span>
+        </div>
       </div>
-      <span className="text-[10px] text-white bg-black/50 px-1 rounded mt-1 truncate max-w-[60px] group-hover:bg-crimson transition-colors">
-        {player.name ? player.name.split(' ').pop() : ''} {/* Show Last Name only */}
-      </span>
     </Link>
   );
 };
 
 export default function LineupView({ lineups }: { lineups: any }) {
   if (!lineups || !lineups.home || !lineups.away) {
-    return <div className="text-white text-center py-10">Lineup data unavailable</div>;
+    return <div className="text-white text-center py-10 font-mono text-sm opacity-50">Data unavailable</div>;
   }
 
-  // Handle both new { starting, bench } structure and potential older/API structures
-  const getPlayers = (teamData: any) => {
-    if (Array.isArray(teamData)) return teamData; // Old/Flat structure
-    if (teamData.starting && Array.isArray(teamData.starting)) return teamData.starting; // New structure
-    if (teamData.startingXI && Array.isArray(teamData.startingXI)) return teamData.startingXI; // API structure fallback
-    return [];
+  const getStartingXI = (team: any) => {
+    let list = [];
+    if (Array.isArray(team)) list = team;
+    else if (team.starting && Array.isArray(team.starting)) list = team.starting;
+    else if (team.startingXI && Array.isArray(team.startingXI)) list = team.startingXI;
+    return list.slice(0, 11);
   };
 
-  const getBench = (teamData: any) => {
-     if (teamData.bench && Array.isArray(teamData.bench)) return teamData.bench;
-     if (teamData.substitutes && Array.isArray(teamData.substitutes)) return teamData.substitutes;
+  const getBench = (team: any) => {
+     if (team.bench && Array.isArray(team.bench)) return team.bench;
+     if (team.substitutes && Array.isArray(team.substitutes)) return team.substitutes;
      return [];
   };
 
-  // Get raw starting lineups
-  const homeStartingRaw = getPlayers(lineups.home);
-  const awayStartingRaw = getPlayers(lineups.away);
-  
-  // Optimize: Limit to 11, get overflow
-  const { xi: homeXI, overflow: homeOverflow } = optimizeLineup(homeStartingRaw);
-  const { xi: awayXI, overflow: awayOverflow } = optimizeLineup(awayStartingRaw);
+  const homeXI = getStartingXI(lineups.home);
+  const awayXI = getStartingXI(lineups.away);
+  const homeBench = getBench(lineups.home);
+  const awayBench = getBench(lineups.away);
 
-  console.log('DEBUG LINEUP FIX:', {
-    homeRaw: homeStartingRaw?.length,
-    homeXI: homeXI?.length,
-    homeOverflow: homeOverflow?.length,
-    awayRaw: awayStartingRaw?.length,
-    awayXI: awayXI?.length,
-    awayOverflow: awayOverflow?.length
-  });
-  
-  // Combine official bench with our overflow
-  const homeBench = [...getBench(lineups.home), ...homeOverflow];
-  const awayBench = [...getBench(lineups.away), ...awayOverflow];
+  // Group by Role for simpler mapping fallback
+  const processTeam = (players: any[]) => {
+    const grouped: any = { GK: [], DF: [], MF: [], FW: [] };
+    players.forEach(p => {
+        const role = normalizePosition(p.position);
+        grouped[role].push(p);
+    });
+    return grouped;
+  };
 
-  const homeFormation = getFormation(homeXI);
-  const awayFormation = getFormation(awayXI);
+  const homeGrouped = processTeam(homeXI);
+  const awayGrouped = processTeam(awayXI);
+
+  // Render Logic
+  const renderTeam = (grouped: any, isAway: boolean, color: string) => {
+    // Determine formations? For now, we use dynamic row spacing which is robust.
+    // 1 GK + X DF + Y MF + Z FW
+    
+    return (
+      <>
+        {/* GK */}
+        {grouped.GK.map((p: any, i: number) => (
+           <PlayerDot 
+             key={`gk-${i}`} 
+             player={p} 
+             color={color} 
+             isAway={isAway}
+             style={{ 
+               top: isAway ? '10%' : '90%', 
+               left: '50%' 
+             }} 
+            />
+        ))}
+
+        {/* DF */}
+        {grouped.DF.map((p: any, i: number) => {
+           const coords = getCoordinates('DF', i, grouped.DF.length);
+           return <PlayerDot key={`df-${i}`} player={p} color={color} isAway={isAway} style={{ top: isAway ? `${100-coords.top}%` : `${coords.top}%`, left: `${coords.left}%` }} />;
+        })}
+
+        {/* MF */}
+        {grouped.MF.map((p: any, i: number) => {
+           const coords = getCoordinates('MF', i, grouped.MF.length);
+           return <PlayerDot key={`mf-${i}`} player={p} color={color} isAway={isAway} style={{ top: isAway ? `${100-coords.top}%` : `${coords.top}%`, left: `${coords.left}%` }} />;
+        })}
+
+        {/* FW */}
+        {grouped.FW.map((p: any, i: number) => {
+           const coords = getCoordinates('FW', i, grouped.FW.length);
+           return <PlayerDot key={`fw-${i}`} player={p} color={color} isAway={isAway} style={{ top: isAway ? `${100-coords.top}%` : `${coords.top}%`, left: `${coords.left}%` }} />;
+        })}
+      </>
+    );
+  };
 
   return (
-    <div className="w-full flex flex-col items-center py-4">
-      {/* THE PITCH CONTAINER */}
-      <div className="relative w-full max-w-[500px] h-[750px] bg-green-800 rounded-xl border-4 border-white/10 overflow-hidden shadow-2xl">
+    <div className="w-full flex flex-col items-center py-8">
+      
+      {/* --- THE PITCH --- */}
+      {/* Aspect Ratio Container for Responsiveness */}
+      <div className="w-full max-w-[500px] aspect-[2/3] relative bg-[#1a4a1c] rounded-lg border-[3px] border-white/20 shadow-2xl overflow-hidden select-none">
         
-        {/* CSS Field Markings */}
-        <div className="absolute top-0 left-0 w-full h-full bg-[url('https://www.transparenttextures.com/patterns/grass.png')] opacity-30"></div>
-        
-        {/* Halfway Line */}
-        <div className="absolute top-1/2 left-0 w-full h-0.5 bg-white/30"></div>
-        
-        {/* Center Circle */}
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-24 h-24 border-2 border-white/30 rounded-full"></div>
+        {/* Pitch Textures */}
+        <div className="absolute inset-0 bg-[repeating-linear-gradient(to_bottom,transparent,transparent_5%,rgba(0,0,0,0.05)_5%,rgba(0,0,0,0.05)_10%)]"></div>
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_0%,rgba(0,0,0,0.2)_100%)]"></div>
 
-        {/* --- AWAY TEAM (Top) --- */}
-        <div className="absolute top-0 w-full h-1/2 flex flex-col justify-start pt-4 pb-2">
-          {/* GK */}
-          <div className="flex justify-center mb-2">
-            {awayFormation.GK[0] && <PlayerDot player={awayFormation.GK[0]} color="#fbceb1" />}
-          </div>
-          {/* DF */}
-          <div className="flex justify-center mb-4">{awayFormation.DF.map((p: any, i: number) => <PlayerDot key={i} player={p} color="#fbceb1" />)}</div>
-          {/* MF */}
-          <div className="flex justify-center mb-4">{awayFormation.MF.map((p: any, i: number) => <PlayerDot key={i} player={p} color="#fbceb1" />)}</div>
-          {/* FW */}
-          <div className="flex justify-center">{awayFormation.FW.map((p: any, i: number) => <PlayerDot key={i} player={p} color="#fbceb1" />)}</div>
-        </div>
+        {/* Pitch Lines */}
+        <div className="absolute top-4 bottom-4 left-4 right-4 border-2 border-white/40 opacity-70"></div> {/* Touchline */}
+        <div className="absolute top-1/2 left-4 right-4 h-0.5 bg-white/40 opacity-70"></div> {/* Halfway Line */}
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-28 h-28 border-2 border-white/40 rounded-full opacity-70"></div> {/* Center Circle */}
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-1.5 h-1.5 bg-white rounded-full"></div> {/* Center Spot */}
+        
+        {/* Penalty Areas */}
+        <div className="absolute top-4 left-1/2 -translate-x-1/2 w-48 h-24 border-2 border-t-0 border-white/40 opacity-70"></div>
+        <div className="absolute bottom-4 left-1/2 -translate-x-1/2 w-48 h-24 border-2 border-b-0 border-white/40 opacity-70"></div>
 
-        {/* --- HOME TEAM (Bottom) --- */}
-        <div className="absolute bottom-0 w-full h-1/2 flex flex-col justify-end pb-4 pt-2">
-           {/* FW */}
-           <div className="flex justify-center mb-4">{homeFormation.FW.map((p: any, i: number) => <PlayerDot key={i} player={p} color="#DC143C" />)}</div>
-           {/* MF */}
-           <div className="flex justify-center mb-4">{homeFormation.MF.map((p: any, i: number) => <PlayerDot key={i} player={p} color="#DC143C" />)}</div>
-           {/* DF */}
-           <div className="flex justify-center mb-2">{homeFormation.DF.map((p: any, i: number) => <PlayerDot key={i} player={p} color="#DC143C" />)}</div>
-           {/* GK */}
-           <div className="flex justify-center">
-             {homeFormation.GK[0] && <PlayerDot player={homeFormation.GK[0]} color="#DC143C" />}
-           </div>
-        </div>
+        {/* --- PLAYERS --- */}
+        {/* AWAY (Top) */}
+        {renderTeam(awayGrouped, true, "#fbceb1")}
+        
+        {/* HOME (Bottom) */}
+        {renderTeam(homeGrouped, false, "#DC143C")}
 
       </div>
 
-      {/* Substitutes Section */}
-      <div className="w-full max-w-4xl mt-8 grid grid-cols-2 gap-8">
+
+      {/* --- BENCH --- */}
+      <div className="w-full max-w-4xl mt-12 grid grid-cols-1 md:grid-cols-2 gap-8 px-4">
         {/* Home Subs */}
-        <div>
-          <h4 className="text-crimson font-bold mb-4 uppercase text-sm tracking-wider border-b border-white/10 pb-2">Home Substitutes</h4>
-          <div className="space-y-2">
+        <div className="bg-white/5 p-6 rounded-2xl border border-white/5 backdrop-blur-sm">
+          <h4 className="flex items-center gap-2 text-crimson font-black mb-6 uppercase text-xs tracking-[0.2em]">
+            <span className="w-2 h-2 rounded-full bg-crimson"></span> Home Subs
+          </h4>
+          <div className="space-y-3">
             {homeBench.map((p: any, i: number) => (
-              <Link href={`/player/${encodeURIComponent(p.name)}`} key={i} className="flex items-center gap-3 text-sm text-gray-300 hover:text-white hover:bg-white/5 p-1 rounded transition-colors cursor-pointer">
-                <span className="w-6 text-right text-gray-500 font-mono">{p.number || '-'}</span>
-                <span>{p.name}</span>
-                <span className="text-xs text-gray-500 ml-auto">{p.position}</span>
+              <Link href={`/player/${encodeURIComponent(p.name)}`} key={i} className="flex items-center justify-between group cursor-pointer hover:bg-white/5 p-2 rounded-lg transition-all">
+                <div className="flex items-center gap-4">
+                  <span className="text-gray-500 font-mono text-xs w-6">{p.number}</span>
+                  <div className="flex flex-col">
+                     <span className="text-sm font-bold text-gray-200 group-hover:text-white">{p.name}</span>
+                     <span className="text-[10px] text-gray-600 uppercase tracking-wider">{p.position}</span>
+                  </div>
+                </div>
+                {p.image && <img src={p.image} className="w-8 h-8 rounded-full object-cover opacity-50 group-hover:opacity-100 grayscale group-hover:grayscale-0 transition-all" alt="" />}
               </Link>
             ))}
-            {homeBench.length === 0 && <p className="text-gray-500 text-sm italic">No substitutes available</p>}
+            {homeBench.length === 0 && <p className="text-gray-600 text-xs text-center py-4">No substitutes listed.</p>}
           </div>
         </div>
 
         {/* Away Subs */}
-        <div>
-          <h4 className="text-apricot font-bold mb-4 uppercase text-sm tracking-wider border-b border-white/10 pb-2">Away Substitutes</h4>
-          <div className="space-y-2">
+        <div className="bg-white/5 p-6 rounded-2xl border border-white/5 backdrop-blur-sm">
+           <h4 className="flex items-center gap-2 text-apricot font-black mb-6 uppercase text-xs tracking-[0.2em]">
+            <span className="w-2 h-2 rounded-full bg-apricot"></span> Away Subs
+          </h4>
+          <div className="space-y-3">
             {awayBench.map((p: any, i: number) => (
-              <Link href={`/player/${encodeURIComponent(p.name)}`} key={i} className="flex items-center gap-3 text-sm text-gray-300 hover:text-white hover:bg-white/5 p-1 rounded transition-colors cursor-pointer">
-                <span className="w-6 text-right text-gray-500 font-mono">{p.number || '-'}</span>
-                <span>{p.name}</span>
-                <span className="text-xs text-gray-500 ml-auto">{p.position}</span>
+              <Link href={`/player/${encodeURIComponent(p.name)}`} key={i} className="flex items-center justify-between group cursor-pointer hover:bg-white/5 p-2 rounded-lg transition-all">
+                <div className="flex items-center gap-4">
+                  <span className="text-gray-500 font-mono text-xs w-6">{p.number}</span>
+                  <div className="flex flex-col">
+                     <span className="text-sm font-bold text-gray-200 group-hover:text-white">{p.name}</span>
+                     <span className="text-[10px] text-gray-600 uppercase tracking-wider">{p.position}</span>
+                  </div>
+                </div>
+                {p.image && <img src={p.image} className="w-8 h-8 rounded-full object-cover opacity-50 group-hover:opacity-100 grayscale group-hover:grayscale-0 transition-all" alt="" />}
               </Link>
             ))}
-            {awayBench.length === 0 && <p className="text-gray-500 text-sm italic">No substitutes available</p>}
+             {awayBench.length === 0 && <p className="text-gray-600 text-xs text-center py-4">No substitutes listed.</p>}
           </div>
         </div>
       </div>
