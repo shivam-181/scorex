@@ -105,18 +105,28 @@ router.get('/:name', async (req, res) => {
         });
         
         if (wikiRes.data && wikiRes.data.extract) {
+            const extract = wikiRes.data.extract;
+            
+            // Simple parsing for Position and Nationality
+            // Regex for "is a [Nationality] professional footballer who plays as a [Position]"
+            const natRegex = /\b(Argentine|Brazilian|French|German|Spanish|English|Italian|Portuguese|Dutch|Belgian|Croatian|Uruguayan|Colombian|Senegalese|Moroccan|Egyptian|Japanese|South Korean|American|Canadian|Mexican|Australian|Nigerian|Ghanaian|Greek|Turkish|Russian|Ukrainian|Polish|Swedish|Danish|Norwegian|Austrian|Swiss|Serbian|Chilean|Peruvian|Ecuadorian)\b/i;
+            const posRegex = /\b(forward|striker|winger|midfielder|defender|goalkeeper|full-back|centre-back|defensive midfielder|attacking midfielder)\b/i;
+
+            const detectedNat = extract.match(natRegex)?.[0];
+            const detectedPos = extract.match(posRegex)?.[0];
+
             const wikiData = {
                 name: wikiRes.data.title,
-                position: "Professional Footballer", // Wiki doesn't give structured position easily
-                nationality: "Unknown",
-                bio: wikiRes.data.extract, // The summary paragraph
-                strengths: ["Experience", "Career Stats"], // Generic
-                weaknesses: ["N/A"],
+                position: detectedPos ? detectedPos.charAt(0).toUpperCase() + detectedPos.slice(1) : "Professional Footballer",
+                nationality: detectedNat ? detectedNat.charAt(0).toUpperCase() + detectedNat.slice(1) : "Unknown",
+                bio: extract, 
+                strengths: ["Career Experience", "Professionalism"], // Placeholders as Wiki doesn't list these
+                weaknesses: ["Data unavailable in fallback"],
                 similar_players: ["N/A"],
                 image: wikiRes.data.thumbnail?.source || getPlayerImage(decodedName)
             };
             
-            playerCache.set(decodedName, wikiData); // Cache this too
+            playerCache.set(decodedName, wikiData); 
             return res.json(wikiData);
         }
     } catch (wikiError: any) {
