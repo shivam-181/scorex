@@ -10,6 +10,8 @@ import leagueRoutes from './routes/leagues.js';
 import subscribeRoutes from './routes/subscribe.js';
 import playerRoutes from './routes/players.js';
 import searchRoutes from './routes/search.js';
+import feedbackRoutes from './routes/feedback.js'; // Feedback Route
+import legendRoutes from './routes/legends.js'; // New
 
 // Connect to MongoDB
 connectDB();
@@ -29,6 +31,8 @@ app.use('/api/leagues', leagueRoutes);
 app.use('/api/subscribe', subscribeRoutes);
 app.use('/api/players', playerRoutes);
 app.use('/api/search', searchRoutes);
+app.use('/api/feedback', feedbackRoutes);
+app.use('/api/legends', legendRoutes);
 
 app.get('/', (req, res) => {
   res.send('ScoreX Backend is Live ⚽');

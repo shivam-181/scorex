@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "dev": "nodemon --exec node --loader ts-node/esm index.ts",
+    "dev": "nodemon --exec tsx index.ts",
     "build": "tsc",
     "start": "node dist/index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -20,7 +20,8 @@
     "dotenv": "^17.2.3",
     "express": "^5.1.0",
     "mongoose": "^9.0.0",
-    "node-cache": "^5.1.2"
+    "node-cache": "^5.1.2",
+    "wikijs": "^6.4.1"
   },
   "devDependencies": {
     "@types/cors": "^2.8.19",
@@ -28,6 +29,7 @@
     "@types/node": "^24.10.1",
     "nodemon": "^3.1.11",
     "ts-node": "^10.9.2",
+    "tsx": "^4.21.0",
     "typescript": "^5.9.3"
   }
 }

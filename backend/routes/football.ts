@@ -5,6 +5,13 @@ import { getHardcodedLineup } from '../utils/realLineups.js';
 
 const router = express.Router();
 
+// Helper: Get local date string YYYY-MM-DD to avoid UTC lags
+const getLocalDateString = (date: Date) => {
+    const offset = date.getTimezoneOffset();
+    const localDate = new Date(date.getTime() - (offset * 60 * 1000));
+    return localDate.toISOString().split('T')[0];
+};
+
 // Get Matches for Today (Live, Scheduled, Finished)
 router.get('/live', async (req, res) => {
   try {
@@ -18,38 +25,36 @@ router.get('/live', async (req, res) => {
     const toDate = new Date(today);
     toDate.setDate(today.getDate() + 3);
 
-    const fromStr = fromDate.toISOString().split('T')[0];
-    const toStr = toDate.toISOString().split('T')[0];
+    const fromStr = getLocalDateString(fromDate);
+    const toStr = getLocalDateString(toDate);
     
     console.log(`Fetching matches from ${fromStr} to ${toStr}`);
     
     // Fetch matches for the date range
     const data = await fetchData(`/matches?dateFrom=${fromStr}&dateTo=${toStr}`); 
     
-    console.log(`Fetched ${data?.matches?.length} matches`);
-    if (data?.matches?.length > 0) {
-      console.log('Sample Match Data:', JSON.stringify(data.matches[0], null, 2));
-    }
-    
     // Inject calculated minute for live matches
     if (data?.matches) {
       data.matches = data.matches.map((match: any) => {
-        if (match.status === 'IN_PLAY') {
+        if (match.status === 'IN_PLAY' || match.status === 'PAUSED') {
           const matchTime = new Date(match.utcDate).getTime();
           const now = new Date().getTime();
           const diffMs = now - matchTime;
           let calculatedMinute = Math.floor(diffMs / 60000);
+          
+          if (calculatedMinute < 0) calculatedMinute = 0;
           let minute: number | string = calculatedMinute;
           
           // Simple heuristic for half-time
           if (calculatedMinute > 45) {
              if (calculatedMinute > 60) {
+               // Type assertion not needed as calculatedMinute is number
                minute = 45 + (calculatedMinute - 60);
              } else {
                minute = "HT";
              }
           }
-          if (calculatedMinute > 90) minute = "90+";
+          if (typeof minute === 'number' && minute > 90) minute = "90+";
           
           return { ...match, minute };
         }
@@ -101,43 +106,77 @@ router.get('/match/:id', async (req, res) => {
       matchData.minute = minute;
     }
     
-    // 3. Check if Lineups/Stats exist. If not, Inject Mock Data or AI Data.
-    console.log(`Lineup Check: matchData.lineup is ${matchData.lineup ? 'Present' : 'Missing'}, Length: ${matchData.lineup?.length}`);
-    
-    // Check for Hardcoded Lineups individually
-    console.log(`TEAM NAMES FROM API: Home='${matchData.homeTeam?.name}', Away='${matchData.awayTeam?.name}'`);
-    const hardcodedHome = getHardcodedLineup(matchData.homeTeam.name);
-    const hardcodedAway = getHardcodedLineup(matchData.awayTeam.name);
-    
-    console.log(`Hardcoded Check: Home (${matchData.homeTeam.name}) -> ${hardcodedHome ? 'Found' : 'Missing'}, Away (${matchData.awayTeam.name}) -> ${hardcodedAway ? 'Found' : 'Missing'}`);
+    // 3. Check if Lineups/Stats exist. If not, Inject Mock Data.
+    let lineups = null;
 
-    // Helper to get lineup for a specific team
-    const getTeamLineup = async (side: 'home' | 'away', teamName: string, hardcoded: any[] | null | undefined) => {
-      // 1. Priority: Hardcoded
-      if (hardcoded) {
-        console.log(`Using Hardcoded lineup for ${teamName}`);
-        return hardcoded;
-      }
+    if (matchData.lineup && matchData.lineup.length > 0) {
+       lineups = matchData.lineup;
+    } else {
+       // Fallback logic
+       console.log(`TEAM NAMES FROM API: Home='${matchData.homeTeam?.name}', Away='${matchData.awayTeam?.name}'`);
+       const hardcodedHome = getHardcodedLineup(matchData.homeTeam.name);
+       const hardcodedAway = getHardcodedLineup(matchData.awayTeam.name);
+       
+       console.log(`Hardcoded Check: Home (${matchData.homeTeam.name}) -> ${hardcodedHome ? 'Found' : 'Missing'}, Away (${matchData.awayTeam.name}) -> ${hardcodedAway ? 'Found' : 'Missing'}`);
 
-      // 2. Priority: AI Generation
-      try {
-         if (!process.env.GOOGLE_API_KEY) throw new Error("No API Key");
-         
-         console.log(`Generating AI lineup for ${teamName}...`);
-         const { GoogleGenerativeAI } = await import('@google/generative-ai');
-         const genAI = new GoogleGenerativeAI(process.env.GOOGLE_API_KEY);
-         const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
-         
-         const prompt = `Generate a realistic starting XI for ${teamName}. Return JSON ONLY: [{ "name": "Player Name", "number": 1, "position": "GK" }, ...]`;
-         const result = await model.generateContent(prompt);
-         const text = result.response.text().replace(/```json/g, '').replace(/```/g, '').trim();
-         return JSON.parse(text);
-      } catch (e) {
-        console.error(`AI Error for ${teamName}:`, e);
-        // 3. Priority: Mock
-        return getMockLineup(teamName);
-      }
-    };
+        // Helper to get lineup for a specific team
+        const getTeamLineup = async (side: 'home' | 'away', teamName: string, hardcoded: any[] | null | undefined) => {
+          // 1. Priority: Hardcoded
+          if (hardcoded) {
+            console.log(`Using Hardcoded lineup for ${teamName}`);
+            return hardcoded;
+          }
+
+          // 2. Priority: AI Generation
+          try {
+             if (!process.env.GOOGLE_API_KEY) throw new Error("No API Key");
+             
+             console.log(`Generating AI lineup for ${teamName}...`);
+             const { GoogleGenerativeAI } = await import('@google/generative-ai');
+             const genAI = new GoogleGenerativeAI(process.env.GOOGLE_API_KEY);
+             const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+             
+             const prompt = `Generate a realistic starting XI for ${teamName}. Return JSON ONLY: [{ "name": "Player Name", "number": 1, "position": "GK" }, ...]`;
+             const result = await model.generateContent(prompt);
+             const text = result.response.text().replace(/```json/g, '').replace(/```/g, '').trim();
+             return JSON.parse(text);
+          } catch (e) {
+            console.error(`AI Error for ${teamName}:`, e);
+            // 3. Priority: Mock
+            return getMockLineup(teamName);
+          }
+        };
+
+        const homeAll = await getTeamLineup('home', matchData.homeTeam.name, hardcodedHome);
+        const awayAll = await getTeamLineup('away', matchData.awayTeam.name, hardcodedAway);
+
+        const padToEleven = (players: any[]) => {
+            const starters = players.slice(0, 11);
+            if (starters.length >= 11) return starters;
+            
+            const needed = 11 - starters.length;
+            for (let i = 0; i < needed; i++) {
+               starters.push({
+                 name: `Player ${(starters.length + 1)}`,
+                 number: '-',
+                 position: 'MF',
+                 isMock: true
+               });
+            }
+            return starters;
+         };
+
+         lineups = { 
+            home: {
+               starting: padToEleven(homeAll),
+               bench: homeAll.slice(11)
+            }, 
+            away: {
+               starting: padToEleven(awayAll),
+               bench: awayAll.slice(11)
+            }
+         };
+    }
 
     const enrichedData = {
       ...matchData,
@@ -156,7 +195,7 @@ router.get('/match/:id', async (req, res) => {
                 ? parseInt(matchData.minute.replace('+', ''), 10) 
                 : matchData.minute;
                 
-              if (!isNaN(currentMinute)) {
+              if (typeof currentMinute === 'number' && !isNaN(currentMinute)) {
                 timeline = timeline.filter((e: any) => e.minute <= currentMinute);
               }
            }
@@ -169,59 +208,7 @@ router.get('/match/:id', async (req, res) => {
         }
         return {};
       })(),
-      lineups: await (async () => {
-        // If API has lineup AND we don't have ANY hardcoded, use API?
-        // But user complains about placeholders. So let's force our logic if ANY hardcoded exists,
-        // OR if API lineup is missing.
-
-        /* 
-           Refactoring for better frontend display:
-           Instead of sending flat arrays, we send { starting: [], bench: [] }
-           We assume the first 11 are starters if it's a flat list.
-        */
-        
-        let homeAll = [];
-        let awayAll = [];
-
-        // if (matchData.lineup && matchData.lineup.length > 0 && !hardcodedHome && !hardcodedAway) {
-        //    // Normalize API data if it exists but is flat? 
-        //    // Usually API returns { home: { starting: [], bench: [] } } structure if it is good data
-        //    // But if we are falling back to our manual logic:
-        //    return matchData.lineup; 
-        // }
-
-        // Otherwise, build it manually
-        homeAll = await getTeamLineup('home', matchData.homeTeam.name, hardcodedHome);
-        awayAll = await getTeamLineup('away', matchData.awayTeam.name, hardcodedAway);
-        
-         // Helper to ensure 11 starters
-         const padToEleven = (players: any[]) => {
-            const starters = players.slice(0, 11);
-            if (starters.length >= 11) return starters;
-            
-            const needed = 11 - starters.length;
-            for (let i = 0; i < needed; i++) {
-               starters.push({
-                 name: `Player ${(starters.length + 1)}`,
-                 number: '-',
-                 position: 'MF', // Default to MF to fill midfield
-                 isMock: true
-               });
-            }
-            return starters;
-         };
-
-         return { 
-           home: {
-              starting: padToEleven(homeAll),
-              bench: homeAll.slice(11)
-           }, 
-           away: {
-              starting: padToEleven(awayAll),
-              bench: awayAll.slice(11)
-           }
-         };
-      })()
+      lineups
     };
 
     res.json(enrichedData);

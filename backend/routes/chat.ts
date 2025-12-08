@@ -6,15 +6,20 @@ dotenv.config();
 
 const router = express.Router();
 
-// Initialize Gemini
-const genAI = new GoogleGenerativeAI(process.env.GOOGLE_API_KEY || '');
-const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
+// Initialize Gemini lazily to avoid startup crashes
+const getModel = () => {
+  const apiKey = process.env.GOOGLE_API_KEY;
+  if (!apiKey) return null;
+  const genAI = new GoogleGenerativeAI(apiKey);
+  return genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+};
 
 router.post('/', async (req, res) => {
   try {
     const { message } = req.body;
 
-    if (!process.env.GOOGLE_API_KEY) {
+    const model = getModel();
+    if (!model) {
       return res.json({ response: "I'm currently offline (API Key missing). Please check back later!" });
     }
 
@@ -48,9 +53,10 @@ router.post('/', async (req, res) => {
     const response = result.response.text();
 
     res.json({ response });
-  } catch (error) {
+  } catch (error: any) {
     console.error("Chat Error:", error);
-    res.status(500).json({ response: "Oops! I tripped over the ball. Try again." });
+    // Return actual error for debugging
+    res.status(500).json({ response: `Oops! I tripped over the ball. (${error.message || 'Unknown Error'})` });
   }
 });
 

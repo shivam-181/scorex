@@ -33,6 +33,7 @@ export default function TopHeader() {
             <Link href="/news" className="hover:text-crimson transition-colors">News</Link>
             <Link href="/leagues" className="hover:text-crimson transition-colors">Leagues</Link>
             <Link href="/about" className="hover:text-crimson transition-colors">About</Link>
+            <Link href="/legacy" className="hover:text-yellow-400 text-yellow-500 transition-colors uppercase tracking-wider">Legends</Link>
           </nav>
           
           <div className="flex items-center gap-4">
@@ -76,6 +77,7 @@ export default function TopHeader() {
               <Link href="/" onClick={() => setIsMenuOpen(false)} className="hover:text-crimson transition-colors">Home</Link>
               <Link href="/news" onClick={() => setIsMenuOpen(false)} className="hover:text-crimson transition-colors">News</Link>
               <Link href="/leagues" onClick={() => setIsMenuOpen(false)} className="hover:text-crimson transition-colors">Leagues</Link>
+              <Link href="/legacy" onClick={() => setIsMenuOpen(false)} className="hover:text-yellow-400 text-yellow-500 transition-colors">Legends Hall</Link>
               <Link href="/my-feed" onClick={() => setIsMenuOpen(false)} className="hover:text-crimson transition-colors">My Feed</Link>
               <div className="h-px bg-white/10 my-2"></div>
               <Link href="/about" onClick={() => setIsMenuOpen(false)} className="text-crimson hover:text-white transition-colors">About ScoreX</Link>

@@ -5,6 +5,8 @@ const cache = new NodeCache({ stdTTL: 60 }); // Cache for 60 seconds
 const API_KEY = process.env.FOOTBALL_API_KEY || process.env.FOOTBALL_DATA_API_KEY;
 const BASE_URL = 'https://api.football-data.org/v4';
 
+export const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+
 export const fetchData = async (endpoint: string) => {
   // Check cache first
   const cachedData = cache.get(endpoint);
