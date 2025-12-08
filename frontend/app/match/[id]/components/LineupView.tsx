@@ -138,7 +138,7 @@ export default function LineupView({ lineups }: { lineups: any }) {
   return (
     <div className="w-full flex flex-col items-center py-4">
       {/* THE PITCH CONTAINER */}
-      <div className="relative w-full max-w-[400px] h-[600px] bg-green-800 rounded-xl border-4 border-white/10 overflow-hidden shadow-2xl">
+      <div className="relative w-full max-w-[500px] h-[750px] bg-green-800 rounded-xl border-4 border-white/10 overflow-hidden shadow-2xl">
         
         {/* CSS Field Markings */}
         <div className="absolute top-0 left-0 w-full h-full bg-[url('https://www.transparenttextures.com/patterns/grass.png')] opacity-30"></div>
