@@ -20,13 +20,13 @@ async function check() {
         const models = res.data.models || [];
         
         const generateModels = models
-            .filter(m => m.supportedGenerationMethods.includes('generateContent'))
-            .map(m => m.name.replace('models/', ''));
+            .filter((m: any) => m.supportedGenerationMethods.includes('generateContent'))
+            .map((m: any) => m.name.replace('models/', ''));
 
         if (generateModels.length === 0) {
             console.log("No models found that support 'generateContent'.");
         } else {
-            generateModels.forEach(name => console.log(`- ${name}`));
+            generateModels.forEach((name: string) => console.log(`- ${name}`));
         }
         
         console.log("\nTry using one of the above names in your code.");
