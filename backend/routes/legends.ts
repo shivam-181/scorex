@@ -38,24 +38,23 @@ router.get('/:name', async (req, res) => {
             
             // Context for the AI
             const rawInfoboxStr = JSON.stringify(info).slice(0, 1000); // Limit length
-            const prompt = `
                 You are a football historian. I have raw Wikipedia data for "${decodedName}".
                 Your task is to extract/verify key details and return a CLEAN, flat JSON object for display.
                 
                 Raw Data Snippet: ${rawInfoboxStr}
                 
                 Requirements:
-                1. Return a JSON object with these exact keys (if applicable):
+                1. Return a JSON object with these exact keys:
                    "Full Name", "Date of Birth", "Place of Birth", "Height", "Position", "National Team", "Total Career Goals", "Years Active"
-                2. Values must be human-readable strings (e.g. "5 Feb 1985" not ISO).
-                3. "Full Name" should be the person's real full name.
-                4. "Date of Birth" should be formatted like "DD Mon YYYY".
-                5. "Place of Birth" should be City, Country.
-                6. "Total Career Goals" should be a number or "N/A".
-                7. Remove any citation numbers [1], [a] etc.
+                2. Use the "Raw Data Snippet" as the primary source.
+                3. **CRITICAL**: If the raw data is missing, incomplete, or contains placeholders like "nobold" or "refn", **USE YOUR OWN INTERNAL KNOWLEDGE** to fill in the correct facts for ${decodedName}. Do NOT return "N/A" or "Unknown" if you know the answer.
+                4. "Full Name" must be the real full name.
+                5. "Date of Birth" must be "DD Mon YYYY".
+                6. "Place of Birth" must be City, Country.
+                7. "Total Career Goals" should be a specific number (Club + Country). Estimate if exact is debated, but provide a number.
+                8. Remove ALL citations ([1], [a]) and formatting artifacts.
                 
                 Output JSON ONLY. No markdown.
-            `;
             
             const aiJson = await generateAIContent(prompt);
             cleanInfobox = JSON.parse(aiJson.replace(/```json/g, '').replace(/```/g, '').trim());
