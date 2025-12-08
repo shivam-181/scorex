@@ -38,6 +38,7 @@ router.get('/:name', async (req, res) => {
             
             // Context for the AI
             const rawInfoboxStr = JSON.stringify(info).slice(0, 1000); // Limit length
+            const prompt = `
                 You are a football historian. I have raw Wikipedia data for "${decodedName}".
                 Your task is to extract/verify key details and return a CLEAN, flat JSON object for display.
                 
@@ -55,6 +56,7 @@ router.get('/:name', async (req, res) => {
                 8. Remove ALL citations ([1], [a]) and formatting artifacts.
                 
                 Output JSON ONLY. No markdown.
+            `;
             
             const aiJson = await generateAIContent(prompt);
             cleanInfobox = JSON.parse(aiJson.replace(/```json/g, '').replace(/```/g, '').trim());
