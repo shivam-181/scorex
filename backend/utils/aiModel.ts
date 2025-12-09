@@ -42,18 +42,19 @@ export const generateAIContent = async (prompt: string): Promise<string> => {
       
     } catch (error: any) {
       const msg = error.message || '';
-      const isRetryable = msg.includes('429') || msg.includes('503') || msg.includes('404') || msg.includes('Overloaded');
+      const isRateLimit = msg.includes('429') || msg.includes('Quota') || msg.includes('quota');
+      const isRetryable = isRateLimit || msg.includes('503') || msg.includes('404') || msg.includes('Overloaded');
       
       console.warn(`⚠️ Model ${modelName} failed: ${msg.split('\n')[0]}`);
       lastError = error;
 
-      if (!isRetryable) {
-        // If it's a fundamental error (like bad request), might not want to retry?
-        // But for safety, let's try other models anyway.
-      }
-      
-      // Small delay before trying next model to be nice to the API
-      await sleep(500); 
+      if (isRateLimit) {
+        console.log("⏳ Rate Limit detected. Initiating Smart Wait (10s) before trying next model...");
+        await sleep(10000); // 10 second cooling off period
+      } else {
+        // Standard small delay for other errors
+        await sleep(1000); 
+      } 
     }
   }
 
