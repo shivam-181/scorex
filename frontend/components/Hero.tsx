@@ -40,9 +40,14 @@ export default function Hero() {
         <motion.button
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
-          className="px-8 py-3 bg-white/5 text-white rounded-full font-bold text-base tracking-wide border border-white/20 shadow-[0_0_30px_rgba(220,20,60,0.3)] backdrop-blur-md hover:bg-white/10 hover:shadow-[0_0_50px_rgba(220,20,60,0.6)] hover:border-crimson/50 transition-all"
+          className="group flex items-center gap-2 text-white font-bold text-xs tracking-[0.2em] uppercase transition-all hover:text-crimson hover:drop-shadow-[0_0_8px_rgba(220,20,60,0.8)]"
           onClick={() => document.getElementById('live-scores')?.scrollIntoView({ behavior: 'smooth' })}
         >
+          {/* Pulsing Dot - The universal symbol for "Live" */}
+          <span className="relative flex h-1.5 w-1.5 mr-1">
+            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-600 opacity-75"></span>
+            <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-red-600"></span>
+          </span>
           Check Live Scores
         </motion.button>
       </div>
