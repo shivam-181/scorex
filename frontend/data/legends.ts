@@ -239,7 +239,7 @@ export const legends: Legend[] = [
     /* [USER UPDATE]: Replace 'image' with your preferred portrait URL */
     image: "https://upload.wikimedia.org/wikipedia/commons/6/65/20180610_FIFA_Friendly_Match_Austria_vs._Brazil_Neymar_850_1705.jpg",
     /* [USER UPDATE]: Replace 'coverImage' with your preferred hero background URL */
-    coverImage: "https://wallpapers.com/images/high/cool-neymar-jr-looking-sideways-sag1skq0mbqqzyqr.webp",
+    coverImage: "https://media.gettyimages.com/id/926640956/photo/uefa-champions-league-2017-18-real-madrid-vs-paris-saint-germain.jpg?s=2048x2048&w=gi&k=20&c=DMURqrQgCII_jaASs12RET2DjatOKhnps4glSzDyGPo=",
     era: "Modern Era",
     stats: { goals: 436, matches: 708, ballonDOr: 0, worldCups: 0 },
     clubStats: [
@@ -255,7 +255,7 @@ export const legends: Legend[] = [
         { year: "2017", title: "World Record Transfer", description: "Moved to PSG for €222m, shattering the transfer record forever." }
     ],
     bio: "The heir to the Brazilian throne. Neymar burst onto the scene at Santos before forming the deadly MSN trio at Barcelona. Known for his flashy dribbling and playmaking, he is Brazil's all-time top scorer.",
-    goldenMoment: { title: "La Remontada", description: "Orchestrating the miraculous 6-1 comeback against PSG in the Champions League.", year: 2017, image: "https://wallpapercave.com/wp/wp12565135.jpg" },
+    goldenMoment: { title: "La Remontada", description: "Orchestrating the miraculous 6-1 comeback against PSG in the Champions League.", year: 2017, image: "https://media.gettyimages.com/id/651994738/photo/uefa-champions-league-fc-barcelona-v-paris-saint-germain.jpg?s=2048x2048&w=gi&k=20&c=RQsRSnoFgRehLoOC6EN9_fk1830dDOa-qbHOm4Ib6Dc=" },
     achievements: ["1x Champions League", "Olympic Gold Medal", "Copa Libertadores"],
     quote: "I'm not a perfect role model... but I'm trying to learn every day.",
     archive: {
