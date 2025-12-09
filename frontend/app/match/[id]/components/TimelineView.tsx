@@ -7,11 +7,17 @@ export default function TimelineView({ match }: { match: any }) {
   // Cards and substitutions might be in `match.bookings` or `match.substitutions` if the API provides them.
   // For now, we'll focus on goals and mock/check for others.
 
+  // Filter events if match is LIVE (don't show future events)
+  const isLive = match.status === 'IN_PLAY' || match.status === 'PAUSED';
+  const currentMinute = match.minute ? parseInt(match.minute.toString().replace('+', '')) : 999;
+  
   const events = [
     ...(match.goals || []).map((g: any) => ({ ...g, type: 'GOAL' })),
     ...(match.bookings || []).map((b: any) => ({ ...b, type: 'CARD' })),
     ...(match.substitutions || []).map((s: any) => ({ ...s, type: 'SUB' })),
-  ].sort((a, b) => a.minute - b.minute);
+  ]
+  .filter(e => !isLive || e.minute <= currentMinute)
+  .sort((a, b) => a.minute - b.minute);
 
   if (events.length === 0) {
     return (
