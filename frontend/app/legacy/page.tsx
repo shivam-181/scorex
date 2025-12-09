@@ -129,7 +129,7 @@ export default function LegacyHall() {
                     <Link key={legend.id} href={`/legacy/${legend.id}`}>
                         <div className="relative h-[400px] group rounded-sm overflow-hidden cursor-pointer border-none bg-[#111]">
                             {/* [USER UPDATE]: Image for Featured Card */}
-                            <img src={legend.image} referrerPolicy="no-referrer" className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 grayscale group-hover:grayscale-0 opacity-80 group-hover:opacity-100" alt={legend.name} />
+                            <img src={legend.image} referrerPolicy="no-referrer" className={`w-full h-full object-cover ${legend.imagePosition || 'object-center'} transition-transform duration-700 group-hover:scale-110 grayscale group-hover:grayscale-0 opacity-80 group-hover:opacity-100`} alt={legend.name} />
                             <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-90" />
                             <div className="absolute bottom-0 left-0 w-full p-8 translate-y-4 group-hover:translate-y-0 transition-transform duration-500">
                                 <h4 className="text-2xl font-serif font-bold text-white group-hover:text-yellow-400 transition-colors mb-2 leading-none">{legend.name}</h4>
@@ -209,7 +209,7 @@ export default function LegacyHall() {
                         src={legend.image} 
                         referrerPolicy="no-referrer"
                         alt={legend.name}
-                        className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105 opacity-80 group-hover:opacity-100"
+                        className={`w-full h-full object-cover ${legend.imagePosition || 'object-center'} transition-transform duration-700 group-hover:scale-105 opacity-80 group-hover:opacity-100`}
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent opacity-90" />
                     

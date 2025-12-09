@@ -6,6 +6,7 @@ export interface Legend {
   region: 'South America' | 'Europe';
   position: 'Forward' | 'Midfielder' | 'Defender' | 'Goalkeeper';
   image: string;
+  imagePosition?: string; // [USER UPDATE]: Optional custom object-position styling
   coverImage: string;
   era: '1950s' | '1970s' | '1990s' | '2000s' | 'Modern Era';
   stats: {
@@ -275,7 +276,8 @@ export const legends: Legend[] = [
     region: 'Europe',
     position: "Forward",
     /* [USER UPDATE]: Replace 'image' with your preferred portrait URL */
-    image: "https://wallpapercave.com/wp/wp14085462.jpg",
+    image: "https://wallpapercave.com/wp/wp4013595.jpg",
+    imagePosition: "object-[50%_15%]",
     /* [USER UPDATE]: Replace 'coverImage' with your preferred hero background URL */
     coverImage: "https://media.gettyimages.com/id/676257516/photo/fbl-eur-c1-realmadrid-atletico.jpg?s=2048x2048&w=gi&k=20&c=qBRHccFJvl47PHnO8kOPfguGURUSw-uRBbtOFXza3dQ=",
     era: "Modern Era",

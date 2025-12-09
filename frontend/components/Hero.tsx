@@ -1,5 +1,6 @@
 'use client';
 import { motion } from 'framer-motion';
+import { ArrowDown } from 'lucide-react';
 import BrandName from './BrandName';
 import FloatingLiveWidget from './FloatingLiveWidget';
 
@@ -36,32 +37,24 @@ export default function Hero() {
         Football Scores. Reimagined.
       </motion.p>
 
-      <div className="flex gap-4 mt-8 z-10 relative">
+      <div className="flex gap-4 mt-16 z-10 relative">
         <motion.button
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
-          className="group flex items-center gap-2 text-white font-bold text-xs tracking-[0.2em] uppercase transition-all hover:text-crimson hover:drop-shadow-[0_0_8px_rgba(220,20,60,0.8)]"
+          className="group flex flex-col items-center gap-6 cursor-pointer transition-all"
           onClick={() => document.getElementById('live-scores')?.scrollIntoView({ behavior: 'smooth' })}
         >
-          {/* Pulsing Dot - The universal symbol for "Live" */}
-          <span className="relative flex h-1.5 w-1.5 mr-1">
-            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-600 opacity-75"></span>
-            <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-red-600"></span>
+          <span className="text-[10px] font-bold uppercase tracking-[0.4em] text-white drop-shadow-[0_0_15px_rgba(220,20,60,0.9)] group-hover:text-crimson transition-all duration-300 group-hover:drop-shadow-[0_0_35px_rgba(220,20,60,1)]">
+             Check Live Scores
           </span>
-          Check Live Scores
+          <div className="relative">
+              <div className="absolute inset-0 bg-crimson/40 blur-2xl rounded-full opacity-60 group-hover:opacity-100 transition-opacity duration-500" />
+              <ArrowDown className="text-white drop-shadow-[0_0_15px_rgba(220,20,60,0.9)] group-hover:text-crimson transition-colors duration-300 animate-bounce" size={20} />
+          </div>
         </motion.button>
       </div>
 
-      {/* Scroll Indicator */}
-      <motion.div 
-        animate={{ y: [0, 10, 0] }}
-        transition={{ repeat: Infinity, duration: 2 }}
-        className="absolute bottom-10 text-white/50 z-10"
-      >
-        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-          <path d="M7 13l5 5 5-5M7 6l5 5 5-5"/>
-        </svg>
-      </motion.div>
+
     </section>
   );
 }

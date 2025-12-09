@@ -89,9 +89,7 @@ export default function MatchHeader({ match }: { match: any }) {
           </div>
 
           {/* Goal Icon Center */}
-          <div className="w-8 flex justify-center items-start text-gray-500">
-            ⚽
-          </div>
+
 
           {/* Away Scorers */}
           <div className="flex-1 text-left pl-8 md:pl-16">
