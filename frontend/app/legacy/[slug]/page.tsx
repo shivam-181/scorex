@@ -1,6 +1,6 @@
 'use client';
 import { useState, useEffect, use } from 'react';
-import { notFound } from 'next/navigation';
+import { notFound, useRouter } from 'next/navigation';
 import { legends } from '../../../data/legends'; 
 import { motion, AnimatePresence } from 'framer-motion';
 import Link from 'next/link';
@@ -17,6 +17,7 @@ interface WikiData {
 }
 
 export default function LegendProfile({ params }: { params: Promise<{ slug: string }> }) {
+    const router = useRouter();
     const resolvedParams = use(params);
     const staticLegend = legends.find(l => l.id === resolvedParams.slug);
 
@@ -61,17 +62,20 @@ export default function LegendProfile({ params }: { params: Promise<{ slug: stri
                         src={staticLegend.coverImage} 
                         alt={staticLegend.name}
                         referrerPolicy="no-referrer"
-                        className="w-full h-full object-cover grayscale opacity-50 contrast-125 transition-transform duration-[30s] hover:scale-105"
+                        className="w-full h-full object-cover object-[50%_15%] grayscale opacity-80 contrast-125 transition-transform duration-[30s] hover:scale-105"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-[#050505] via-[#050505]/60 to-transparent" />
                     <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-yellow-900/10 via-transparent to-transparent" />
                 </div>
 
                 <div className="relative z-10 h-full flex flex-col justify-end pb-12 px-6 md:px-12 max-w-7xl mx-auto">
-                    <Link href="/legacy" className="mb-6 inline-flex items-center gap-2 text-white/50 hover:text-yellow-400 transition-colors group w-fit">
+                    <button 
+                        onClick={() => router.back()}
+                        className="mb-6 inline-flex items-center gap-2 text-white/50 hover:text-yellow-400 transition-colors group w-fit bg-transparent border-none cursor-pointer"
+                    >
                         <ArrowLeft size={16} className="group-hover:-translate-x-1 transition-transform" />
                         <span className="uppercase tracking-[0.2em] text-[10px] font-bold">Return to Hall</span>
-                    </Link>
+                    </button>
 
                     <motion.div
                         initial={{ opacity: 0, y: 50 }}
@@ -91,7 +95,7 @@ export default function LegendProfile({ params }: { params: Promise<{ slug: stri
                             </span>
                         </div>
                         
-                        <h1 className="text-6xl md:text-8xl lg:text-9xl font-serif font-black text-white mb-6 tracking-tighter drop-shadow-2xl leading-none">
+                        <h1 className="text-5xl md:text-8xl lg:text-9xl font-serif font-black text-white mb-6 tracking-tighter drop-shadow-2xl leading-none">
                             {staticLegend.name}
                         </h1>
 
@@ -190,19 +194,27 @@ export default function LegendProfile({ params }: { params: Promise<{ slug: stri
                         </div>
 
                         {/* Right: Golden Moment */}
-                        <div className="bg-gradient-to-br from-[#111] to-black p-10 rounded-3xl border border-white/10 relative overflow-hidden group">
-                             <div className="absolute top-0 right-0 p-8 opacity-10 group-hover:opacity-20 transition-opacity">
-                                 <Trophy size={120} />
+                        <div className="bg-[#111] p-10 rounded-3xl border border-white/10 relative overflow-hidden group h-full flex flex-col justify-end min-h-[400px]">
+                             {/* Background Image */}
+                             <div className="absolute inset-0 z-0">
+                                <img 
+                                    src={staticLegend.goldenMoment.image} 
+                                    alt={staticLegend.goldenMoment.title}
+                                    className="w-full h-full object-cover object-[50%_20%] opacity-90 group-hover:opacity-100 group-hover:scale-105 transition-all duration-700 grayscale group-hover:grayscale-0"
+                                />
+                                <div className="absolute inset-0 bg-gradient-to-t from-black via-black/80 to-transparent" />
                              </div>
+
+
                              
                              <div className="relative z-10">
-                                 <div className="inline-block px-3 py-1 bg-yellow-500/10 text-yellow-500 rounded-full text-[10px] font-bold uppercase tracking-widest mb-6 border border-yellow-500/20">
+                                 <div className="inline-block px-3 py-1 bg-yellow-500 text-black rounded-full text-[10px] font-bold uppercase tracking-widest mb-6 shadow-[0_0_15px_rgba(234,179,8,0.5)]">
                                      Defining Moment &bull; {staticLegend.goldenMoment.year}
                                  </div>
-                                 <h3 className="text-3xl font-serif font-bold text-white mb-4">
+                                 <h3 className="text-3xl font-serif font-bold text-white mb-4 drop-shadow-lg">
                                      {staticLegend.goldenMoment.title}
                                  </h3>
-                                 <p className="text-gray-400 leading-relaxed text-lg">
+                                 <p className="text-gray-300 leading-relaxed text-lg drop-shadow-md">
                                      {staticLegend.goldenMoment.description}
                                  </p>
                              </div>
@@ -251,26 +263,41 @@ export default function LegendProfile({ params }: { params: Promise<{ slug: stri
                             </ul>
                          </div>
 
-                         {/* Archive Data from Wiki (Infobox) */}
+                         {/* Archive Data (Meticulously Hardcoded) */}
                          <div className="space-y-6">
                              <h3 className="text-2xl font-serif text-white mb-6 flex items-center gap-2">
                                  Archive Records
-                                 {loadingWiki && <Loader2 className="animate-spin text-yellow-500" size={16} />}
                              </h3>
-                             {wikiData?.infobox ? (
+                             {staticLegend.archive ? (
                                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                     {Object.entries(wikiData.infobox).slice(0, 10).map(([key, value]: [string, any]) => (
-                                         <div key={key} className="p-4 rounded-lg border border-white/5 bg-[#0a0a0a]">
-                                             <div className="text-gray-500 text-[10px] uppercase tracking-widest mb-1">{key.replace(/_/g, ' ')}</div>
-                                             <div className="text-white text-sm break-words font-medium">
-                                                 {typeof value === 'object' ? JSON.stringify(value).slice(0, 30) + '...' : value}
-                                             </div>
-                                         </div>
-                                     ))}
+                                     <div className="p-4 rounded-lg border border-white/5 bg-[#0a0a0a]">
+                                          <div className="text-gray-500 text-[10px] uppercase tracking-widest mb-1">Full Name</div>
+                                          <div className="text-white text-sm font-medium">{staticLegend.fullName}</div>
+                                     </div>
+                                     <div className="p-4 rounded-lg border border-white/5 bg-[#0a0a0a]">
+                                          <div className="text-gray-500 text-[10px] uppercase tracking-widest mb-1">Date of Birth</div>
+                                          <div className="text-white text-sm font-medium">{staticLegend.archive.birthDate}</div>
+                                     </div>
+                                     <div className="p-4 rounded-lg border border-white/5 bg-[#0a0a0a]">
+                                          <div className="text-gray-500 text-[10px] uppercase tracking-widest mb-1">Place of Birth</div>
+                                          <div className="text-white text-sm font-medium">{staticLegend.archive.birthPlace}</div>
+                                     </div>
+                                      <div className="p-4 rounded-lg border border-white/5 bg-[#0a0a0a]">
+                                          <div className="text-gray-500 text-[10px] uppercase tracking-widest mb-1">Height</div>
+                                          <div className="text-white text-sm font-medium">{staticLegend.archive.height}</div>
+                                     </div>
+                                     <div className="p-4 rounded-lg border border-white/5 bg-[#0a0a0a]">
+                                          <div className="text-gray-500 text-[10px] uppercase tracking-widest mb-1">Position Specifics</div>
+                                          <div className="text-white text-sm font-medium">{staticLegend.archive.positionDetail}</div>
+                                     </div>
+                                     <div className="p-4 rounded-lg border border-white/5 bg-[#0a0a0a]">
+                                          <div className="text-gray-500 text-[10px] uppercase tracking-widest mb-1">Career Span</div>
+                                          <div className="text-white text-sm font-medium">{staticLegend.archive.careerSpan}</div>
+                                     </div>
                                  </div>
                              ) : (
                                  <div className="text-gray-500 italic border border-dashed border-white/10 p-6 rounded-lg">
-                                     Additional archive records are unavailable.
+                                     Archive records are currently being digitized.
                                  </div>
                              )}
                          </div>

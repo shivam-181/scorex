@@ -67,7 +67,7 @@ export default function Navbar() {
 
   return (
     <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 animate-in fade-in slide-in-from-bottom-10 duration-300">
-      <div className="glass-panel px-6 py-3 rounded-full flex gap-6 items-center shadow-2xl shadow-crimson/20">
+      <div className="glass-panel px-6 py-3 rounded-full flex gap-4 md:gap-6 items-center shadow-2xl shadow-crimson/20">
         
         <Link href="/">
           <div className="p-2 rounded-full transition-colors bg-crimson text-white">

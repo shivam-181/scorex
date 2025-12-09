@@ -12,6 +12,7 @@ export default function FeedbackModal({ isOpen, onClose }: FeedbackModalProps) {
   const [category, setCategory] = useState('');
   const [message, setMessage] = useState('');
   const [status, setStatus] = useState<'idle' | 'submitting' | 'success' | 'error'>('idle');
+  const [errorMessage, setErrorMessage] = useState('');
 
   const categories = [
     'General Feedback',
@@ -43,9 +44,12 @@ export default function FeedbackModal({ isOpen, onClose }: FeedbackModalProps) {
             setStatus('idle');
             setCategory('');
             setMessage('');
+            setErrorMessage('');
           }, 300);
         }, 2000);
       } else {
+        const data = await res.json();
+        setErrorMessage(data.error || 'Failed to send feedback');
         setStatus('error');
       }
     } catch (err) {
@@ -148,7 +152,7 @@ export default function FeedbackModal({ isOpen, onClose }: FeedbackModalProps) {
                      {status === 'error' && (
                         <div className="flex items-center gap-2 text-red-400 text-sm bg-red-400/10 p-3 rounded-lg">
                            <AlertCircle size={16} />
-                           <span>Something went wrong. Please try again.</span>
+                           <span>{errorMessage || "Something went wrong. Please try again."}</span>
                         </div>
                      )}
 

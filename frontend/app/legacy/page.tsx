@@ -22,7 +22,7 @@ export default function LegacyHall() {
   const featuredLegends = legends.slice(0, 4); 
 
   const records = [
-    { title: "All-Time Top Scorer", value: "Cristiano Ronaldo", sub: "890+ Goals" },
+    { title: "All-Time Top Scorer", value: "Cristiano Ronaldo", sub: "910+ Goals" },
     { title: "Most Ballon d'Ors", value: "Lionel Messi", sub: "8 Titles" },
     { title: "Most World Cups", value: "Pelé", sub: "3 Trophies" },
     { title: "Most Goals in a Calendar Year", value: "Lionel Messi", sub: "91 Goals" },
@@ -30,9 +30,12 @@ export default function LegacyHall() {
 
   /* [USER UPDATE]: Add more quotes here as you wish */
   const quotes = [
+    { text: "Talent without working hard is nothing.", author: "Cristiano Ronaldo" },
     { text: "Success is no accident. It is hard work, perseverance, learning, studying, sacrifice and most of all, love of what you are doing.", author: "Pelé" },
     { text: "I am not a god, I am just a footballer. But if God exists, he plays for Barcelona.", author: "Hristo Stoichkov" },
     { text: "When you win, you don't get carried away. But if you go step by step, with confidence, you can go far.", author: "Diego Maradona" },
+    { text: "I don't need the Golden Ball to know that I'm the best. I know when I do things wrong and when I do things right.", author: "Zlatan Ibrahimović" },
+    { text: "I learned all about life with a ball at my feet.", author: "Ronaldinho" },
   ];
 
   return (
@@ -43,8 +46,8 @@ export default function LegacyHall() {
       <section className="relative h-[calc(100vh-80px)] min-h-[600px] flex flex-col items-center justify-center overflow-hidden">
         <div className="absolute inset-0 z-0">
            {/* [USER UPDATE]: Change hero background image here */}
-           <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1522770179533-24471fcdba45?q=80&w=2000')] bg-cover bg-center opacity-20 grayscale" />
-           <div className="absolute inset-0 bg-gradient-to-b from-[#050505]/60 via-[#050505]/90 to-[#050505]" />
+           <div className="absolute inset-0 bg-[url('https://media.gettyimages.com/id/1754209918/photo/fbl-award-ballon-dor-2023.jpg?s=2048x2048&w=gi&k=20&c=WPH_irszz5pM3cyWAxRBLKlAS5bqvU87nPH745ySAoQ=')] bg-cover bg-center opacity-60 grayscale" />
+           <div className="absolute inset-0 bg-gradient-to-b from-[#050505]/30 via-[#050505]/70 to-[#050505]" />
         </div>
         
         <div className="relative z-10 text-center px-4 max-w-5xl mx-auto flex flex-col items-center">
@@ -60,7 +63,7 @@ export default function LegacyHall() {
             </div>
             
             {/* Adjusted Font Size for Perfect Fit */}
-            <h1 className="text-6xl md:text-8xl lg:text-9xl font-serif font-black tracking-tighter mb-8 text-transparent bg-clip-text bg-gradient-to-b from-white via-white to-white/20 drop-shadow-2xl text-center leading-[0.9]">
+            <h1 className="text-5xl md:text-8xl lg:text-9xl font-serif font-black tracking-tighter mb-8 text-transparent bg-clip-text bg-gradient-to-b from-white via-white to-white/20 drop-shadow-2xl text-center leading-[0.9]">
               LEGACY HALL
             </h1>
             
@@ -70,11 +73,14 @@ export default function LegacyHall() {
             
             <button 
               onClick={() => document.getElementById('browse')?.scrollIntoView({ behavior: 'smooth' })}
-              className="group flex flex-col items-center gap-3 text-white/50 hover:text-yellow-500 transition-colors cursor-pointer"
+              className="group flex flex-col items-center gap-6 mt-8 cursor-pointer transition-all duration-500 hover:scale-105"
             >
-              <span className="text-[10px] uppercase tracking-[0.3em]">Enter the Archives</span>
-              <div className="w-10 h-10 rounded-full border border-white/10 flex items-center justify-center group-hover:border-yellow-500/50 transition-colors">
-                  <ArrowDown className="animate-bounce" size={14} />
+              <span className="text-[10px] font-bold uppercase tracking-[0.4em] text-white/40 group-hover:text-yellow-400 transition-all duration-300 group-hover:drop-shadow-[0_0_10px_rgba(234,179,8,0.8)]">
+                  Enter the Archives
+              </span>
+              <div className="relative">
+                  <div className="absolute inset-0 bg-yellow-500/20 blur-xl rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                  <ArrowDown className="text-white/30 group-hover:text-yellow-500 transition-colors duration-300 animate-bounce" size={20} />
               </div>
             </button>
           </motion.div>

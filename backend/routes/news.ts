@@ -11,7 +11,7 @@ const cache = new NodeCache({ stdTTL: 3600 }); // Cache for 1 hour
 router.get('/', async (req, res) => {
   try {
     const limit = parseInt(req.query.limit as string) || 6;
-    const cacheKey = 'football_news_v2'; // Updated cache key
+    const cacheKey = 'football_news_v3'; // Updated cache key
     let articles = cache.get<any[]>(cacheKey);
 
     if (!articles) {
@@ -21,7 +21,7 @@ router.get('/', async (req, res) => {
 
       const response = await axios.get('https://newsapi.org/v2/everything', {
         params: {
-          q: '(football OR soccer OR "premier league" OR "champions league" OR "la liga" OR "bundesliga" OR "serie a") AND NOT (cricket OR ipl OR t20 OR "indian premier league")',
+          q: '(football AND (soccer OR "premier league" OR "champions league" OR "la liga" OR "bundesliga" OR "serie a" OR "ligue 1" OR "uefa" OR "fifa" OR "world cup" OR "international football")) AND NOT (nfl OR "american football" OR rugby OR cricket OR ipl OR t20 OR tennis OR nba OR basketball OR baseball)',
           language: 'en',
           sortBy: 'publishedAt',
           apiKey: process.env.NEWS_API_KEY,

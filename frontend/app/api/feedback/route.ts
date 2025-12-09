@@ -21,7 +21,7 @@ export async function POST(req: NextRequest) {
 
     const { data, error } = await resend.emails.send({
       from: 'ScoreX Feedback <onboarding@resend.dev>', // Default Resend testing sender
-      to: ['shivam180804@gmail.com'], // Deliver to you
+      to: ['shivamkumar060703@gmail.com'], // Deliver to you
       subject: `ScoreX Feedback: ${category}`,
       html: `
         <h1>New Feedback Received</h1>

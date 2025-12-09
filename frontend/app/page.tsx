@@ -222,62 +222,65 @@ export default function Home() {
                 />
               </div>
 
-              {/* Live Toggle */}
-              <button
-                onClick={() => {
-                  setShowLiveOnly(!showLiveOnly);
-                  if (!showLiveOnly) {
-                    setShowUpcomingOnly(false);
-                    setShowRecentOnly(false);
-                  }
-                }}
-                className={`flex items-center justify-center gap-2 px-6 py-2 rounded-full font-bold text-sm transition-all border ${
-                  showLiveOnly
-                    ? "bg-crimson border-crimson text-white shadow-[0_0_15px_#DC143C]"
-                    : "bg-white/5 border-white/10 text-gray-400 hover:text-white hover:border-white/30"
-                }`}
-              >
-                <Zap size={16} className={showLiveOnly ? "fill-white" : ""} />
-                LIVE
-              </button>
+              {/* Filter Buttons Group - Horizontal on Mobile */}
+              <div className="flex flex-wrap gap-2 justify-center md:justify-start w-full md:w-auto">
+                {/* Live Toggle */}
+                <button
+                  onClick={() => {
+                    setShowLiveOnly(!showLiveOnly);
+                    if (!showLiveOnly) {
+                      setShowUpcomingOnly(false);
+                      setShowRecentOnly(false);
+                    }
+                  }}
+                  className={`flex items-center justify-center gap-2 px-4 py-2 rounded-full font-bold text-xs md:text-sm transition-all border ${
+                    showLiveOnly
+                      ? "bg-crimson border-crimson text-white shadow-[0_0_15px_#DC143C]"
+                      : "bg-white/5 border-white/10 text-gray-400 hover:text-white hover:border-white/30"
+                  }`}
+                >
+                  <Zap size={14} className={showLiveOnly ? "fill-white" : ""} />
+                  LIVE
+                </button>
 
-              {/* Upcoming Toggle */}
-              <button
-                onClick={() => {
-                  setShowUpcomingOnly(!showUpcomingOnly);
-                  if (!showUpcomingOnly) {
-                    setShowLiveOnly(false);
-                    setShowRecentOnly(false);
-                  }
-                }}
-                className={`flex items-center justify-center gap-2 px-6 py-2 rounded-full font-bold text-sm transition-all border ${
-                  showUpcomingOnly
-                    ? "bg-[#DC143C]/10 border-white text-white shadow-[0_0_15px_#DC143C]"
-                    : "bg-white/5 border-white/10 text-gray-400 hover:text-white hover:border-white/30"
-                }`}
-              >
-                <Calendar size={16} className={showUpcomingOnly ? "text-white" : ""} />
-                UPCOMING
-              </button>
+                {/* Upcoming Toggle */}
+                <button
+                  onClick={() => {
+                    setShowUpcomingOnly(!showUpcomingOnly);
+                    if (!showUpcomingOnly) {
+                      setShowLiveOnly(false);
+                      setShowRecentOnly(false);
+                    }
+                  }}
+                  className={`flex items-center justify-center gap-2 px-4 py-2 rounded-full font-bold text-xs md:text-sm transition-all border ${
+                    showUpcomingOnly
+                      ? "bg-[#DC143C]/10 border-white text-white shadow-[0_0_15px_#DC143C]"
+                      : "bg-white/5 border-white/10 text-gray-400 hover:text-white hover:border-white/30"
+                  }`}
+                >
+                  <Calendar size={14} className={showUpcomingOnly ? "text-white" : ""} />
+                  UPCOMING
+                </button>
 
-              {/* Recent Toggle */}
-              <button
-                onClick={() => {
-                  setShowRecentOnly(!showRecentOnly);
-                  if (!showRecentOnly) {
-                    setShowLiveOnly(false);
-                    setShowUpcomingOnly(false);
-                  }
-                }}
-                className={`flex items-center justify-center gap-2 px-6 py-2 rounded-full font-bold text-sm transition-all border ${
-                  showRecentOnly
-                    ? "bg-[#DC143C]/10 border-white text-white shadow-[0_0_15px_#DC143C]"
-                    : "bg-white/5 border-white/10 text-gray-400 hover:text-white hover:border-white/30"
-                }`}
-              >
-                <Calendar size={16} className={showRecentOnly ? "text-white" : ""} />
-                RECENT
-              </button>
+                {/* Recent Toggle */}
+                <button
+                  onClick={() => {
+                    setShowRecentOnly(!showRecentOnly);
+                    if (!showRecentOnly) {
+                      setShowLiveOnly(false);
+                      setShowUpcomingOnly(false);
+                    }
+                  }}
+                  className={`flex items-center justify-center gap-2 px-4 py-2 rounded-full font-bold text-xs md:text-sm transition-all border ${
+                    showRecentOnly
+                      ? "bg-[#DC143C]/10 border-white text-white shadow-[0_0_15px_#DC143C]"
+                      : "bg-white/5 border-white/10 text-gray-400 hover:text-white hover:border-white/30"
+                  }`}
+                >
+                  <Calendar size={14} className={showRecentOnly ? "text-white" : ""} />
+                  RECENT
+                </button>
+              </div>
 
               {/* Sort Dropdown */}
               <div className="relative">
