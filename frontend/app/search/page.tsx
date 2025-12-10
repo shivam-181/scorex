@@ -1,5 +1,5 @@
 'use client';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { motion } from 'framer-motion';
 import Link from 'next/link';
 import { Search, Trophy, Users, Newspaper, ArrowRight, Loader2, Zap } from 'lucide-react';
@@ -7,7 +7,7 @@ import { useSearchParams } from 'next/navigation';
 
 import { legends } from '../../data/legends';
 
-export default function SearchPage() {
+function SearchContent() {
   const searchParams = useSearchParams();
   const initialQuery = searchParams.get('q') || "";
   const [query, setQuery] = useState(initialQuery);
@@ -207,5 +207,17 @@ export default function SearchPage() {
         </div>
       </div>
     </main>
+  );
+}
+
+export default function SearchPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-dark pt-24 flex justify-center items-start">
+        <Loader2 className="animate-spin text-crimson" size={32} />
+      </div>
+    }>
+      <SearchContent />
+    </Suspense>
   );
 }
