@@ -65,8 +65,8 @@ export default function Navbar() {
   // Hide if not scrolled enough OR if footer is visible (Only applies to Homepage behavior)
   if ((!isScrolledDeep || isFooterIntersecting) && pathname === '/') return null;
 
-  // Show on Home, Legacy, and Awards. Hide on others.
-  if (pathname !== '/' && !pathname.startsWith('/legacy') && !pathname.startsWith('/awards')) return null;
+  // Show only on Homepage
+  if (pathname !== '/') return null;
 
   return (
     <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 animate-in fade-in slide-in-from-bottom-10 duration-300">

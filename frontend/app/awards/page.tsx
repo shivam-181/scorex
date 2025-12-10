@@ -1,9 +1,10 @@
 'use client';
 import { useState } from 'react';
+import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
 import { awards } from '../../data/awards/collection';
 import AwardCard from '../../components/awards/AwardCard';
-import Navbar from '../../components/Navbar';
+
 import { Search, Trophy, Globe, Award, Filter } from 'lucide-react';
 
 export default function AwardsLanding() {
@@ -20,15 +21,18 @@ export default function AwardsLanding() {
 
   return (
     <div className="min-h-screen bg-[#050505] text-white font-sans selection:bg-yellow-500/30">
-      <Navbar />
+
 
       {/* Hero Section */}
       <section className="relative h-screen flex flex-col justify-center items-center px-6 overflow-hidden pt-32">
         <div className="absolute inset-0 z-0">
-             <img 
+             <Image 
                 src="https://upload.wikimedia.org/wikipedia/commons/e/ed/Royal_Albert_Hall_-_Central_View_169.jpg" 
                 alt="Royal Albert Hall" 
-                className="absolute inset-0 w-full h-full object-cover opacity-60"
+                fill
+                priority
+                sizes="100vw"
+                className="object-cover opacity-60"
              />
              <div className="absolute inset-0 bg-gradient-to-t from-[#050505] via-[#050505]/70 to-[#050505]/30 mix-blend-multiply" />
              <div className="absolute inset-0 bg-gradient-to-b from-[#050505] via-transparent to-[#050505]" />

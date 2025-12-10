@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { legends } from '../../data/legends';
 import Link from 'next/link';
 import { ArrowDown, Trophy, Search, Filter, Quote, Award, Sparkles, Crown } from 'lucide-react';
-import Navbar from '@/components/Navbar';
+
 
 export default function LegacyHall() {
   const [filterEra, setFilterEra] = useState<string>('All');
@@ -40,7 +40,7 @@ export default function LegacyHall() {
 
   return (
     <div className="min-h-screen bg-[#050505] text-white selection:bg-yellow-500/30 font-sans">
-      <Navbar />
+
       
       {/* (A) Hero Section: Resized to fit perfectly on screen (viewport minus navbar approximately) */}
       <section className="relative h-[calc(100vh-80px)] min-h-[600px] flex flex-col items-center justify-center overflow-hidden">
