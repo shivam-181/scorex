@@ -59,15 +59,13 @@ export default function Navbar() {
     };
   }, []);
 
-  // Only render on homepage
-  if (pathname !== '/') return null;
+  // Handle null pathname (common in some nextjs contexts or during hydration)
+  if (!pathname) return null;
 
-  // Hide if not scrolled enough OR if footer is visible
+  // Hide if not scrolled enough OR if footer is visible (Only applies to Homepage behavior)
   if ((!isScrolledDeep || isFooterIntersecting) && pathname === '/') return null;
-  // If we are not on home, we might want to show it always or never? 
-  // For now, let's keep the user's implicit logic: explicitly imported in pages.
-  // But wait, the component has a check: `if (pathname !== '/') return null;`
-  // I will change it to allow specific paths.
+
+  // Show on Home, Legacy, and Awards. Hide on others.
   if (pathname !== '/' && !pathname.startsWith('/legacy') && !pathname.startsWith('/awards')) return null;
 
   return (
