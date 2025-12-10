@@ -1,6 +1,7 @@
 'use client';
 import { motion } from 'framer-motion';
-import { BrainCircuit, Zap, User } from 'lucide-react';
+import { BrainCircuit, Zap, User, Briefcase, Calendar, ArrowRight } from 'lucide-react';
+import Link from 'next/link';
 import BrandName from './BrandName';
 
 const features = [
@@ -46,15 +47,17 @@ export default function FeaturesSection() {
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ delay: index * 0.2 }}
-              className="glass-panel p-8 rounded-2xl hover:bg-white/5 transition-colors duration-300"
+              className="glass-panel p-8 rounded-2xl hover:bg-white/5 transition-colors duration-300 flex flex-col h-full"
             >
               <div className="mb-6 bg-white/5 w-16 h-16 rounded-full flex items-center justify-center mx-auto">
                 {feature.icon}
               </div>
               <h3 className="text-xl font-bold text-white mb-3 text-center">{feature.title}</h3>
-              <p className="text-gray-400 text-center text-sm leading-relaxed">
+              <p className="text-gray-400 text-center text-sm leading-relaxed mb-6 flex-grow">
                 {feature.description}
               </p>
+              
+
             </motion.div>
           ))}
         </div>

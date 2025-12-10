@@ -6,7 +6,7 @@ import FloatingLiveWidget from './FloatingLiveWidget';
 
 export default function Hero() {
   return (
-    <section className="h-[calc(100vh+1rem)] flex flex-col justify-center items-center text-center relative overflow-hidden -mt-28 pt-28">
+    <section className="h-[calc(100vh+4.7rem)] flex flex-col justify-center items-center text-center relative overflow-hidden -mt-28 pt-36">
       {/* Floating Live Widget - Positioned Top Left */}
       <FloatingLiveWidget />
 
@@ -14,7 +14,7 @@ export default function Hero() {
       <div className="absolute inset-0 z-0 bg-black">
         <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-black/20 to-dark z-10" />
         <img 
-          src="/Dt.jpeg" 
+          src="/Dwt.jpeg" 
           alt="Stadium Background" 
           className="w-full h-full object-cover object-[0%_35%] scale-115 translate-x-10"
         />
@@ -52,6 +52,8 @@ export default function Hero() {
               <ArrowDown className="text-white drop-shadow-[0_0_15px_rgba(220,20,60,0.9)] group-hover:text-crimson transition-colors duration-300 animate-bounce" size={20} />
           </div>
         </motion.button>
+
+
       </div>
 
 

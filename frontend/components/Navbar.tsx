@@ -1,6 +1,7 @@
 'use client';
 import Link from 'next/link';
 import { Home, Heart, Newspaper, Trophy, Crown, Medal } from 'lucide-react';
+
 import { usePathname } from 'next/navigation';
 import { useState, useEffect } from 'react';
 
@@ -98,6 +99,8 @@ export default function Navbar() {
             <Crown size={24} />
           </div>
         </Link>
+        
+
         
         <div className="w-px h-6 bg-white/10"></div>
 
