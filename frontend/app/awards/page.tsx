@@ -27,7 +27,7 @@ export default function AwardsLanding() {
       <section className="relative h-screen flex flex-col justify-center items-center px-6 overflow-hidden pt-32">
         <div className="absolute inset-0 z-0">
              <Image 
-                src="https://upload.wikimedia.org/wikipedia/commons/e/ed/Royal_Albert_Hall_-_Central_View_169.jpg" 
+                src="https://cdn.ericchurch.com/uploads/news/GqkESMz4kusvP8pogYNJUsM4zaL66WiaA2VeJajG.jpg" 
                 alt="Royal Albert Hall" 
                 fill
                 priority
