@@ -37,7 +37,7 @@ export default function FanZonePage() {
                     animate={{ opacity: 1, y: 0 }}
                     className="text-5xl md:text-7xl font-bold tracking-tighter mb-4"
                 >
-                    Fan <span className="text-transparent bg-clip-text bg-gradient-to-r from-crimson to-red-600">Zone</span>
+                    FAN <span className="text-transparent bg-clip-text bg-gradient-to-r from-crimson to-red-600">ZONE</span>
                 </motion.h1>
                 <motion.p 
                     initial={{ opacity: 0 }}

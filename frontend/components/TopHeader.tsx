@@ -10,14 +10,19 @@ import BrandName from './BrandName';
 export default function TopHeader() {
   const pathname = usePathname();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [isFanZoneOpen, setIsFanZoneOpen] = useState(false);
+  const [isScrolled, setIsScrolled] = useState(false);
   const [isVisible, setIsVisible] = useState(true);
 
   useEffect(() => {
      const handleScroll = () => {
+          const currentScrollY = window.scrollY;
+          // Toggle blur/background immediately on scroll
+          const scrollThreshold = 10;
+          setIsScrolled(currentScrollY > scrollThreshold);
+
           if (pathname === '/awards') {
               const threshold = window.innerHeight ? window.innerHeight - 100 : 800;
-              setIsVisible(window.scrollY < threshold);
+              setIsVisible(currentScrollY < threshold);
           } else {
               setIsVisible(true);
           }
@@ -34,8 +39,12 @@ export default function TopHeader() {
     <>
       <header 
         className={`${
-          pathname === '/' ? 'fixed top-[1.35rem]' : 'fixed top-0'
-        } left-0 w-full z-50 px-6 py-4 grid grid-cols-3 items-center bg-transparent pointer-events-none transition-transform duration-500 ${isVisible ? 'translate-y-0' : '-translate-y-full'}`}
+          pathname === '/' 
+            ? isScrolled 
+              ? 'fixed top-0 bg-black/60 backdrop-blur-xl border-b border-white/5 shadow-lg' 
+              : 'fixed top-[1.35rem] bg-black/60 backdrop-blur-xl border-b border-white/5 shadow-lg'
+            : 'fixed top-0 bg-black/80 backdrop-blur-md'
+        } left-0 w-full z-50 px-6 py-4 grid grid-cols-3 items-center pointer-events-none transition-all duration-500 ${isVisible ? 'translate-y-0' : '-translate-y-full'}`}
       >
         {/* Left: Logo */}
         <div className="flex justify-start pointer-events-auto">
