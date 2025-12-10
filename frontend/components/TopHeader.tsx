@@ -1,5 +1,5 @@
 'use client';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { Heart, Menu, X } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -10,6 +10,24 @@ import BrandName from './BrandName';
 export default function TopHeader() {
   const pathname = usePathname();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isVisible, setIsVisible] = useState(true);
+
+  useEffect(() => {
+     const handleScroll = () => {
+          if (pathname === '/awards') {
+              // Hide when scrolled past the hero (approx 100vh)
+              // Using 800 as a safe fallback for "landing page" height if innerHeight varies dynamically
+              const threshold = window.innerHeight ? window.innerHeight - 100 : 800;
+              setIsVisible(window.scrollY < threshold);
+          } else {
+              setIsVisible(true);
+          }
+      };
+
+      window.addEventListener('scroll', handleScroll);
+      handleScroll(); // Initial check
+      return () => window.removeEventListener('scroll', handleScroll);
+  }, [pathname]);
 
   if (pathname.startsWith('/match/')) return null;
 
@@ -18,7 +36,7 @@ export default function TopHeader() {
       <header 
         className={`${
           pathname === '/' ? 'sticky' : 'fixed'
-        } top-0 left-0 w-full z-50 px-6 py-4 flex justify-between items-center bg-gradient-to-b from-black/80 to-transparent pointer-events-none`}
+        } top-0 left-0 w-full z-50 px-6 py-4 flex justify-between items-center bg-gradient-to-b from-black/80 to-transparent pointer-events-none transition-transform duration-500 ${isVisible ? 'translate-y-0' : '-translate-y-full'}`}
       >
         {/* Logo */}
         <Link href="/" className="pointer-events-auto">
@@ -34,6 +52,7 @@ export default function TopHeader() {
             <Link href="/leagues" className="hover:text-crimson transition-colors">Leagues</Link>
             <Link href="/about" className="hover:text-crimson transition-colors">About</Link>
             <Link href="/legacy" className="hover:text-yellow-400 text-yellow-500 transition-colors uppercase tracking-wider">Legends</Link>
+            <Link href="/awards" className="hover:text-[#BBFCDD] text-[#BBFCDD] transition-colors uppercase tracking-wider">Awards</Link>
           </nav>
           
           <div className="flex items-center gap-4">
