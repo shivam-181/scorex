@@ -3,12 +3,17 @@ import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import Link from 'next/link';
 import { Search, Trophy, Users, Newspaper, ArrowRight, Loader2, Zap } from 'lucide-react';
+import { useSearchParams } from 'next/navigation';
+
+import { legends } from '../../data/legends';
 
 export default function SearchPage() {
-  const [query, setQuery] = useState("");
-  const [results, setResults] = useState<any>({ leagues: [], teams: [], news: [] });
+  const searchParams = useSearchParams();
+  const initialQuery = searchParams.get('q') || "";
+  const [query, setQuery] = useState(initialQuery);
+  const [results, setResults] = useState<any>({ leagues: [], teams: [], news: [], legends: [] });
   const [loading, setLoading] = useState(false);
-  const [debouncedQuery, setDebouncedQuery] = useState(query);
+  const [debouncedQuery, setDebouncedQuery] = useState(initialQuery);
 
   // Debounce Query
   useEffect(() => {
@@ -22,17 +27,26 @@ export default function SearchPage() {
   useEffect(() => {
     const fetchResults = async () => {
       if (debouncedQuery.length < 2) {
-        setResults({ leagues: [], teams: [], news: [] });
+        setResults({ leagues: [], teams: [], news: [], legends: [] });
         return;
       }
 
       setLoading(true);
+      
+      // Local Search: Legends
+      const matchedLegends = legends.filter(l => 
+        l.name.toLowerCase().includes(debouncedQuery.toLowerCase()) || 
+        l.fullName.toLowerCase().includes(debouncedQuery.toLowerCase())
+      );
+
       try {
         const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/search?q=${encodeURIComponent(debouncedQuery)}`);
         const data = await res.json();
-        setResults(data);
+        setResults({ ...data, legends: matchedLegends });
       } catch (error) {
         console.error("Search failed:", error);
+        // Still show legends even if API fails
+        setResults({ leagues: [], teams: [], news: [], legends: matchedLegends });
       } finally {
         setLoading(false);
       }
@@ -42,7 +56,7 @@ export default function SearchPage() {
   }, [debouncedQuery]);
 
   return (
-    <main className="min-h-screen bg-dark pt-24 pb-20 relative overflow-hidden">
+    <main className="min-h-screen bg-dark pt-4 pb-20 relative overflow-hidden">
       {/* Background Watermark */}
       <div className="absolute inset-0 opacity-20 pointer-events-none">
         <img 
@@ -55,34 +69,45 @@ export default function SearchPage() {
       <div className="container mx-auto px-4 relative z-10">
         {/* Search Header */}
         <div className="max-w-3xl mx-auto text-center mb-12">
-          <h1 className="text-4xl md:text-5xl font-bold text-white mb-6">Global Search</h1>
           
-          <div className="relative">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={24} />
-            <input
-              type="text"
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-              placeholder="Search teams, leagues, or news..."
-              className="w-full bg-white/10 backdrop-blur-md border border-white/20 rounded-full py-4 pl-14 pr-6 text-xl text-white placeholder-gray-500 focus:outline-none focus:border-crimson focus:bg-white/15 transition-all shadow-lg"
-              autoFocus
-            />
-            {loading && (
-              <div className="absolute right-4 top-1/2 -translate-y-1/2">
-                <Loader2 className="animate-spin text-crimson" size={24} />
-              </div>
-            )}
-          </div>
+          {loading && (
+            <div className="flex justify-center mb-8">
+              <Loader2 className="animate-spin text-crimson" size={32} />
+            </div>
+          )}
         </div>
 
         {/* Results Grid */}
         <div className="space-y-12 max-w-5xl mx-auto">
           
+          {/* Legends Section (New) */}
+          {results.legends && results.legends.length > 0 && (
+            <motion.section initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
+              <h2 className="text-2xl font-bold text-white mb-4 flex items-center gap-2">
+                <Users className="text-yellow-500" /> Legends Hall
+              </h2>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {results.legends.map((legend: any) => (
+                  <Link href={`/legacy/${legend.id}`} key={legend.id}>
+                    <div className="glass-panel p-4 flex items-center gap-4 hover:bg-white/10 transition-colors cursor-pointer group border border-yellow-500/20">
+                      <img src={legend.image} alt={legend.name} className="w-12 h-12 object-cover rounded-full border border-yellow-500/50" />
+                      <div>
+                        <h3 className="font-bold text-white group-hover:text-yellow-400 transition-colors">{legend.name}</h3>
+                        <p className="text-xs text-yellow-500/60 uppercase tracking-wider">Legend · {legend.nationality}</p>
+                      </div>
+                      <ArrowRight className="ml-auto text-yellow-500/50 group-hover:translate-x-1 transition-transform" size={16} />
+                    </div>
+                  </Link>
+                ))}
+              </div>
+            </motion.section>
+          )}
+
           {/* Leagues Section */}
           {results.leagues.length > 0 && (
             <motion.section initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
               <h2 className="text-2xl font-bold text-white mb-4 flex items-center gap-2">
-                <Trophy className="text-yellow-500" /> Competitions
+                <Trophy className="text-blue-500" /> Competitions
               </h2>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {results.leagues.map((league: any) => (
@@ -105,7 +130,7 @@ export default function SearchPage() {
           {results.teams.length > 0 && (
             <motion.section initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}>
               <h2 className="text-2xl font-bold text-white mb-4 flex items-center gap-2">
-                <Users className="text-blue-500" /> Teams
+                <Users className="text-crimson" /> Teams
               </h2>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {results.teams.map((team: any) => (
@@ -125,7 +150,7 @@ export default function SearchPage() {
           {results.news.length > 0 && (
             <motion.section initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}>
               <h2 className="text-2xl font-bold text-white mb-4 flex items-center gap-2">
-                <Newspaper className="text-crimson" /> Latest News
+                <Newspaper className="text-green-500" /> Latest News
               </h2>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {results.news.map((article: any, idx: number) => (

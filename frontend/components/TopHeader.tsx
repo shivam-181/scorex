@@ -3,15 +3,17 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { Heart, Menu, X, Briefcase, Calendar, ChevronDown, Search, ShoppingBag } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 
 import BrandName from './BrandName';
 
 export default function TopHeader() {
   const pathname = usePathname();
+  const router = useRouter();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const [isVisible, setIsVisible] = useState(true);
+  const [searchQuery, setSearchQuery] = useState("");
 
   useEffect(() => {
      const handleScroll = () => {
@@ -33,7 +35,7 @@ export default function TopHeader() {
       return () => window.removeEventListener('scroll', handleScroll);
   }, [pathname]);
 
-  if (pathname.startsWith('/match/')) return null;
+  if (pathname.startsWith('/match/') || pathname === '/search' || (pathname.startsWith('/legacy/') && pathname.length > 8)) return null;
 
   return (
     <>
@@ -74,11 +76,22 @@ export default function TopHeader() {
         <div className="flex justify-end items-center gap-4 pointer-events-auto">
             {/* Search Bar */}
             <div className="hidden md:flex items-center bg-white/10 rounded-full px-4 py-2 w-48 hover:bg-white/20 transition-colors group focus-within:w-64 focus-within:bg-white/20 duration-300">
-                <Search size={16} className="text-white/50 group-hover:text-white transition-colors" />
+                <Search size={16} className="text-white/50 group-hover:text-white transition-colors cursor-pointer" onClick={() => {
+                  if (searchQuery.trim()) {
+                    router.push(`/search?q=${encodeURIComponent(searchQuery)}`);
+                  }
+                }}/>
                 <input 
                     type="text" 
                     placeholder="Search..." 
                     className="bg-transparent border-none outline-none text-sm text-white ml-2 w-full placeholder:text-white/50"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' && searchQuery.trim()) {
+                        router.push(`/search?q=${encodeURIComponent(searchQuery)}`);
+                      }
+                    }}
                 />
             </div>
 
