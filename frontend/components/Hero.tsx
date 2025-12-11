@@ -3,23 +3,20 @@ import { motion } from 'framer-motion';
 import { ArrowDown } from 'lucide-react';
 import BrandName from './BrandName';
 import FloatingLiveWidget from './FloatingLiveWidget';
+import WorldCupCountdown from './WorldCupCountdown';
 
 export default function Hero() {
   return (
-    <section className="h-[calc(100vh+4.7rem)] flex flex-col justify-center items-center text-center relative overflow-hidden -mt-28 pt-36">
-      {/* Floating Live Widget - Positioned Top Left */}
-      <FloatingLiveWidget />
-
-      {/* Background Image */}
-      <div className="absolute inset-0 z-0 bg-black">
-        <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-black/20 to-dark z-10" />
-        <img 
-          src="/Dwt.jpeg" 
-          alt="Stadium Background" 
-          className="w-full h-full object-cover object-[0%_35%] scale-115 translate-x-10"
-        />
-      </div>
+    <section className="h-[calc(100vh+4.7rem)] flex flex-col justify-start items-center text-center relative overflow-hidden -mt-28 pt-28">
       
+      {/* World Cup Countdown Bar - Attached to Top Navbar */}
+      <div className="w-full mt-13 mb-auto z-20 animate-in fade-in slide-in-from-top-10 duration-1000 delay-300">
+         <WorldCupCountdown />
+      </div>
+
+      
+      {/* Centered Hero Content */}
+      <div className="flex-1 flex flex-col justify-center items-center w-full z-10 pb-20">
       <motion.h1 
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -54,6 +51,20 @@ export default function Hero() {
         </motion.button>
 
 
+      </div>
+      </div>
+      
+      {/* Floating Live Widget - Positioned Top Left */}
+      <FloatingLiveWidget />
+
+      {/* Background Image */}
+      <div className="absolute inset-0 z-0 bg-black">
+        <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-black/20 to-dark z-10" />
+        <img 
+          src="/Dwt.jpeg" 
+          alt="Stadium Background" 
+          className="w-full h-full object-cover object-[0%_35%] scale-115 translate-x-10"
+        />
       </div>
 
 

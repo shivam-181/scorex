@@ -16,11 +16,25 @@ export default function TopHeader() {
   const [searchQuery, setSearchQuery] = useState("");
 
   useEffect(() => {
-     const handleScroll = () => {
+      const handleScroll = () => {
           const currentScrollY = window.scrollY;
           // Toggle blur/background immediately on scroll
           const scrollThreshold = 10;
           setIsScrolled(currentScrollY > scrollThreshold);
+
+          // Check for Live Center Section
+          const liveCenterSection = document.getElementById('live-scores');
+          if (liveCenterSection) {
+              const rect = liveCenterSection.getBoundingClientRect();
+              // If the top of the section is at or passed the top of the viewport (with small buffer)
+              // AND the bottom is still in view (so we are "inside" it)
+              // We hide the main navbar so the sticky sub-navbar can take over.
+              // Buffer of 60px roughly matches navbar height to ensure smooth transition.
+              if (rect.top <= 60 && rect.bottom > 60) {
+                  setIsVisible(false);
+                  return; // Exit early so we don't override with other logic
+              }
+          }
 
           if (pathname === '/awards') {
               const threshold = window.innerHeight ? window.innerHeight - 100 : 800;
@@ -35,7 +49,7 @@ export default function TopHeader() {
       return () => window.removeEventListener('scroll', handleScroll);
   }, [pathname]);
 
-  if (pathname.startsWith('/match/') || pathname === '/search' || (pathname.startsWith('/legacy/') && pathname.length > 8)) return null;
+  if (pathname.startsWith('/match/') || pathname === '/search' || (pathname.startsWith('/legacy/') && pathname.length > 8) || pathname.startsWith('/awards/')) return null;
 
   return (
     <>

@@ -8,6 +8,8 @@ import FeaturesSection from "../components/FeaturesSection";
 import NewsPreview from "../components/NewsPreview";
 import { Search, Zap, Calendar, ArrowUpDown } from "lucide-react";
 import ScrollRestoration from "@/components/ScrollRestoration";
+import FifaPromoSection from "../components/FifaPromoSection";
+import FifaTournamentSection from "../components/FifaTournamentSection";
 
 export default function Home() {
   const [matches, setMatches] = useState([]);
@@ -191,7 +193,7 @@ export default function Home() {
     <main className="min-h-screen bg-dark">
       <Hero />
 
-      <div className="relative w-full py-20 overflow-hidden" id="live-scores">
+      <div className="relative w-full py-20" id="live-scores">
         {/* Background Watermark - Full Width */}
         <div className="absolute inset-0 opacity-20 pointer-events-none z-0">
           <img
@@ -203,7 +205,8 @@ export default function Home() {
 
         {/* Content Container - Centered */}
         <div className="container mx-auto px-4 relative z-10">
-          <div className="flex flex-col md:flex-row justify-between items-end mb-6 gap-4">
+          <div className="sticky top-0 z-40 bg-dark/90 backdrop-blur-md -mx-4 px-4 pt-4 pb-2 mb-6 border-b border-white/5 shadow-lg transition-all">
+          <div className="flex flex-col md:flex-row justify-between items-end mb-2 gap-4">
             <h2 className="text-3xl font-bold text-white border-l-4 border-crimson pl-4">
               Live Center
             </h2>
@@ -334,6 +337,7 @@ export default function Home() {
             activeFilter={activeFilter}
             setFilter={setActiveFilter}
           />
+          </div>
 
           {loading ? (
             <div className="flex flex-col justify-center items-center py-20 gap-4">
@@ -376,6 +380,13 @@ export default function Home() {
           )}
         </div>
       </div>
+
+
+      {/* FIFA+ Promo Section */}
+      <FifaPromoSection />
+
+      {/* FIFA Tournament Section */}
+      <FifaTournamentSection />
 
       {/* News Preview Section */}
       <NewsPreview />
