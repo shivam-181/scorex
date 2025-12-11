@@ -1,7 +1,6 @@
 'use client';
 import Link from 'next/link';
 import { Home, Heart, Newspaper, Trophy, Crown, Medal } from 'lucide-react';
-
 import { usePathname } from 'next/navigation';
 import { useState, useEffect } from 'react';
 
@@ -102,7 +101,8 @@ export default function Navbar() {
         
 
         
-        <div className="w-px h-6 bg-white/10"></div>
+        
+        <div className="w-px h-6 bg-white/10 relative group-hover:bg-white/20 transition-colors"></div>
 
         <Link href="/my-feed">
           <div className="p-2 rounded-full transition-colors text-gray-400 hover:text-white">

@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { ArrowRight } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
+import NewsBanner from './NewsBanner';
 
 interface NewsItem {
   title: string;
@@ -87,6 +88,9 @@ export default function NewsPreview() {
             ))}
           </div>
         )}
+        
+        {/* Promotional Banner */}
+        <NewsBanner />
       </div>
     </section>
   );

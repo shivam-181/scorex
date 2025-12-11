@@ -330,11 +330,7 @@ export default function ManagerMode() {
                                 }`}
                             >
                                 <div className="w-10 h-10 rounded-full bg-gray-800 overflow-hidden relative border border-white/10 shrink-0 pointer-events-none">
-                                    {player.image ? (
-                                        <img src={player.image} alt={player.name} className="w-full h-full object-cover" />
-                                    ) : (
-                                        <div className="w-full h-full flex items-center justify-center text-xs font-bold text-white/30">{player.position}</div>
-                                    )}
+                                    <PlayerAvatar player={player} />
                                 </div>
                                 <div className="flex-1 min-w-0 pointer-events-none">
                                     <h4 className="text-sm font-bold truncate group-hover:text-crimson transition-colors">{player.name}</h4>
@@ -450,11 +446,7 @@ function DraggablePlayer({ player, pitchRef, onRemove }: { player: PlacedPlayer,
                 player.position === 'GK' ? 'border-yellow-400 bg-yellow-900/80' : 
                 'border-white bg-black/60 backdrop-blur-sm'
             }`}>
-                 {player.image ? (
-                    <img src={player.image} alt={player.name} className="w-full h-full object-cover" draggable={false} />
-                ) : (
-                    <div className="w-full h-full flex items-center justify-center font-bold text-white/40">{player.position}</div>
-                )}
+                 <PlayerAvatar player={player} />
             </div>
 
             {/* Name Label */}
@@ -462,5 +454,27 @@ function DraggablePlayer({ player, pitchRef, onRemove }: { player: PlacedPlayer,
                 {player.name} <span className="text-crimson ml-1">{player.rating}</span>
             </div>
         </motion.div>
+    );
+}
+
+function PlayerAvatar({ player }: { player: { name: string, image?: string, position: string } }) {
+    const [imgError, setImgError] = useState(false);
+
+    if (player.image && !imgError) {
+        return (
+            <img 
+                src={player.image} 
+                alt={player.name} 
+                className="w-full h-full object-cover" 
+                draggable={false}
+                onError={() => setImgError(true)}
+            />
+        );
+    }
+
+    return (
+        <div className="w-full h-full flex items-center justify-center font-bold text-white/40 select-none">
+            {player.position}
+        </div>
     );
 }

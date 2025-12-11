@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { motion } from 'framer-motion';
-import { Briefcase, Calendar, ArrowRight } from 'lucide-react';
+import { Briefcase, Calendar, ArrowRight, Globe, Trophy } from 'lucide-react';
 import BrandName from '@/components/BrandName';
 
 const features = [
@@ -21,6 +21,14 @@ const features = [
     link: "/on-this-day",
     color: "from-orange-500/20 to-orange-900/10",
     hoverColor: "group-hover:border-orange-500/50"
+  },
+  {
+    title: "Global Heatmap",
+    description: "See where the beautiful game is being followed right now. Live activity map of the ScoreX community.",
+    icon: <Globe className="w-12 h-12 text-purple-500 mb-4" />,
+    link: "/fan-zone/heatmap",
+    color: "from-purple-500/20 to-purple-900/10",
+    hoverColor: "group-hover:border-purple-500/50"
   }
 ];
 
