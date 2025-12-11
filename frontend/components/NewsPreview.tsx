@@ -38,12 +38,9 @@ export default function NewsPreview() {
   return (
     <section className="py-20 bg-black relative overflow-hidden">
       {/* Watermark */}
-      <div className="absolute inset-0 opacity-40 pointer-events-none">
-        <img 
-          src="https://images.unsplash.com/photo-1522778526097-ce0a22ceb253?q=80&w=870&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" 
-          alt="Watermark" 
-          className="w-full h-full object-cover"
-        />
+      {/* Background Watermark/Texture */}
+      <div className="absolute inset-0 bg-[#020617] z-0">
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-blue-900/20 via-black to-black opacity-50"></div>
       </div>
 
       <div className="container mx-auto px-4 relative z-10">
