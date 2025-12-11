@@ -16,7 +16,7 @@ export default function Hero() {
 
       
       {/* Centered Hero Content */}
-      <div className="flex-1 flex flex-col justify-center items-center w-full z-10 pb-20">
+      <div className="flex-1 flex flex-col justify-center items-center w-full z-10 pt-20">
       <motion.h1 
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -63,7 +63,7 @@ export default function Hero() {
         <img 
           src="/Dwt.jpeg" 
           alt="Stadium Background" 
-          className="w-full h-full object-cover object-[0%_35%] scale-115 translate-x-10"
+          className="w-full h-full object-cover object-[0%_18%] scale-115 translate-x-10"
         />
       </div>
 

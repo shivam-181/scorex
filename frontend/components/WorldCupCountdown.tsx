@@ -78,7 +78,7 @@ export default function WorldCupCountdown() {
           <div className="flex items-start gap-6 md:gap-8 text-center">
             <div className="flex flex-col items-center">
               <span className="text-xl md:text-2xl font-bold tabular-nums tracking-tight">
-                {timeLeft.days}
+                {String(timeLeft.days).padStart(2, "0")}
               </span>
               <span className="text-xs text-gray-400 font-medium uppercase tracking-wide">
                 Days
@@ -87,7 +87,7 @@ export default function WorldCupCountdown() {
             
             <div className="flex flex-col items-center">
               <span className="text-xl md:text-2xl font-bold tabular-nums tracking-tight">
-                {timeLeft.hours}
+                {String(timeLeft.hours).padStart(2, "0")}
               </span>
               <span className="text-xs text-gray-400 font-medium uppercase tracking-wide">
                 Hours
@@ -96,7 +96,7 @@ export default function WorldCupCountdown() {
             
             <div className="flex flex-col items-center">
               <span className="text-xl md:text-2xl font-bold tabular-nums tracking-tight">
-                {timeLeft.minutes}
+                {String(timeLeft.minutes).padStart(2, "0")}
               </span>
               <span className="text-xs text-gray-400 font-medium uppercase tracking-wide">
                 Mins
@@ -105,7 +105,7 @@ export default function WorldCupCountdown() {
             
             <div className="flex flex-col items-center">
               <span className="text-xl md:text-2xl font-bold tabular-nums tracking-tight">
-                {timeLeft.seconds}
+                {String(timeLeft.seconds).padStart(2, "0")}
               </span>
               <span className="text-xs text-gray-400 font-medium uppercase tracking-wide">
                 Secs

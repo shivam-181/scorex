@@ -58,9 +58,9 @@ export default function TopHeader() {
           pathname === '/' 
             ? isScrolled 
               ? 'fixed top-0 bg-black/60 backdrop-blur-xl border-b border-white/5 shadow-lg' 
-              : 'fixed top-[1.35rem] bg-black/60 backdrop-blur-xl border-b border-white/5 shadow-lg'
+              : 'fixed top-[2.25rem] bg-black/60 backdrop-blur-xl border-b border-white/5 shadow-lg'
             : 'fixed top-0 bg-black/80 backdrop-blur-md'
-        } left-0 w-full z-50 px-6 py-4 grid grid-cols-3 items-center pointer-events-none transition-all duration-500 ${isVisible ? 'translate-y-0' : '-translate-y-full'}`}
+        } left-0 w-full z-50 px-6 py-2 grid grid-cols-3 items-center pointer-events-none transition-all duration-500 ${isVisible ? 'translate-y-0' : '-translate-y-full'}`}
       >
         {/* Left: Logo */}
         <div className="flex justify-start pointer-events-auto">
@@ -73,15 +73,15 @@ export default function TopHeader() {
 
         {/* Center: Navigation */}
         <div className="flex justify-center pointer-events-auto">
-            <nav className="hidden md:flex items-center gap-8 text-sm font-bold text-white/90">
-                <Link href="/news" className="hover:text-crimson transition-colors">News</Link>
-                <Link href="/leagues" className="hover:text-crimson transition-colors">Leagues</Link>
-                <Link href="/legacy" className="hover:text-yellow-400 transition-colors">Legends</Link>
-                <Link href="/awards" className="hover:text-[#BBFCDD] transition-colors">Awards</Link>
+            <nav className="hidden md:flex items-center gap-6 text-sm font-bold text-white/90">
+                <Link href="/news" className="hover:text-crimson transition-colors">NEWS</Link>
+                <Link href="/leagues" className="hover:text-crimson transition-colors">LEAGUES</Link>
+                <Link href="/legacy" className="hover:text-yellow-400 transition-colors">LEGENDS</Link>
+                <Link href="/awards" className="hover:text-[#BBFCDD] transition-colors">AWARDS</Link>
                 
                 {/* Fan Zone Link */}
                 <Link href="/fan-zone" className="flex items-center gap-1 hover:text-apricot transition-colors py-2 group uppercase tracking-wider font-bold">
-                    Fan Zone
+                    FAN ZONE
                 </Link>
             </nav>
         </div>
@@ -148,6 +148,7 @@ export default function TopHeader() {
               <Link href="/news" onClick={() => setIsMenuOpen(false)} className="hover:text-crimson transition-colors">News</Link>
               <Link href="/leagues" onClick={() => setIsMenuOpen(false)} className="hover:text-crimson transition-colors">Leagues</Link>
               <Link href="/legacy" onClick={() => setIsMenuOpen(false)} className="hover:text-yellow-400 text-yellow-500 transition-colors">Legends Hall</Link>
+              <Link href="/awards" onClick={() => setIsMenuOpen(false)} className="hover:text-[#BBFCDD] text-[#BBFCDD] transition-colors">Awards</Link>
               <Link href="/manager" onClick={() => setIsMenuOpen(false)} className="hover:text-blue-500 text-blue-400 transition-colors">Manager Mode</Link>
               <Link href="/on-this-day" onClick={() => setIsMenuOpen(false)} className="hover:text-orange-500 text-orange-400 transition-colors">On This Day</Link>
               <Link href="/my-feed" onClick={() => setIsMenuOpen(false)} className="hover:text-crimson transition-colors">My Feed</Link>
