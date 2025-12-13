@@ -55,7 +55,7 @@ export default function FloatingLiveWidget() {
               ease: "easeInOut" 
             }
           }}
-          className="absolute top-52 left-4 md:left-8 z-40 w-[300px] md:w-[350px] bg-dark/80 backdrop-blur-md border border-white/10 rounded-xl shadow-[0_8px_32px_rgba(0,0,0,0.3)] overflow-hidden"
+          className="absolute top-64 left-4 md:left-8 z-40 w-[300px] md:w-[350px] bg-dark/80 backdrop-blur-md border border-white/10 rounded-xl shadow-[0_8px_32px_rgba(0,0,0,0.3)] overflow-hidden"
         >
           {/* Header */}
           <div className="px-4 py-2 bg-crimson/90 flex items-center justify-between">
